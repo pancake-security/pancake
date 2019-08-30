@@ -10,7 +10,7 @@
 
 #include "storage_interface.h"
 
-class Proxy {
+class proxy {
 public:
 
     virtual void init() = 0;
@@ -21,6 +21,6 @@ public:
     virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) = 0;
 
 private:
-    std::vector<std::shared_ptr<storage_interface>> storage_interfaces;
+    std::vector<std::shared_ptr<storage_interface>> storage_interfaces_;
 };
 #endif //PANCAKE_PROXY_H

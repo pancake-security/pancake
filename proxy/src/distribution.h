@@ -7,8 +7,12 @@
 
 #endif //DISTRIBUTION_H
 
-class Distribution {
+class distribution {
 public:
-    virtual void init(std::shared_ptr<std::vector<const std::string>> items, std::shared_ptr<std::vector<const double>> frequencies) = 0;
-    virtual const std::string sample() = 0;
+    void init(std::shared_ptr<std::vector<const std::string>> items, std::shared_ptr<std::vector<int>> frequencies);
+    std::string sample();
+
+private:
+    std::discrete_distribution<int> distribution_;
+    std::vector<const string> items_;
 };

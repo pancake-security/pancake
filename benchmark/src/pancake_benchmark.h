@@ -11,9 +11,11 @@
 class pancake_benchmark {
 public:
     void run_benchmark();
+    void warmup(const std::string key_file, const std::string& workload_file);
+    void cooldown(const std::string key_file, const std::string& workload_file);
 
 private:
-    Pancake_Proxy pancake_proxy;
+    pancake_proxy pancake_proxy_;
 };
 
 #endif //PANCAKE_PANCAKE_BENCHMARK_H

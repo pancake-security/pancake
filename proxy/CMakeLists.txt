@@ -21,9 +21,8 @@ add_executable(pancake_proxy
         src/memcached.cpp
         src/memcached.h
         src/distribution.h
-        src/standard_distribution.h
         src/update_cache.h
-        src/cuckoo_update_cache.h
+        src/encryption_engine.h
 )
 add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
 target_link_libraries(pancake_proxy

@@ -1,17 +1,20 @@
 //
-// Created by Lloyd Brown on 8/29/19.
+// Created by Lloyd Brown on 8/30/19.
 //
 
-#ifndef UPDATE_CACHE_H
-#define UPDATE_CACHE_H
+#ifndef PANCAKE_UPDATE_CACHE_H
+#define PANCAKE_UPDATE_CACHE_H
 
-class Update_Cache {
+#include <libcuckoo/cuckoohash_map.hh>
+
+class update_cache {
 public:
-    virtual std::string check_for_update(std::string &replica) = 0;
-    virtual std::string populate_replica_updates(std::string &key, std::string &val, int number_replicas) = 0;
-    virtual int size_in_bytes () = 0;
+    std::string check_for_update(std::string &replica);
+    std::string populate_replica_updates(std::string &key, std::string &val, int number_replicas);
+    int size_in_bytes ();
 
 private:
     cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>> map;
 };
-#endif //UPDATE_CACHE_H
+
+#endif //PANCAKE_CUCKOO_UPDATE_CACHE_H

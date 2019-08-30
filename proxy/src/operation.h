@@ -7,14 +7,14 @@
 
 #include <string>
 
-class Operation {
+class operation {
 public:
-    Operation(const Operation&);
-    Operation& operator=(const Operation&);
-    Operation() : key(), value() {
+    operation(const Operation&);
+    operation& operator=(const Operation&);
+    operation() : key(), value() {
     }
 
-    virtual ~Operation() throw();
+    virtual ~operation() throw();
     std::string key;
     std::string value;
 

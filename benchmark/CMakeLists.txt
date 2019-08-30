@@ -24,9 +24,8 @@ add_executable(pancake_benchmark
         src/memcached.cpp
         src/memcached.h
         src/distribution.h
-        src/standard_distribution.h
         src/update_cache.h
-        src/cuckoo_update_cache.h
+        src/encryption_engine.h
         src/timer.h
         )
 add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep)
