@@ -79,6 +79,36 @@ ExternalProject_Add(libcuckoo
 
 include_directories(SYSTEM ${LIBCUCKOO_INCLUDE_DIR})
 message(STATUS "Libcuckoo include dir: ${LIBCUCKOO_INCLUDE_DIR}")
+#
+#set(LIBMEMCACHED_CXX_FLAGS "${EXTERNAL_CXX_FLAGS}")
+#set(LIBMEMCACHED_C_FLAGS "${EXTERNAL_C_FLAGS}")
+#set(LIBMEMCACHED_PREFIX "${PROJECT_BINARY_DIR}/external/libmemcached")
+##set(LIBMEMCACHED_CMAKE_ARGS "-Wno-dev"
+##        "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+##        "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+##        "-DCMAKE_CXX_FLAGS=${LIBCUCKOO_CXX_FLAGS}"
+##        "-DCMAKE_C_FLAGS=${LIBCUCKOO_C_FLAGS}"
+##        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+##        "-DCMAKE_INSTALL_PREFIX=${LIBCUCKOO_PREFIX}"
+##        "-DBUILD_EXAMPLES=OFF"
+##        "-DBUILD_TESTS=OFF"
+##        "-DBUILD_SHARED_LIBS=OFF")
+#set(LIBMEMCACHED_INCLUDE_DIR "${LIBCUCKOO_PREFIX}")
+#set(LIBMEMCACHED_STATIC_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}libmemcached")
+#set(LIBMEMCACHED_LIBRARY "${LIBCUCKOO_PREFIX}")
+##set(LIBMEMCACHED_LIBRARIES )
+#
+#ExternalProject_Add(libmemcached
+#        GIT_REPOSITORY https://github.com/memcached/memcached.git
+#        GIT_SUBMODULES
+#        LIST_SEPARATOR |
+#        LOG_DOWNLOAD ON
+#        LOG_CONFIGURE ON
+#        LOG_BUILD ON
+#        LOG_INSTALL ON)
+#
+#include_directories(SYSTEM ${LIBMEMCACHED_INCLUDE_DIR})
+#message(STATUS "Libcuckoo include dir: ${LIBMEMCACHED_INCLUDE_DIR}")
 
 set(THRIFT_CXX_FLAGS "${EXTERNAL_CXX_FLAGS}")
 set(THRIFT_C_FLAGS "${EXTERNAL_C_FLAGS}")
@@ -239,7 +269,7 @@ include_directories(SYSTEM ${BZIP2_INCLUDE_DIR})
 #  MEMCACHED_USE_EXTERNAL_LIBRARY is ON, we will fetch, build, and include a copy of the neccessary
 #  Libraries.
 
-option(MEMCACHED_USE_EXTERNAL_LIBRARY "Pull and build source from external location if local is not found" OFF)
+option(MEMCACHED_USE_EXTERNAL_LIBRARY "Pull and build source from external location if local is not found" NO)
 
 # Search for native library to build against
 if(WIN32)
@@ -280,7 +310,8 @@ if((LIBMEMCACHEDCORE_LIBRARY STREQUAL "LIBMEMCACHEDCORE_LIBRARY-NOTFOUND"
     # Currently libmemcached versions are not sufficient on ubuntu 12.04 and 14.04 LTS
     # until then, we build the required libraries from source
     if(NOT TARGET generate-libmemcached)
-        set(LIBMEMCACHED_URL https://launchpad.net/libmemcached/1.0/${LIBMEMCACHED_FIND_VERSION}/+download/libmemcached-${LIBMEMCACHED_FIND_VERSION}.tar.gz)
+        #set(LIBMEMCACHED_URL https://launchpad.net/libmemcached/1.0/${LIBMEMCACHED_FIND_VERSION}/+download/libmemcached-${LIBMEMCACHED_FIND_VERSION}.tar.gz)
+        set(LIBMEMCACHED_URL https://launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz)
         include(ExternalProject)
         ExternalProject_Add(
             generate-libmemcached
