@@ -1,3 +1,0 @@
-repository='https://github.com/anuragkh/ssdb-rocks.git'
-module=''
-tag='origin'
