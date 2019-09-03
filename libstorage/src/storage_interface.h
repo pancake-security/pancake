@@ -15,8 +15,5 @@ public:
     virtual void put(const std::string &key, const std::string &value) = 0;
     virtual std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) = 0;
     virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) = 0;
-
-private:
-    static std::vector<std::shared_ptr<storage_interface>> s_ifs;
 };
 #endif //STORAGE_INTERFACE_H

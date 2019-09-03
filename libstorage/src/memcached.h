@@ -11,7 +11,7 @@
 class memcached : public storage_interface {
 public:
     void init(const std::string hostname, const std::string port) override;
-    std::string get(const std::string &key, const std::string &value) override;
+    std::string get(const std::string &key) override;
     void put(const std::string &key, const std::string &value) override;
     std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) override;
     void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) override;
@@ -19,6 +19,5 @@ public:
 private:
     std::shared_ptr<memcached_st> client;
 };
-
 
 #endif //MEMCACHED_H
