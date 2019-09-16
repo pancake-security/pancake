@@ -12,7 +12,6 @@ add_executable(pancake_proxy
         src/operation.cpp
         src/operation.h
         src/proxy.h
-        src/storage_interface.cpp
         src/storage_interface.h
         src/redis.cpp
         src/redis.h
@@ -23,7 +22,7 @@ add_executable(pancake_proxy
         src/distribution.h
         src/update_cache.h
         src/encryption_engine.h
-)
+        )
 add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
 target_link_libraries(pancake_proxy
         #${THRIFT_LIBRARIES}
@@ -58,7 +57,7 @@ add_executable(path_oram
       src/PathORAM.cpp
       src/PathORAM.h
       src/Util.h
-      src/Util.cpp)
+      )
 add_dependencies(path_oram cpp_redis ssdb_rocks thrift libcuckoo)
 target_link_libraries(path_oram
       #${CPP_REDIS_LIBRARIES}
