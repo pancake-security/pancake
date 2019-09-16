@@ -13,8 +13,7 @@
             clients.push_back(memc);
         }
         else {
-            std::cerr << "Couldn't add server: " << memcached_strerror(memc, rc) << std::endl;
-            exit(-1);
+            throw std::runtime_error("Server connection failed: " + memcached_strerror(memc, rc));
         }
     }
 
@@ -27,8 +26,7 @@
             return std::string(value);
         }
         else {
-            std::cerr << "Couldn't get key: " << memcached_strerror(clients[idx], rc) << std::endl;
-            exit(-1);
+            throw std::runtime_error("Key retrieval failed: " + memcached_strerror(clients[idx], rc));
         }
     }
 
@@ -37,8 +35,7 @@
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         rc = memcached_set(clients[idx], key.c_str(), strlen(key.c_str()), value.c_str(), strlen(value.c_str()), (time_t)0, (uint32_t)0);
         if (rc != MEMCACHED_SUCCESS) {
-            std::cerr << "Write failed: ", << clients[idx] << std::err;
-            exit(-1);
+            throw std::runtime_error("Write failed: " + memcached_strerror(clients[idx], rc));
         }
     }
 
@@ -66,8 +63,7 @@
             }
             memcached_return_t rc = memcached_mget(clients[it->first], it->second, key_length, keys.size());
             if (rc != MEMCACHED_SUCCESS) {
-                std::cerr << "Batch read failed: ", << clients[it->first] << std::err;
-                exit(-1);
+                throw std::runtime_error("Batch read failed: " + memcached_strerror(clients[it->first], rc));
             }
             while ((return_value = memcached_fetch(clients[it->first], return_key, &return_key_length, &return_value_length, &flags, &rc))){
                 return_values.push_back(std::string(return_value));
@@ -103,8 +99,7 @@
             }
             memcached_return_t rc = memcached_mset(clients[it->first], it->second, key_length, keys.size());
             if (rc != MEMCACHED_SUCCESS) {
-                std::cerr << "Batch read failed: ", << clients[it->first] << std::err;
-                exit(-1);
+                throw std::runtime_error("Batch write failed: " + memcached_strerror(clients[it->first], rc));
             }
         }
     }

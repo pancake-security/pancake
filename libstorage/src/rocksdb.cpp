@@ -17,7 +17,8 @@
         std::string val;
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         ssdb::Status s = clients[idx]->get(key, &val);
-        assert(s.ok());
+        if (!s.ok())
+            throw std::runtime_error((s.code()));
         return val;
     }
 
@@ -25,7 +26,7 @@
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         ssdb::Status s = clients[idx]->set(key, value);
         if (!s.ok())
-            std::cerr << "Error: " << s.code() << std::endl;
+            throw std::runtime_error((s.code()));
         assert(s.ok());
     }
 
