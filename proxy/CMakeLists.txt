@@ -12,7 +12,6 @@ add_executable(pancake_proxy
         src/operation.cpp
         src/operation.h
         src/proxy.h
-        src/storage_interface.cpp
         src/storage_interface.h
         src/redis.cpp
         src/redis.h

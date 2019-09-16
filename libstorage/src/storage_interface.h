@@ -10,10 +10,10 @@
 class storage_interface {
 public:
 
-    virtual void init(const std::string hostname, const std::string port) = 0;
-    virtual std::string get(const std::string &key, const std::string &value) = 0;
+    virtual void init(const std::string hostname, int port) = 0;
+    virtual std::string get(const std::string &key) = 0;
     virtual void put(const std::string &key, const std::string &value) = 0;
-    virtual std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) = 0;
-    virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) = 0;
+    virtual std::vector<const std::string> get_batch(std::vector<const std::string> keys) = 0;
+    virtual void put_batch(std::vector<const std::string> keys, std::vector<const std::string> values) = 0;
 };
 #endif //STORAGE_INTERFACE_H
