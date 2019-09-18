@@ -5,14 +5,17 @@
 #ifndef DISTRIBUTION_H
 #define DISTRIBUTION_H
 
-#endif //DISTRIBUTION_H
+#include <random>
 
 class distribution {
 public:
-    void init(std::shared_ptr<std::vector<const std::string>> items, std::shared_ptr<std::vector<int>> frequencies);
+    void init(std::shared_ptr<std::vector<std::string> > items, std::shared_ptr<std::vector<int>> frequencies);
     std::string sample();
 
 private:
     std::discrete_distribution<int> distribution_;
-    std::vector<const string> items_;
+    std::default_random_engine random_;
+    std::shared_ptr<std::vector<std::string>> items_;
 };
+
+#endif //DISTRIBUTION_H

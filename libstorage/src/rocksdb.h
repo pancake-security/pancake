@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+
 class rocksdb : public storage_interface {
 public:
     void init(const std::string hostname, int port) override;
