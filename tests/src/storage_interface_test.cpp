@@ -5,6 +5,7 @@
 #include "redis.h"
 //#include "memcached.h"
 #include "rocksdb.h"
+#include <iostream>
 
 struct options {
     bool testing_redis;

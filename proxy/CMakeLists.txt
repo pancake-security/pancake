@@ -1,4 +1,5 @@
 set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage)
+set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 include_directories(${STORAGE_INCLUDE})
 
@@ -20,9 +21,10 @@ add_executable(pancake_proxy
         src/memcached.cpp
         src/memcached.h
         src/distribution.h
+        src/distribution.cpp
         src/update_cache.h
         src/encryption_engine.h
-        )
+        src/update_cache.cpp)
 add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
 target_link_libraries(pancake_proxy
         #${THRIFT_LIBRARIES}
@@ -61,7 +63,7 @@ add_executable(path_oram
 add_dependencies(path_oram cpp_redis ssdb_rocks thrift libcuckoo)
 target_link_libraries(path_oram
       #${CPP_REDIS_LIBRARIES}
-      ${THRIFT_LIBRARIES}
+      #${THRIFT_LIBRARIES}
       ${OPENSSL_LIBRARIES}
       ${SSDB_CLIENT_LIBRARY}
       ${LEVELDB_LIBRARY}
