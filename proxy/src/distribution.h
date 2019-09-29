@@ -9,13 +9,14 @@
 
 class distribution {
 public:
-    distribution(std::shared_ptr<std::vector<std::string> > items, std::shared_ptr<std::vector<int>> frequencies);
+    distribution();
+    distribution(std::vector<std::string> items, std::vector<double> frequencies);
     std::string sample();
 
 private:
-    std::discrete_distribution<int> distribution_;
+    std::discrete_distribution<double> distribution_;
     std::default_random_engine random_;
-    std::shared_ptr<std::vector<std::string>> items_;
+    std::vector<std::string> items_;
 };
 
 #endif //DISTRIBUTION_H

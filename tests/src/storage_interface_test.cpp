@@ -42,7 +42,7 @@ void run_basic_test(storage_interface * client){
 
 int main(int argc, char* argv[]) {
     options opts;
-    for (int i = 1; i < argc; ++i) { // Remember argv[0] is the path to the program, we want from argv[1] onwards
+    for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--redis") == 0)
             opts.testing_redis = true;
         else if (std::strcmp(argv[i], "--rocksdb") == 0)

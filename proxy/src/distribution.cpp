@@ -5,12 +5,12 @@
 #include "distribution.h"
 
 
-    distribution::distribution(std::shared_ptr<std::vector<std::string>> items, std::shared_ptr<std::vector<int> > frequencies) {
-        std::discrete_distribution<int> new_distribution_(frequencies->begin(), frequencies->end());
+    distribution::distribution(std::vector<std::string> items, std::vector<double> frequencies) {
+        std::discrete_distribution<double> new_distribution_(frequencies.begin(), frequencies.end());
         this->distribution_ = new_distribution_;
         this->items_ = items;
     };
 
     std::string distribution::sample() {
-        return (*items_)[distribution_(random_)];
+        return *items_[distribution_(random_)];
     };

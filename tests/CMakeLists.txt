@@ -56,6 +56,8 @@ add_executable(update_cache_test
         src/update_cache_test.cpp
         ../proxy/src/update_cache.h
         ../proxy/src/update_cache.cpp
+        ../proxy/src/util.h
+        ../proxy/src/util.cpp
         )
 target_link_libraries(update_cache_test
         ${PROXY_INCLUDE_LIBRARIES}

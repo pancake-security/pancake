@@ -5,67 +5,35 @@
 #ifndef PANCAKE_PROXY_H
 #define PANCAKE_PROXY_H
 
-#include <set>
+#include <unordered_map>
 #include <vector>
+#include <algorithm>
+#include <unistd.h>
 
 #include "proxy.h"
 #include "operation.h"
 #include "update_cache.h"
 #include "distribution.h"
+#include "util.h"
 #include "encryption_engine.h"
 #include "queue.h"
-#include "storage_interface.h"
-#include "redis.h"
-#include "roksdb.h"
-#include "memcached.h"
+#include "../../libstorage/src/storage_interface.h"
+//#include "redis.h"
+//#include "rocksdb.h"
+//#include "memcached.h"
 
 
 class pancake_proxy : public proxy {
 public:
+    pancake_proxy();
     void init() override;
     void run() override;
     std::string get(const std::string &key, const std::string &value) override;
     void put(const std::string &key, const std::string &value) override;
-    std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) override;
-    void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) override;
-
-private:
+    std::vector<const std::string> get_batch(std::vector<const std::string> *  keys) override;
+    void put_batch(std::vector<const std::string> * keys, std::vector<const std::string> *  values) override;
     void usage();
-    std::shared_ptr<std::vector<operation> create_security_batch(Operation op);
-    void create_replicas();
-    void load_frequencies_from_trace(const std::string &trace_location);
-    void insert_replicas(std::string key, int num_replicas, std::shared_ptr<std::vector<std::string>>> replicas,
-                         std::shared_ptr<std::vector<double>>> frequencies,
-                         std::shared_ptr<std::vector<double>>> fake_frequencies, bool is_dummy_key);
-    void compute_fake_distribution();
-    void prepare_for_swapping(std::string key, int r_new, int r_old, bool is_dummy_key,
-                              std::shared_ptr<std::vector<std::string>> unassigned_labels,
-                              std::shared_ptr<std::vector<std::pair<std::string, int>>> needs_labels)
-    int perform_swapping(std::shared_ptr<std::vector<std::string>> unassigned_labels,
-                         std::shared_ptr<std::vector<std::pair<std::string, int>>> needs_labels)
-    void update_distribution();
-    bool is_true_distribution();
-    void execute_batch(const std::vector<operation> & operations, std::vector<std::string> & _returns,
-                       std::vector<bool> & is_trues);
-    void service_thread(int id);
-    std::shared_ptr<std::vector<operation> create_security_batch(Operation op, queue op_queue);
 
-    std::vector<storage_interface *> storage_interfaces_;
-    std::queue <Operation> operation_queue_;
-    update_cache update_cache_;
-    update_cache  missing_new_replicas_;
-    std::unordered_map<std::string, int> key_to_frequency_;
-    std::unordered_map<std::string, int> new_key_to_frequency_;
-    int frequency_sum_ = 0;
-    int label_count_ = 0;
-    int dummy_keys_ = 0;
-    double p_max;
-    std::string dummy_key_ = gen_random(16);
-    std::unordered_map<std::string, int> key_to_number_of_replicas_;
-    std::unordered_map<std::string, int> replica_to_label_;
-    distribution fake_distribution_;
-    distribution real_distribution_;
-    encryption_engine encryption_engine_;
     std::string output_location_ = "log";
     std::string server_hostname_ = "127.0.0.1";
     int server_port_ = 50054;
@@ -80,6 +48,42 @@ private:
     int core_ = 0;
     bool is_static_ = true;
 
+private:
+    void create_security_batch(operation op, queue <operation> * op_queue,
+            std::vector<operation> * storage_batch,
+            std::vector<bool> * is_trues);
+    void create_replicas();
+    void load_frequencies_from_trace(const std::string &trace_location, std::unordered_map<std::string, int> * key_to_frequency);
+    void insert_replicas(std::string key, int num_replicas);
+    void compute_fake_distribution();
+    void prepare_for_swapping(std::string key, int r_new, int r_old,
+                              std::vector<std::string> * unassigned_labels,
+                              std::vector<std::pair<std::string, int>> * needs_labels);
+    int perform_swapping(std::vector<std::string> * unassigned_labels,
+                         std::vector<std::pair<std::string, int>> * needs_labels);
+    void update_distribution();
+    bool distribution_changed();
+    bool is_true_distribution();
+    void execute_batch(const std::vector<operation> * operations, std::vector<std::string> * _returns,
+                       std::vector<bool> * is_trues, std::vector<storage_interface*>* storage_interfaces);
+    void service_thread(queue <operation> operation_queue);
+
+    std::vector<storage_interface *> storage_interfaces_;
+    std::queue <operation> operation_queue_;
+    update_cache update_cache_;
+    update_cache  missing_new_replicas_;
+    std::unordered_map<std::string, int> key_to_frequency_;
+    std::unordered_map<std::string, int> new_key_to_frequency_;
+    int frequency_sum_ = 0;
+    int label_count_ = 0;
+    int dummy_keys_ = 0;
+    double p_max;
+    std::string dummy_key_ = rand_str(16);
+    std::unordered_map<std::string, int> key_to_number_of_replicas_;
+    std::unordered_map<std::string, int> replica_to_label_;
+    distribution fake_distribution_;
+    distribution real_distribution_;
+    encryption_engine encryption_engine_;
 };
 
 #endif //PANCAKE_PROXY_H

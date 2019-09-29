@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "storage_interface.h"
-
 class proxy {
 public:
 
@@ -17,10 +15,8 @@ public:
     virtual void run() = 0;
     virtual std::string get(const std::string &key, const std::string &value) = 0;
     virtual void put(const std::string &key, const std::string &value) = 0;
-    virtual std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) = 0;
-    virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) = 0;
+    virtual std::vector<const std::string> get_batch(std::vector<const std::string> * keys) = 0;
+    virtual void put_batch(std::vector<const std::string> * keys, std::vector<const std::string> * values) = 0;
 
-private:
-    std::vector<std::shared_ptr<storage_interface>> storage_interfaces_;
 };
 #endif //PANCAKE_PROXY_H

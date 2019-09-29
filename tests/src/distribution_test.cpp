@@ -8,16 +8,16 @@
 void run_basic_test(){
     std::cout << "Performing distribution stress test" << std::endl;
 
-    auto items = std::make_shared<std::vector<std::string>>();
-    auto frequencies = std::make_shared<std::vector<int>>();
+    std::vector<std::string> items;
+    std::vector<double> frequencies;
     for (int i = 0; i < 10000000; i++){
-        items->push_back(std::to_string(i));
-        frequencies->push_back(1);
+        items.push_back(std::to_string(i));
+        frequencies.push_back(1.0);
     }
 
 
     // Initialize distribution
-    distribution dist = distribution(items, frequencies);
+    distribution dist = distribution(std::move(items), std::move(frequencies));
 
 
     for (int i = 0; i < 10000000; i++){

@@ -110,70 +110,70 @@ message(STATUS "Libcuckoo include dir: ${LIBCUCKOO_INCLUDE_DIR}")
 #include_directories(SYSTEM ${LIBMEMCACHED_INCLUDE_DIR})
 #message(STATUS "Libcuckoo include dir: ${LIBMEMCACHED_INCLUDE_DIR}")
 
-set(THRIFT_CXX_FLAGS "${EXTERNAL_CXX_FLAGS}")
-set(THRIFT_C_FLAGS "${EXTERNAL_C_FLAGS}")
-set(THRIFT_PREFIX "${PROJECT_BINARY_DIR}/external/thrift")
-set(THRIFT_HOME "${THRIFT_PREFIX}")
-set(THRIFT_INCLUDE_DIR "${THRIFT_PREFIX}/include")
-if (USE_SYSTEM_BOOST)
-    set(THRIFT_PREFIX_PATH "${LIBEVENT_PREFIX}|${ZLIB_PREFIX}|${OPENSSL_PREFIX}")
-else ()
-    set(THRIFT_PREFIX_PATH "${LIBEVENT_PREFIX}|${ZLIB_PREFIX}|${OPENSSL_PREFIX}|${BOOST_PREFIX}")
-endif ()
-set(THRIFT_CMAKE_ARGS "-Wno-dev"
-        "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
-        "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
-        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-        "-DCMAKE_CXX_FLAGS=${THRIFT_CXX_FLAGS}"
-        "-DCMAKE_C_FLAGS=${THRIFT_C_FLAGS}"
-        "-DCMAKE_INSTALL_PREFIX=${THRIFT_PREFIX}"
-        "-DCMAKE_INSTALL_RPATH=${THRIFT_PREFIX}/lib"
-        "-DBUILD_COMPILER=${GENERATE_THRIFT}"
-        "-DBUILD_TESTING=OFF"
-        "-DWITH_SHARED_LIB=OFF"
-        "-DWITH_QT4=OFF"
-        "-DWITH_QT5=OFF"
-        "-DWITH_C_GLIB=OFF"
-        "-DWITH_HASKELL=OFF"
-        "-DWITH_LIBEVENT=OFF"
-        "-DWITH_ZLIB=OFF"
-        "-DWITH_JAVA=OFF"
-        "-DWITH_PYTHON=OFF"
-        "-DWITH_CPP=ON"
-        "-DWITH_STDTHREADS=OFF"
-        "-DWITH_BOOSTTHREADS=OFF"
-        "-DWITH_STATIC_LIB=ON"
-        "-DCMAKE_PREFIX_PATH=${THRIFT_PREFIX_PATH}"
-        "-DZLIB_LIBRARY=${ZLIB_LIBRARY}") # Force usage of static library
-
-set(THRIFT_STATIC_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}thrift")
-#if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-#  set(THRIFT_STATIC_LIB_NAME "${THRIFT_STATIC_LIB_NAME}d")
+#set(THRIFT_CXX_FLAGS "${EXTERNAL_CXX_FLAGS}")
+#set(THRIFT_C_FLAGS "${EXTERNAL_C_FLAGS}")
+#set(THRIFT_PREFIX "${PROJECT_BINARY_DIR}/external/thrift")
+#set(THRIFT_HOME "${THRIFT_PREFIX}")
+#set(THRIFT_INCLUDE_DIR "${THRIFT_PREFIX}/include")
+#if (USE_SYSTEM_BOOST)
+#    set(THRIFT_PREFIX_PATH "${LIBEVENT_PREFIX}|${ZLIB_PREFIX}|${OPENSSL_PREFIX}")
+#else ()
+#    set(THRIFT_PREFIX_PATH "${LIBEVENT_PREFIX}|${ZLIB_PREFIX}|${OPENSSL_PREFIX}|${BOOST_PREFIX}")
 #endif ()
-set(THRIFT_LIBRARIES "${THRIFT_PREFIX}/lib/${THRIFT_STATIC_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-if (GENERATE_THRIFT)
-    set(THRIFT_COMPILER "${THRIFT_PREFIX}/bin/thrift")
-endif ()
-ExternalProject_Add(thrift
-        DEPENDS openssl_ep
-        URL "http://archive.apache.org/dist/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz"
-        LIST_SEPARATOR |
-        CMAKE_ARGS ${THRIFT_CMAKE_ARGS}
-        LOG_DOWNLOAD ON
-        LOG_CONFIGURE ON
-        LOG_BUILD ON
-        LOG_INSTALL ON)
-
-include_directories(SYSTEM ${THRIFT_INCLUDE_DIR})
-message(STATUS "Thrift include dir: ${THRIFT_INCLUDE_DIR}")
-message(STATUS "Thrift static libraries: ${THRIFT_LIBRARIES}")
-
-if (GENERATE_THRIFT)
-    message(STATUS "Thrift compiler: ${THRIFT_COMPILER}")
-    add_executable(thriftcompiler IMPORTED GLOBAL)
-    set_target_properties(thriftcompiler PROPERTIES IMPORTED_LOCATION ${THRIFT_COMPILER})
-    add_dependencies(thriftcompiler thrift)
-endif ()
+#set(THRIFT_CMAKE_ARGS "-Wno-dev"
+#        "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+#        "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+#        "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+#        "-DCMAKE_CXX_FLAGS=${THRIFT_CXX_FLAGS}"
+#        "-DCMAKE_C_FLAGS=${THRIFT_C_FLAGS}"
+#        "-DCMAKE_INSTALL_PREFIX=${THRIFT_PREFIX}"
+#        "-DCMAKE_INSTALL_RPATH=${THRIFT_PREFIX}/lib"
+#        "-DBUILD_COMPILER=${GENERATE_THRIFT}"
+#        "-DBUILD_TESTING=OFF"
+#        "-DWITH_SHARED_LIB=OFF"
+#        "-DWITH_QT4=OFF"
+#        "-DWITH_QT5=OFF"
+#        "-DWITH_C_GLIB=OFF"
+#        "-DWITH_HASKELL=OFF"
+#        "-DWITH_LIBEVENT=OFF"
+#        "-DWITH_ZLIB=OFF"
+#        "-DWITH_JAVA=OFF"
+#        "-DWITH_PYTHON=OFF"
+#        "-DWITH_CPP=ON"
+#        "-DWITH_STDTHREADS=OFF"
+#        "-DWITH_BOOSTTHREADS=OFF"
+#        "-DWITH_STATIC_LIB=ON"
+#        "-DCMAKE_PREFIX_PATH=${THRIFT_PREFIX_PATH}"
+#        "-DZLIB_LIBRARY=${ZLIB_LIBRARY}") # Force usage of static library
+#
+#set(THRIFT_STATIC_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}thrift")
+##if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+##  set(THRIFT_STATIC_LIB_NAME "${THRIFT_STATIC_LIB_NAME}d")
+##endif ()
+#set(THRIFT_LIBRARIES "${THRIFT_PREFIX}/lib/${THRIFT_STATIC_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+#if (GENERATE_THRIFT)
+#    set(THRIFT_COMPILER "${THRIFT_PREFIX}/bin/thrift")
+#endif ()
+#ExternalProject_Add(thrift
+#        DEPENDS openssl_ep
+#        URL "http://archive.apache.org/dist/thrift/${THRIFT_VERSION}/thrift-${THRIFT_VERSION}.tar.gz"
+#        LIST_SEPARATOR |
+#        CMAKE_ARGS ${THRIFT_CMAKE_ARGS}
+#        LOG_DOWNLOAD ON
+#        LOG_CONFIGURE ON
+#        LOG_BUILD ON
+#        LOG_INSTALL ON)
+#
+#include_directories(SYSTEM ${THRIFT_INCLUDE_DIR})
+#message(STATUS "Thrift include dir: ${THRIFT_INCLUDE_DIR}")
+#message(STATUS "Thrift static libraries: ${THRIFT_LIBRARIES}")
+#
+#if (GENERATE_THRIFT)
+#    message(STATUS "Thrift compiler: ${THRIFT_COMPILER}")
+#    add_executable(thriftcompiler IMPORTED GLOBAL)
+#    set_target_properties(thriftcompiler PROPERTIES IMPORTED_LOCATION ${THRIFT_COMPILER})
+#    add_dependencies(thriftcompiler thrift)
+#endif ()
 
 set(CPP_REDIS_CXX_FLAGS "${EXTERNAL_CXX_FLAGS}")
 set(CPP_REDIS_C_FLAGS "${EXTERNAL_C_FLAGS}")

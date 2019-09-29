@@ -9,8 +9,8 @@
 
 class operation {
 public:
-    operation(const Operation&);
-    operation& operator=(const Operation&);
+    operation(const operation&);
+    operation& operator=(const operation&);
     operation() : key(), value() {
     }
 
@@ -22,7 +22,7 @@ public:
 
     void __set_value(const std::string& val);
 
-    bool operator == (const Operation & rhs) const
+    bool operator == (const operation & rhs) const
     {
         if (!(key == rhs.key))
             return false;
@@ -30,7 +30,7 @@ public:
             return false;
         return true;
     }
-    bool operator != (const Operation &rhs) const {
+    bool operator != (const operation &rhs) const {
         return !(*this == rhs);
     }
 };

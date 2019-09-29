@@ -46,6 +46,9 @@ add_subdirectory(libstorage)
 # Tests 
 add_subdirectory(tests)
 
+# Proxy
+add_subdirectory(proxy)
+
 if (BUILD_BENCHMARK)
   # RPC Framework
   add_subdirectory(benchmark)
