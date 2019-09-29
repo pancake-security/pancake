@@ -4,9 +4,9 @@
 
 #include "redis.h"
 
-    void redis::init(const std::string hostname, int port){
-        clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
-        clients.back()->connect(hostname, port,
+    redis::redis(const std::string hostname, int port){
+        this->clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
+        this->clients.back()->connect(hostname, port,
                 [](const std::string &host, std::size_t port, cpp_redis::client::connect_state status) {
                     if (status == cpp_redis::client::connect_state::dropped || status == cpp_redis::client::connect_state::failed || status == cpp_redis::client::connect_state::lookup_failed){
                         std::cerr << "Redis client disconnected from " << host << ":" << port << std::endl;

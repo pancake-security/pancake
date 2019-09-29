@@ -1,7 +1,7 @@
 #include "memcached.h"
 
 
-    void memcached::init(const std::string &server, int &port)
+    memcached::memcached(const std::string &server, int &port)
     {
         memcached_return rc;
         memcached_server_st *servers = NULL;
@@ -10,7 +10,7 @@
         servers = memcached_server_list_append(servers, server.c_str(), port, &rc);
         rc = memcached_server_push(memc, servers);
         if (rc == MEMCACHED_SUCCESS) {
-            clients.push_back(memc);
+            this->clients.push_back(memc);
         }
         else {
             throw std::runtime_error("Server connection failed: " + memcached_strerror(memc, rc));

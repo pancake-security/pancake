@@ -5,7 +5,6 @@ message(${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${STORAGE_INCLUDE})
 
-
 add_executable(storage_interface_test
         src/storage_interface_test.cpp
         ../libstorage/src/storage_interface.h

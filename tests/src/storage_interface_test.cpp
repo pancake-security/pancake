@@ -15,10 +15,7 @@ struct options {
 
 int usage();
 
-void run_basic_test(storage_interface * client, int port){
-    std::cout << "Testing initialization" << std::endl;
-    client->init("127.0.0.1", port);
-
+void run_basic_test(storage_interface * client){
     std::cout << "Testing basic put" << std::endl;
     client->put("1","2");
 
@@ -55,17 +52,17 @@ int main(int argc, char* argv[]) {
     }
 
     if (opts.testing_redis){
-        auto redis_client = new redis();
-        run_basic_test(redis_client, 5000);
+        auto redis_client = new redis("127.0.0.1", 5000);
+        run_basic_test(redis_client);
     }
 
     if (opts.testing_rocksdb){
-        auto rocksdb_client = new rocksdb();
-        run_basic_test(rocksdb_client, 5001);
+        auto rocksdb_client = new rocksdb("127.0.0.1", 5001);
+        run_basic_test(rocksdb_client);
     }
 
     if (opts.testing_memcached){
-        //auto memcached_client = new memcached();
-        //run_basic_test(memcached_client, "5002")
+        //auto memcached_client = new memcached("127.0.0.1", 5002);
+        //run_basic_test(memcached_client)
     }
 }

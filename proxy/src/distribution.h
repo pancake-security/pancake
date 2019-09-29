@@ -9,7 +9,7 @@
 
 class distribution {
 public:
-    void init(std::shared_ptr<std::vector<std::string> > items, std::shared_ptr<std::vector<int>> frequencies);
+    distribution(std::shared_ptr<std::vector<std::string> > items, std::shared_ptr<std::vector<int>> frequencies);
     std::string sample();
 
 private:

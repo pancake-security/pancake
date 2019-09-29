@@ -4,9 +4,9 @@
 
 #include "update_cache.h"
 
-    void update_cache::init(std::shared_ptr<std::vector <std::pair<std::string, int>>> keys_replicas_pairs) {
+    update_cache::update_cache(std::shared_ptr<std::vector <std::pair<std::string, int>>> keys_replicas_pairs) {
         for (auto key_replica_pair = keys_replicas_pairs->begin(); key_replica_pair != keys_replicas_pairs->end(); key_replica_pair++) {
-            map.insert_or_assign(key_replica_pair->first, std::make_pair("", std::vector<bool>(key_replica_pair->second, false)));
+            this->map.insert_or_assign(key_replica_pair->first, std::make_pair("", std::vector<bool>(key_replica_pair->second, false)));
         }
     };
 
@@ -22,6 +22,21 @@
         };
         map.update_fn(key, update_fn);
         return to_send;
+    };
+
+    void update_cache::edit_bit_vector_size(std::string &key, int size) {
+        if (map.contains(key))  {
+            auto update_fn = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
+                auto new_bit_vector = std::vector<bool>(size, true);
+                for(int i = 0; i < cache_entry.second.size() && i < new_bit_vector.size(); i++)
+                    new_bit_vector[i] = cache_entry.second[i];
+                cache_entry.second = new_bit_vector;
+            };
+            map.update_fn(key, update_fn);
+        }
+        else {
+            map.insert_or_assign(key, std::make_pair("", std::vector<bool>(size, false)));
+        }
     };
 
     bool update_cache::populate_replica_updates(std::string &key, std::string &val){

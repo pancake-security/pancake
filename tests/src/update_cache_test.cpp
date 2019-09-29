@@ -11,8 +11,7 @@ void run_basic_test(){
     std::string val = "10";
     auto pairs = std::make_shared<std::vector<std::pair<std::string, int>>>();
     pairs->push_back(std::make_pair("1", 8));
-    update_cache cache;
-    cache.init(pairs);
+    update_cache cache = update_cache(pairs);
 
     std::cout << "Check basic insertion and update logic" << std::endl;
     assert(cache.check_for_update(key, 1) == "");
@@ -27,6 +26,12 @@ void run_basic_test(){
     //std::cout << "Cache size in bytes: " << cache.size_in_bytes() << std::endl;
     assert(cache.size_in_bytes() == 3);
 
+    std::cout << "Ensure bit_vector size change does not remove old values" << std::endl;
+    cache.edit_bit_vector_size(key, 35);
+    assert(cache.check_for_update(key, 4) == val);
+    std::cout << "Ensure newly instantiated replicas need to be updated" << std::endl;
+    assert(cache.check_for_update(key, 10) == val);
+
     std::cout << "Performing update cache stress test" << std::endl;
 
     auto big_pairs = std::make_shared<std::vector<std::pair<std::string, int>>>();
@@ -35,8 +40,7 @@ void run_basic_test(){
         big_pairs->push_back(std::make_pair(std::to_string(i), 64));
     }
 
-    update_cache big_cache;
-    big_cache.init(big_pairs);
+    update_cache big_cache = update_cache(big_pairs);
 
     int current_size = 1000000*8;
     for (int i = 1000000; i < 2000000; i++){

@@ -17,8 +17,7 @@ void run_basic_test(){
 
 
     // Initialize distribution
-    distribution dist;
-    dist.init(items, frequencies);
+    distribution dist = distribution(items, frequencies);
 
 
     for (int i = 0; i < 10000000; i++){

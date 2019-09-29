@@ -24,14 +24,14 @@ const char hn[] = "SHA256";
 
 class encryption_engine {
 public:
-    void init();
+    encryption_engine();
     std::string encrypt(const std::string &plain_text);
     std::string decrypt(const std::string &cipher_text);
     std::string hmac(const std::string &key);
     std::string gen_random(const int len);
 
 private:
-    void handleErrors(void);
+    void handle_errors();
     int sign_it(const byte* msg, size_t mlen, byte** sig, size_t* slen, EVP_PKEY* pkey);
     int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *aad,
                 int aad_len, unsigned char *key, unsigned char *iv, int iv_len,

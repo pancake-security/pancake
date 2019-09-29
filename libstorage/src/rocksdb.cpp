@@ -5,9 +5,9 @@
 #include "rocksdb.h"
 
 
-    void rocksdb::init(const std::string hostname, int port){
-        clients.push_back(ssdb::Client::connect(hostname.c_str(), port));
-        if (clients.back() == NULL){
+    rocksdb::rocksdb(const std::string hostname, int port){
+        this->clients.push_back(ssdb::Client::connect(hostname.c_str(), port));
+        if (this->clients.back() == NULL){
             std::cerr << "Failed to connect" << std::endl;
             exit(-1);
         }

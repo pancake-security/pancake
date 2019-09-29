@@ -5,7 +5,7 @@
 #include "distribution.h"
 
 
-    void distribution::init(std::shared_ptr<std::vector<std::string>> items, std::shared_ptr<std::vector<int> > frequencies) {
+    distribution::distribution(std::shared_ptr<std::vector<std::string>> items, std::shared_ptr<std::vector<int> > frequencies) {
         std::discrete_distribution<int> new_distribution_(frequencies->begin(), frequencies->end());
         this->distribution_ = new_distribution_;
         this->items_ = items;

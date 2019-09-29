@@ -12,7 +12,7 @@
 class redis : public storage_interface
 {
 public:
-    void init(const std::string hostname, int port) override;
+    redis(const std::string hostname, int port);
     std::string get(const std::string &key) override;
     void put(const std::string &key, const std::string &value) override;
     std::vector<const std::string> get_batch(std::vector<const std::string> keys) override;

@@ -16,8 +16,5 @@ public:
     virtual std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) = 0;
     virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) = 0;
 
-private:
-
-    static std::shared_ptr<proxy> proxy;
 };
 #endif //CLIENT_H

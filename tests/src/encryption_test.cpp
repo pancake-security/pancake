@@ -6,8 +6,7 @@
 #include <iostream>
 
 void run_basic_test(){
-    encryption_engine encryption;
-    encryption.init();
+    encryption_engine encryption = encryption_engine();
 
     std::cout << "Performing encryption sanity test" << std::endl;
     assert("12345675757" == encryption.decrypt(encryption.encrypt("12345675757")));
