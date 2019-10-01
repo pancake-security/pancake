@@ -13,11 +13,11 @@
 
 class rocksdb : public storage_interface {
 public:
-    rocksdb(const std::string hostname, int port);
-    std::string get(const std::string &key) override;
-    void put(const std::string &key, const std::string &value) override;
-    std::vector<const std::string> get_batch(std::vector<const std::string> keys) override;
-    void put_batch(std::vector<const std::string> keys, std::vector<const std::string> values) override;
+    rocksdb(std::string hostname, int port);
+    std::string get(std::string &key) override;
+    void put(std::string &key, std::string &value) override;
+    std::vector<std::string> get_batch(std::vector<std::string> * keys) override;
+    void put_batch(std::vector<std::string> * keys, std::vector<std::string> * values) override;
 
 private:
     std::vector<ssdb::Client*> clients;

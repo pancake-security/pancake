@@ -16,22 +16,24 @@ struct options {
 int usage();
 
 void run_basic_test(storage_interface * client){
+    std::string one = "1";
+    std::string two = "2";
     std::cout << "Testing basic put" << std::endl;
-    client->put("1","2");
+    client->put(one,two);
 
     std::cout << "Testing basic get" << std::endl;
-    assert(client->get("1") == "2");
+    assert(client->get(one) == "2");
 
     std::cout << "Testing basic multiput" << std::endl;
-    std::vector<const std::string> keys, values;
+    std::vector<std::string> keys, values;
     for (int i = 0; i < 1000; i++){
         keys.push_back(std::to_string(i));
         values.push_back(std::to_string(i+1));
     }
-    client->put_batch(keys, values);
+    client->put_batch(&keys, &values);
 
     std::cout << "Testing basic multiget" << std::endl;
-    auto return_vector = client->get_batch(keys);
+    auto return_vector = client->get_batch(&keys);
     int i = 0;
     for (auto value: return_vector){
         assert(value == values[i]);

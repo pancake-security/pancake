@@ -10,12 +10,12 @@ add_executable(pancake_proxy
         src/proxy.h
         src/operation.h
         ../libstorage/src/storage_interface.h
-        #../libstorage/src/redis.cpp
-        #../libstorage/src/redis.h
-        #../libstorage/src/rocksdb.cpp
-        #../libstorage/src/rocksdb.h
-        #../libstorage/src/memcached.cpp
-        #../libstorage/src/memcached.h
+        ../libstorage/src/redis.cpp
+        ../libstorage/src/redis.h
+        ../libstorage/src/rocksdb.cpp
+        ../libstorage/src/rocksdb.h
+        ../libstorage/src/memcached.cpp
+        ../libstorage/src/memcached.h
         src/distribution.h
         src/distribution.cpp
         src/queue.h
@@ -27,10 +27,9 @@ add_executable(pancake_proxy
         src/util.h
         src/util.cpp
         )
-#add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
-add_dependencies(pancake_proxy ssdb_rocks libcuckoo openssl_ep)
+add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
 target_link_libraries(pancake_proxy
-        #${THRIFT_LIBRARIES}
+        ${THRIFT_LIBRARIES}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         ${SSDB_CLIENT_LIBRARY}

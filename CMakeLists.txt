@@ -28,11 +28,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_SOURCE_DIR}/cmake")
 # Dependencies
 include(Dependencies)
 
-# Testing
-if (BUILD_TESTS)
-    include(CTest)
-endif()
-
 if (BUILD_STRESS_TESTS)
     add_definitions(-DSTRESS_TEST)
 endif()

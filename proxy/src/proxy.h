@@ -13,10 +13,10 @@ public:
 
     virtual void init() = 0;
     virtual void run() = 0;
-    virtual std::string get(const std::string &key, const std::string &value) = 0;
-    virtual void put(const std::string &key, const std::string &value) = 0;
-    virtual std::vector<const std::string> get_batch(std::vector<const std::string> * keys) = 0;
-    virtual void put_batch(std::vector<const std::string> * keys, std::vector<const std::string> * values) = 0;
+    virtual std::string get(std::string &key, std::string &value) = 0;
+    virtual void put(std::string &key, std::string &value) = 0;
+    virtual std::vector<std::string> get_batch(std::vector<std::string> * keys) = 0;
+    virtual void put_batch(std::vector<std::string> * keys, std::vector<std::string> * values) = 0;
 
 };
 #endif //PANCAKE_PROXY_H

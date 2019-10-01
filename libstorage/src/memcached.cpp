@@ -1,7 +1,7 @@
 #include "memcached.h"
 
 
-    memcached::memcached(const std::string &server, int &port)
+    memcached::memcached(std::string &server, int &port)
     {
         memcached_return rc;
         memcached_server_st *servers = NULL;
@@ -17,7 +17,7 @@
         }
     }
 
-    std::string memcached::get(const std::string &key) {
+    std::string memcached::get(std::string &key) {
         size_t return_value_length;
         memcached_return rc;
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
@@ -30,7 +30,7 @@
         }
     }
 
-    void memcached::put(const std::string &key, const std::string &value) {
+    void memcached::put(std::string &key, std::string &value) {
         memcached_return rc;
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         rc = memcached_set(clients[idx], key.c_str(), strlen(key.c_str()), value.c_str(), strlen(value.c_str()), (time_t)0, (uint32_t)0);
@@ -39,29 +39,29 @@
         }
     }
 
-    std::vector<const std::string> memcached::get_batch(std::vector<const std::string> keys) {
+    std::vector<std::string> memcached::get_batch(std::vector<std::string> * keys) {
         std::unordered_map<int, std::vector<std::string>> key_vectors;
 
         // Gather all relevant storage interface's by id and create vector for key batch
-        for (auto key: keys) {
+        for (auto key: *keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_vectors[id].emplace_back(key);
         }
 
-        std::vector<const std::string> return_values;
+        std::vector<std::string> return_values;
 
         for (auto it = key_vectors.begin(); it != key_vectors.end(); it++) {
             char return_key[MEMCACHED_MAX_KEY];
             size_t return_key_length;
             char *return_value;
             size_t return_value_length;
-            char ** char_keys = (char **)malloc(keys.size() * sizeof(char*));
+            char ** char_keys = (char **)malloc(keys->size() * sizeof(char*));
             int i = 0;
             for (auto key : it->second) {
                 char_keys[i] = strdup(key.c_str());
                 i++;
             }
-            memcached_return_t rc = memcached_mget(clients[it->first], it->second, key_length, keys.size());
+            memcached_return_t rc = memcached_mget(clients[it->first], it->second, key_length, keys->size());
             if (rc != MEMCACHED_SUCCESS) {
                 throw std::runtime_error("Batch read failed: " + memcached_strerror(clients[it->first], rc));
             }
@@ -73,15 +73,15 @@
         return return_values;
     }
 
-    void memcached::put_batch(std::vector<const std::string> keys, std::vector<const std::string> values)
+    void memcached::put_batch(std::vector<std::string> * keys, std::vector<std::string> * values)
         std::unordered_map<int, std::pair<std::vector<std::string>, std::vector<std::string>>> key_value_vector_pairs;
 
         // Gather all relevant storage interface's by id and create vector for key batch
         int i = 0;
-        for (auto key: keys) {
+        for (auto key: *keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_value_vector_pairs[id].first.emplace_back(key);
-            key_value_vector_pairs[id].second.emplace_back(values[i]);
+            key_value_vector_pairs[id].second.emplace_back((*values)[i]);
             i++;
         }
 
@@ -90,14 +90,14 @@
             size_t return_key_length;
             char *return_value;
             size_t return_value_length;
-            char ** char_keys = (char **)malloc(keys.size() * sizeof(char*));
+            char ** char_keys = (char **)malloc(keys->size() * sizeof(char*));
             char ** char_values = (char **)malloc(values.size() * sizeof(char*));
             int i = 0;
             for (auto key : it->second) {
                 char_keys[i] = strdup(key.c_str());
                 i++;
             }
-            memcached_return_t rc = memcached_mset(clients[it->first], it->second, key_length, keys.size());
+            memcached_return_t rc = memcached_mset(clients[it->first], it->second, key_length, keys->size());
             if (rc != MEMCACHED_SUCCESS) {
                 throw std::runtime_error("Batch write failed: " + memcached_strerror(clients[it->first], rc));
             }

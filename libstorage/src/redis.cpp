@@ -15,7 +15,7 @@
                 });
     }
 
-    std::string redis::get(const std::string &key){
+    std::string redis::get(std::string &key){
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         auto fut = clients[idx]->get(key);
         clients[idx]->commit();
@@ -26,7 +26,7 @@
         return reply.as_string();
     }
 
-    void redis::put(const std::string &key, const std::string &value){
+    void redis::put(std::string &key, std::string &value){
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         auto fut = clients[idx]->set(key, value);
         clients[idx]->commit();
@@ -36,12 +36,12 @@
         }
     }
 
-    std::vector<const std::string> redis::get_batch(std::vector<const std::string> keys){
+    std::vector<std::string> redis::get_batch(std::vector<std::string> * keys){
         std::queue<std::future<cpp_redis::reply>> futures;
         std::unordered_map<int, std::vector<std::string>> key_vectors;
 
         // Gather all relevant storage interface's by id and create vector for key batch
-        for (auto key: keys) {
+        for (auto key: *keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_vectors[id].emplace_back(key);
         }
@@ -55,7 +55,7 @@
         for (auto it = key_vectors.begin(); it != key_vectors.end(); it++)
             clients[it->first]->commit();
 
-        std::vector<const std::string> return_vector;
+        std::vector< std::string> return_vector;
 
         for (int i = 0; i < futures.size(); i++) {
             auto reply = futures.front().get();
@@ -74,15 +74,15 @@
         return return_vector;
     }
 
-    void redis::put_batch(std::vector<const std::string> keys, std::vector<const std::string> values){
+    void redis::put_batch(std::vector<std::string> * keys, std::vector<std::string> * values){
         std::queue<std::future<cpp_redis::reply>> futures;
         std::unordered_map<int, std::vector<std::pair<std::string, std::string>>> key_value_vector_pairs;
 
         // Gather all relevant storage interface's by id and create vector for key batch
         int i = 0;
-        for (auto key: keys) {
+        for (auto key: *keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
-            key_value_vector_pairs[id].emplace_back(std::make_pair(key, values[i]));
+            key_value_vector_pairs[id].push_back(std::make_pair(key, (*values)[i]));
             i++;
         }
 
@@ -95,7 +95,7 @@
         for (auto it = key_value_vector_pairs.begin(); it != key_value_vector_pairs.end(); it++)
             clients[it->first]->commit();
 
-        std::shared_ptr<std::vector<const std::string>> return_vector;
+        std::shared_ptr<std::vector< std::string>> return_vector;
 
         for (int i = 0; i < futures.size(); i++){
             auto reply = futures.front().get();

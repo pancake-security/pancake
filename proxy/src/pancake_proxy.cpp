@@ -237,19 +237,19 @@ void pancake_proxy::execute_batch(const std::vector<operation> * operations, std
     (*storage_interfaces)[0]->put_batch(&storage_keys, &storage_values);
 }
 
-std::string pancake_proxy::get(const std::string &key, const std::string &value) {
+std::string pancake_proxy::get(std::string &key, std::string &value) {
     return "";
 };
 
-void pancake_proxy::put(const std::string &key, const std::string &value) {
+void pancake_proxy::put(std::string &key, std::string &value) {
 
 };
-std::vector<const std::string> pancake_proxy::get_batch(std::vector<const std::string> * keys) {
-    std::vector<const std::string> _return;
+std::vector<std::string> pancake_proxy::get_batch(std::vector<std::string> * keys) {
+    std::vector<std::string> _return;
     return _return;
 };
 
-void pancake_proxy::put_batch(std::vector<const std::string> * keys, std::vector<const std::string> * values) {
+void pancake_proxy::put_batch(std::vector<std::string> * keys, std::vector<std::string> * values) {
 
 };
 

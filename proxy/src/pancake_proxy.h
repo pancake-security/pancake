@@ -9,6 +9,7 @@
 #include <vector>
 #include <algorithm>
 #include <unistd.h>
+#include <fstream>
 
 #include "proxy.h"
 #include "operation.h"
@@ -18,9 +19,9 @@
 #include "encryption_engine.h"
 #include "queue.h"
 #include "../../libstorage/src/storage_interface.h"
-//#include "redis.h"
-//#include "rocksdb.h"
-//#include "memcached.h"
+#include "redis.h"
+#include "rocksdb.h"
+#include "memcached.h"
 
 
 class pancake_proxy : public proxy {
@@ -28,10 +29,10 @@ public:
     pancake_proxy();
     void init() override;
     void run() override;
-    std::string get(const std::string &key, const std::string &value) override;
-    void put(const std::string &key, const std::string &value) override;
-    std::vector<const std::string> get_batch(std::vector<const std::string> *  keys) override;
-    void put_batch(std::vector<const std::string> * keys, std::vector<const std::string> *  values) override;
+    std::string get(std::string &key, std::string &value) override;
+    void put(std::string &key, std::string &value) override;
+    std::vector<std::string> get_batch(std::vector<std::string> *  keys) override;
+    void put_batch(std::vector<std::string> * keys, std::vector<std::string> *  values) override;
     void usage();
 
     std::string output_location_ = "log";
