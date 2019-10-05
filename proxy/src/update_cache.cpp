@@ -4,6 +4,8 @@
 
 #include "update_cache.h"
 
+    update_cache::update_cache(){};
+
     update_cache::update_cache(std::vector <std::pair<std::string, int>> * keys_replicas_pairs) {
         for (auto key_replica_pair = keys_replicas_pairs->begin(); key_replica_pair != keys_replicas_pairs->end(); key_replica_pair++) {
             this->map.insert_or_assign(key_replica_pair->first, std::make_pair("", std::vector<bool>(key_replica_pair->second, false)));
@@ -112,6 +114,6 @@
         return ret;
     }
 
-    locked_table get_locked_table(){
+    cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table update_cache::get_locked_table(){
         return map.lock_table();
     };

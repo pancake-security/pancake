@@ -4,15 +4,26 @@
 
 #include "redis.h"
 
-    redis::redis(const std::string hostname, int port){
+    redis::redis(const std::string host_name, int port){
         this->clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
-        this->clients.back()->connect(hostname, port,
+        this->clients.back()->connect(host_name, port,
                 [](const std::string &host, std::size_t port, cpp_redis::client::connect_state status) {
                     if (status == cpp_redis::client::connect_state::dropped || status == cpp_redis::client::connect_state::failed || status == cpp_redis::client::connect_state::lookup_failed){
                         std::cerr << "Redis client disconnected from " << host << ":" << port << std::endl;
                         exit(-1);
                     }
                 });
+    }
+
+    void redis::add_server(const std::string host_name, int port){
+        this->clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
+        this->clients.back()->connect(host_name, port,
+                                  [](const std::string &host, std::size_t port, cpp_redis::client::connect_state status) {
+                                      if (status == cpp_redis::client::connect_state::dropped || status == cpp_redis::client::connect_state::failed || status == cpp_redis::client::connect_state::lookup_failed){
+                                          std::cerr << "Redis client disconnected from " << host << ":" << port << std::endl;
+                                          exit(-1);
+                                      }
+                                  });
     }
 
     std::string redis::get(std::string &key){

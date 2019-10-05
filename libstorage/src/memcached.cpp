@@ -1,13 +1,29 @@
 #include "memcached.h"
 
 
-    memcached::memcached(std::string &server, int &port)
+    memcached::memcached(std::string &host_name, int &port)
     {
         memcached_return rc;
         memcached_server_st *servers = NULL;
         memcached_st *memc;
         memc = memcached_create(NULL);
-        servers = memcached_server_list_append(servers, server.c_str(), port, &rc);
+        servers = memcached_server_list_append(servers, host_name.c_str(), port, &rc);
+        rc = memcached_server_push(memc, servers);
+        if (rc == MEMCACHED_SUCCESS) {
+            this->clients.push_back(memc);
+        }
+        else {
+            throw std::runtime_error("Server connection failed: " + memcached_strerror(memc, rc));
+        }
+    }
+
+    void memcached::add_server(std::string &host_name, int &port)
+    {
+        memcached_return rc;
+        memcached_server_st *servers = NULL;
+        memcached_st *memc;
+        memc = memcached_create(NULL);
+        servers = memcached_server_list_append(host_name, host_name.c_str(), port, &rc);
         rc = memcached_server_push(memc, servers);
         if (rc == MEMCACHED_SUCCESS) {
             this->clients.push_back(memc);

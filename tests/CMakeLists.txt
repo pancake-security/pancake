@@ -1,8 +1,6 @@
 set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
 set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy/src)
 
-message(${CMAKE_CURRENT_SOURCE_DIR})
-
 include_directories(${STORAGE_INCLUDE})
 
 add_executable(storage_interface_test

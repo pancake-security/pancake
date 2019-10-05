@@ -4,46 +4,31 @@
 
 #include "pancake_proxy.h"
 
-void pancake_proxy::init(){
+void pancake_proxy::init(std::vector<std::string> * keys, std::vector<std::string> * values, void ** args){
+    real_distribution_ = (distribution *)args[0];
+    alpha_ = *((double *)args[1]);
+    delta_ = *((double *)args[2]);
     encryption_engine_ = encryption_engine();
-    load_frequencies_from_trace(output_location_, &key_to_frequency_);
+    if (server_type_ == "redis") {
+        storage_interface_ = new redis(server_host_name_, server_port_);
+    }
+    else if (server_type_ == "rocksdb") {
+        storage_interface_ = new rocksdb(server_host_name_, server_port_);
+    }
+    //else if (server_type_ == "memcached")
+    //    storage_interface_ new memcached(server_host_name_, server_port_+i);
+    for (int i = 1; i < server_count_; i++) {
+        storage_interface_->add_server(server_host_name_, server_port_+i);
+    }
     create_replicas();
+    run();
 }
-
-void pancake_proxy::load_frequencies_from_trace(const std::string &trace_location, std::unordered_map<std::string, int> * key_to_frequency) {
-    frequency_sum_ = 0;
-    std::string op, key;
-    std::ifstream in_workload_file;
-    in_workload_file.open(trace_location);
-    if(!in_workload_file){
-        std::perror("Unable to find workload file");
-    }
-    std::string line;
-    while (std::getline(in_workload_file, line)) {
-        key = line.substr(line.find(" ")+1);
-        if (key.find(" ") != -1)
-            key = key.substr(0,key.find(" "));
-        assert (key != "PUT");
-        assert (key != "GET");
-        assert (key.length() < object_size_);
-        if (key_to_frequency->count(key) == 0){
-            (*key_to_frequency)[key] = 1;
-            frequency_sum_ += 1;
-        }
-        else {
-            (*key_to_frequency)[key] += 1;
-            frequency_sum_ += 1;
-        }
-    }
-    in_workload_file.close();
-};
-
 
 void pancake_proxy::insert_replicas(std::string key, int num_replicas){
     std::string value_cipher = encryption_engine_.encrypt(rand_str(object_size_));
     for (int i = 0; i < num_replicas; i++){
         std::string replica = key+std::to_string(i);
-        std::string replica_cipher = encryption_engine_.hmac(std::to_string(label_count_));
+        std::string replica_cipher = std::to_string(label_count_);
         replica_to_label_[replica] = label_count_;
         //TODO add initial writes
         //storage_interfaces_[label_count_ % s_ifs.size()]->write(encryption_engine_.hmac(std::to_string(label_count_)), value_cipher);
@@ -52,68 +37,74 @@ void pancake_proxy::insert_replicas(std::string key, int num_replicas){
 }
 
 void pancake_proxy::create_replicas() {
-    int n = key_to_frequency_.size();
-    int n_prime = 2*n;
+    //int n = key_to_frequency_.size();
+    //int n_prime = 2*n;
     int keys_created = 0;
     std::vector<std::pair<std::string, int>> update_cache_pairs;
-    std::vector<std::string> keys;
-    std::vector<double> frequencies;
+
+    auto keys_frequencies_pair = real_distribution_->get_items_and_frequencies();
+    auto keys = keys_frequencies_pair.first;
+    auto frequencies = keys_frequencies_pair.second;
+
     std::vector<double> fake_frequencies;
-    for (auto iterator = key_to_frequency_.begin(); iterator != key_to_frequency_.end(); iterator++) {
-        std::string key = iterator->first;
-        double pi = key_to_frequency_[key]/(double)frequency_sum_;
-        int r_i = ceil((key_to_frequency_[key]/(double)frequency_sum_)*n);
-        keys.push_back(key);
-        frequencies.push_back(key_to_frequency_[key]/(double)frequency_sum_);
-        fake_frequencies.push_back(((1-pi/r_i)/(2*n-1))*r_i);
+    int index = 0;
+    for (auto key: *keys) {
+        double pi = (*frequencies)[index];
+        key_to_frequency_[key] = pi;
+        int r_i = ceil(pi/alpha_);
+        double pi_f = r_i * (alpha_-pi/r_i)/(1/delta_ - 1);
+        fake_frequencies.push_back(pi_f);
         key_to_number_of_replicas_[key] = r_i;
         insert_replicas(key, r_i);
         update_cache_pairs.push_back(std::make_pair(key, r_i));
         keys_created += r_i;
+        index++;
     }
-    real_distribution_ = distribution(keys, frequencies);
-    int dummy_r_i = std::max(0,n_prime-keys_created);
+    int dummy_r_i = 0 > 2*keys->size()-keys_created ? 0 : 2*keys->size()-keys_created;
     dummy_keys_ = dummy_r_i;
     if(dummy_r_i != 0) {
-        keys.push_back(dummy_key_);
-        fake_frequencies.push_back((1/(2*n-1))*dummy_r_i);
+        fake_frequencies.push_back((alpha_/(1/delta_-1))*dummy_r_i);
         key_to_number_of_replicas_[dummy_key_] = dummy_r_i;
         insert_replicas(dummy_key_, dummy_r_i);
         update_cache_pairs.push_back(std::make_pair(dummy_key_, dummy_r_i));
     }
     update_cache_ = update_cache(&update_cache_pairs);
-    fake_distribution_ = distribution(keys, fake_frequencies);
+    auto full_keys = *keys;
+    full_keys.push_back(dummy_key_);
+    fake_distribution_ = new distribution(full_keys, fake_frequencies);
 };
 
-void pancake_proxy::compute_fake_distribution() {
+void pancake_proxy::recompute_fake_distribution(distribution * new_distribution) {
+    auto new_keys_frequencies_pair = new_distribution->get_items_and_frequencies();
+    auto new_keys = new_keys_frequencies_pair.first;
+    std::vector<double> * new_frequencies = new_keys_frequencies_pair.second;
     std::vector<std::string> keys;
-    std::vector<double> frequencies;
     std::vector<double> fake_frequencies;
-    int n = key_to_frequency_.size();
+    int n = new_keys->size();
     double curr_max_real = (double)1/n;
-    auto locked = missing_new_replicas_.get_locked_table());
+    auto locked = missing_new_replicas_.get_locked_table();
     for (auto iterator = locked.begin(); iterator != locked.end(); iterator++){
-        std::string bit_vec = iterator->second;
+        std::vector<bool> bit_vec = iterator->second.second;
         std::string key = iterator->first;
         int r = key_to_number_of_replicas_[key];
-        assert(bit_vec.length() == r);
-        curr_max_real = std::max(new_key_to_frequency_[key]/(double)frequency_sum_), curr_max_real);
+        assert(bit_vec.size() == r);
+        double prob = new_key_to_frequency_[key];
+        curr_max_real = curr_max_real > prob ? curr_max_real : prob;
     }
     locked.unlock();
-    p_max = curr_max_real;
+    p_max_ = curr_max_real;
     int num_real_replicas = 0;
-    for (auto iterator = key_to_frequency_.begin(); iterator != key_to_frequency_.end(); iterator++){
-        std::string key = iterator->first;
-        int r = key_to_number_of_replicas_[key];
+    int index = 0;
+    for (auto new_key: *new_keys){
+        int r = key_to_number_of_replicas_[new_key];
         num_real_replicas += r;
-        keys.push_back(key);
-        frequencies.push_back(iterator->second/frequency_sum_);
-        fake_frequencies.push_back((r*p_max-new_key_to_frequency_[key]/(double)frequency_sum_));
+        fake_frequencies.push_back((r*p_max_-(*new_frequencies)[index]));
+        index++;
     }
-    real_distribution_ = distribution(keys, frequencies);
+    keys = *new_keys;
     keys.push_back(dummy_key_);
-    fake_frequencies.push_back(dummy_keys_*p_max);
-    fake_distribution_ = distribution(keys, fake_frequencies);
+    fake_frequencies.push_back(dummy_keys_*p_max_);
+    fake_distribution_ = new distribution(keys, fake_frequencies);
 };
 
 void pancake_proxy::prepare_for_swapping(std::string key, int r_new, int r_old,
@@ -147,28 +138,36 @@ int pancake_proxy::perform_swapping(std::vector<std::string> * unassigned_labels
     return needs_labels->size();
 }
 
-void pancake_proxy::update_distribution() {
+void pancake_proxy::update_distribution(distribution * new_distribution) {
     auto update_s = std::chrono::high_resolution_clock::now();
     auto update_e = std::chrono::high_resolution_clock::now();
     std::vector<std::string> unassigned_labels;
     std::vector<std::pair<std::string, int>> needs_labels;
     int new_num_real_replicas = 0;
-    int n = key_to_frequency_.size();
+    auto new_keys_frequencies_pair = new_distribution->get_items_and_frequencies();
+    auto new_keys = new_keys_frequencies_pair.first;
+    std::vector<double> * new_frequencies = new_keys_frequencies_pair.second;
+    int n = new_keys->size();
     int num_swaps = 0;
-    for (auto iterator = new_key_to_frequency_.begin(); iterator != new_key_to_frequency_.end(); iterator++) {
-        auto key = iterator->first;
-        int r_old = (key_to_number_of_replicas_.find(key) != key_to_number_of_replicas_.end()) ? key_to_number_of_replicas_[key] : 0;
-        int r_new = ceil(new_key_to_frequency_[key]/(double)frequency_sum_*n);
-        key_to_number_of_replicas_[key] = r_new;
+    int index = 0;
+    for (auto new_key: *new_keys) {
+        //auto key = iterator->first;
+        double pi = (*new_frequencies)[index];
+        new_key_to_frequency_[new_key] = (*new_frequencies)[index];
+        int r_old = (key_to_number_of_replicas_.find(new_key) != key_to_number_of_replicas_.end()) ? key_to_number_of_replicas_[new_key] : 0;
+        int r_new = ceil(pi/alpha_);
+        key_to_number_of_replicas_[new_key] = r_new;
         assert(r_new > 0);
         new_num_real_replicas += r_new;
-        prepare_for_swapping(key, r_new, r_old, &unassigned_labels, &needs_labels);
+        prepare_for_swapping(new_key, r_new, r_old, &unassigned_labels, &needs_labels);
+        index++;
     }
     assert (new_num_real_replicas < 2*n);
     int r_old = dummy_keys_;
     dummy_keys_ = 2*n - new_num_real_replicas;
     prepare_for_swapping(dummy_key_, dummy_keys_, r_old, &unassigned_labels, &needs_labels);
-    compute_fake_distribution();
+    recompute_fake_distribution(new_distribution);
+    real_distribution_ = new_distribution;
     key_to_frequency_ = new_key_to_frequency_;
     assert(needs_labels.size() == unassigned_labels.size());
     num_swaps += perform_swapping(&unassigned_labels, &needs_labels);
@@ -178,92 +177,279 @@ void pancake_proxy::update_distribution() {
 };
 
 bool pancake_proxy::is_true_distribution() {
-    return rand()/(RAND_MAX+1.0) < prob(1.0*(2.0 * p_max * key_to_frequency_.size()));
+    return rand()/(RAND_MAX+1.0) < prob(1.0*(2.0 * p_max_ * key_to_frequency_.size()));
 };
 
-void pancake_proxy::create_security_batch(operation op, queue <operation> * op_queue,
-                                                       std::vector<operation> * storage_batch,
-                                                       std::vector<bool> * is_trues) {
+void pancake_proxy::create_security_batch(queue <std::pair<operation, void *>> * op_queue,
+                                          std::vector<operation> * storage_batch,
+                                          std::vector<void *> * is_trues) {
     for (int i = 0; i < security_batch_size_; i++) {
         if (is_true_distribution()) {
             if (op_queue->size() == 0) {
                 struct operation operat;
-                operat.key = real_distribution_.sample();
+                operat.key = real_distribution_->sample();
                 operat.value = "";
                 storage_batch->push_back(operat);
-                is_trues->push_back(false);
+                is_trues->push_back(nullptr);
             } else {
-                storage_batch->push_back(op_queue->pop());
-                is_trues->push_back(true);
+                auto operation_return_pair = op_queue->pop();
+                storage_batch->push_back(operation_return_pair.first);
+                is_trues->push_back((void *)operation_return_pair.second);
             }
         } else {
             struct operation operat;
-            operat.key = fake_distribution_.sample();
+            operat.key = fake_distribution_->sample();
             operat.value = "";
             storage_batch->push_back(operat);
-            is_trues->push_back(false);
+            is_trues->push_back(nullptr);
         }
     }
 };
 
 void pancake_proxy::execute_batch(const std::vector<operation> * operations, std::vector<std::string> * _returns,
-                               std::vector<bool> * is_trues, std::vector<storage_interface*>* storage_interfaces) {
+                                  std::vector<void *> * is_trues, storage_interface * storage_interface) {
 
     // Store which are real queries so we can return the values
     std::vector<int> replica_ids;
     std::vector<std::string> labels;
-    std::vector<int> ids;
 
     std::vector<std::string> storage_keys;
     for(int i = 0; i < operations->size(); i++){
-        replica_ids.push_back(missing_new_replicas_.sample_a_replica((*operations)[i].key, key_to_number_of_replicas_[(*operations)[i].key], (*is_trues)[i], key_to_frequency_[(*operations)[i].key], p_max));
+        std::string key = (*operations)[i].key;
+        replica_ids.push_back(missing_new_replicas_.sample_a_replica(key, key_to_number_of_replicas_[key], (*is_trues)[i], key_to_frequency_[key], p_max_));
         labels.push_back(std::to_string(replica_to_label_[(*operations)[i].key+std::to_string(replica_ids[i])]));
-        int id = std::stoi(labels[i]) % storage_interfaces->size();
-        ids.push_back(id);
-        storage_keys.push_back(encryption_engine_.hmac(labels[i]));
+        storage_keys.push_back(labels[i]);
     }
-    auto responses = (*storage_interfaces)[0]->get_batch(&storage_keys);
+    auto responses = storage_interface->get_batch(&storage_keys);
     std::vector<std::string> storage_values;
-    for(int i = 0; i < operations->size(); i++){
+    auto is_trues_iterator = is_trues->end();
+    is_trues_iterator--;
+    for(int i = operations->size(); i >= 0; i--){
         auto cipher = responses[i];
         auto plaintext = encryption_engine_.decrypt(cipher);
         auto plaintext_update = update_cache_.check_for_update((*operations)[i].key, replica_ids[i]);
         plaintext = plaintext_update == "" ? plaintext : plaintext_update;
         missing_new_replicas_.check_if_missing((*operations)[i].key, plaintext, &update_cache_);
-        if ((*is_trues)[i])
+        if ((*is_trues)[i] == nullptr) {
             _returns->push_back(plaintext);
+            is_trues_iterator--;
+        }
+        else {
+            auto old_iterator = is_trues_iterator;
+            is_trues_iterator--;
+            is_trues->erase(old_iterator);
+        }
+
         storage_values.push_back(encryption_engine_.encrypt(plaintext));
     }
-    (*storage_interfaces)[0]->put_batch(&storage_keys, &storage_values);
+    storage_interface->put_batch(&storage_keys, &storage_values);
 }
 
-std::string pancake_proxy::get(std::string &key, std::string &value) {
+std::string pancake_proxy::get(const std::string &key) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = "";
+    queue <std::pair<operation, void *>> * op_queue;
+    op_queue->push(std::make_pair(operat, (void *)1));
+    auto return_vector = perform_op(op_queue);
+    return return_vector[0];
+};
+
+void pancake_proxy::put(const std::string &key, const std::string &value) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = value;
+    queue <std::pair<operation, void *>> * op_queue;
+    op_queue->push(std::make_pair(operat, (void *)1));
+    auto return_vector = perform_op(op_queue);
+};
+std::vector<std::string> pancake_proxy::get_batch(const std::vector<std::string> * keys) {
+    queue <std::pair<operation, void *>> * op_queue;
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = "";
+        op_queue->push(std::make_pair(operat, (void *)1));
+    }
+    auto return_vector = perform_op(op_queue);
+    return return_vector;
+};
+
+void pancake_proxy::put_batch(const std::vector<std::string> * keys, const std::vector<std::string> * values) {
+    queue <std::pair<operation, void *>> * op_queue;
+    int i = 0;
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = (*values)[i];
+        op_queue->push(std::make_pair(operat, (void *)1));
+        i++;
+    }
+    auto return_vector = perform_op(op_queue);
+};
+
+std::string pancake_proxy::get(int queue_id, const std::string &key) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = "";
+    queue <std::pair<operation, void *>> * op_queue;
+    op_queue->push(std::make_pair(operat, (void *)1));
+    auto return_vector = perform_op(op_queue);
+    return return_vector[0];
+};
+
+void pancake_proxy::put(int queue_id, const std::string &key, const std::string &value) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = value;
+    queue <std::pair<operation, void *>> * op_queue;
+    op_queue->push(std::make_pair(operat, (void *)1));
+    auto return_vector = perform_op(op_queue);
+};
+std::vector<std::string> pancake_proxy::get_batch(int queue_id, const std::vector<std::string> * keys) {
+    queue <std::pair<operation, void *>> * op_queue;
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = "";
+        op_queue->push(std::make_pair(operat, (void *)1));
+    }
+    auto return_vector = perform_op(op_queue);
+    return return_vector;
+};
+
+void pancake_proxy::put_batch(int queue_id, const std::vector<std::string> * keys, const std::vector<std::string> * values) {
+    queue <std::pair<operation, void *>> * op_queue;
+    int i = 0;
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = (*values)[i];
+        op_queue->push(std::make_pair(operat, (void *)1));
+        i++;
+    }
+    auto return_vector = perform_op(op_queue);
+};
+
+std::string pancake_proxy::get(int queue_id, const std::string &key, std::string& _return) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = "";
+    operation_queues_[queue_id].push(std::make_pair(operat, (void *)&_return));
     return "";
 };
 
-void pancake_proxy::put(std::string &key, std::string &value) {
-
+void pancake_proxy::put(int queue_id, const std::string &key, const std::string &value, std::string& _return) {
+    struct operation operat;
+    operat.key = key;
+    operat.value = value;
+    operation_queues_[queue_id].push(std::make_pair(operat, (void *)&_return));
 };
-std::vector<std::string> pancake_proxy::get_batch(std::vector<std::string> * keys) {
-    std::vector<std::string> _return;
-    return _return;
+std::vector<std::string> pancake_proxy::get_batch(int queue_id, const std::vector<std::string> * keys, std::vector<std::string> & _return) {
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = "";
+        operation_queues_[queue_id].push(std::make_pair(operat, (void *)&_return));
+    }
+    std::vector<std::string> return_vector;
+    return return_vector;
 };
 
-void pancake_proxy::put_batch(std::vector<std::string> * keys, std::vector<std::string> * values) {
-
+void pancake_proxy::put_batch(int queue_id, const std::vector<std::string> * keys, const std::vector<std::string> * values, std::string& _return) {
+    queue <std::pair<operation, void *>> * op_queue;
+    int i = 0;
+    for (auto key: *keys) {
+        struct operation operat;
+        operat.key = key;
+        operat.value = (*values)[i];
+        operation_queues_[queue_id].push(std::make_pair(operat, (void *)&_return));
+        i++;
+    }
 };
 
-void pancake_proxy::service_thread(queue <operation> operation_queue){
-    while (true) {
-        std::vector<bool> is_trues;
+void pancake_proxy::service_thread(int id){
+    storage_interface * storage_interface;
+    if (server_type_ == "redis") {
+        storage_interface = new redis(server_host_name_, server_port_);
+    }
+    else if (server_type_ == "rocksdb") {
+        storage_interface = new rocksdb(server_host_name_, server_port_);
+    }
+    //else if (server_type_ == "memcached")
+    //    storage_interface_ new memcached(server_host_name_, server_port_+i);
+    for (int i = 1; i < server_count_; i++) {
+        storage_interface->add_server(server_host_name_, server_port_+i);
+    }
+    std::vector<void *> is_trues;
+    std::vector <std::string> _returns;
+    while (!distribution_changed()) {
         std::vector <operation> storage_batch;
         while (storage_batch.size() < storage_batch_size_) {
-            operation operat = operation_queue.pop();
-            create_security_batch(operat, &operation_queue, &storage_batch, &is_trues);
+            create_security_batch(&operation_queues_[id], &storage_batch, &is_trues);
         }
-        std::vector <std::string> _returns;
-        execute_batch(&storage_batch, &_returns, &is_trues, *storage_interfaces);
+        execute_batch(&storage_batch, &_returns, &is_trues, storage_interface);
+        if (!is_trues.empty()) {
+            auto value_iterator = _returns.begin();
+            auto return_iterator = is_trues.begin();
+            void *previous_return = *return_iterator;
+
+            auto erase_value = _returns.begin();
+            auto erase_return = is_trues.begin();
+
+            std::vector<std::string> return_values;
+            bool should_erase = false;
+            for (; return_iterator != is_trues.end(); return_iterator++, value_iterator++) {
+                auto current_return = *return_iterator;
+                // Return current values
+                if (current_return != previous_return) {
+                    if (return_values.size() > 1) {
+                        auto real_return = (std::vector<std::string> *) previous_return;
+                        *real_return = std::move(return_values);
+                    }
+                    else {
+                        auto real_return = (std::string *) previous_return;
+                        *real_return = return_values[0];
+                    }
+                    return_values.clear();
+                    should_erase = true;
+                    auto erase_value = value_iterator;
+                    auto erase_return = return_iterator;
+                }
+                return_values.push_back(*value_iterator);
+                previous_return = current_return;
+            }
+            if (should_erase){
+                _returns.erase(_returns.begin(), erase_value);
+                is_trues.erase(is_trues.begin(), erase_return);
+            }
+        }
     }
+};
+
+std::vector<std::string> pancake_proxy::perform_op(queue<std::pair<operation, void *>> * operation_queue){
+    storage_interface * storage_interface;
+    if (server_type_ == "redis") {
+        storage_interface = new redis(server_host_name_, server_port_);
+    }
+    else if (server_type_ == "rocksdb") {
+        storage_interface = new rocksdb(server_host_name_, server_port_);
+    }
+    //else if (server_type_ == "memcached")
+    //    storage_interface_ new memcached(server_host_name_, server_port_+i);
+    for (int i = 1; i < server_count_; i++) {
+        storage_interface->add_server(server_host_name_, server_port_+i);
+    }
+    std::vector<void *> is_trues;
+    std::vector <std::string> _returns;
+    while (operation_queue->size() != 0) {
+        std::vector<operation> storage_batch;
+        while (storage_batch.size() < storage_batch_size_) {
+            create_security_batch(operation_queue, &storage_batch, &is_trues);
+        }
+        execute_batch(&storage_batch, &_returns, &is_trues, storage_interface);
+    }
+    return _returns;
 };
 
 bool pancake_proxy::distribution_changed(){
@@ -272,79 +458,8 @@ bool pancake_proxy::distribution_changed(){
 
 void pancake_proxy::run() {
     if (distribution_changed()){
-        update_distribution();
+        auto dist = distribution();
+        update_distribution(&dist);
         sleep(1);
     }
 };
-
-void pancake_proxy::usage() {
-    std::cout << "Pancake proxy: frequency flattening kvs\n";
-    // Network Parameters
-    std::cout << "\t -h: Storage server host name\n";
-    std::cout << "\t -p: Storage server port\n";
-    std::cout << "\t -s: Storage server type (redis, rocksdb, memcached)\n";
-    std::cout << "\t -n: Storage server count\n";
-    // Workload parameters
-    std::cout << "\t -w: Clients' first workload file\n";
-    std::cout << "\t -l: key size\n";
-    std::cout << "\t -v: Value size\n";
-    std::cout << "\t -b: Security batch size\n";
-    std::cout << "\t -c: Storage batch size\n";
-    std::cout << "\t -t: Number of worker threads for cpp_redis\n";
-    // Other parameters
-    std::cout << "\t -o: Output location for sizing thread\n";
-    std::cout << "\t -d: Core to run on\n";
-};
-
-int main(int argc, char* argv[]) {
-    pancake_proxy proxy;
-    int o;
-    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:")) != -1) {
-        switch (o) {
-            case 'h':
-                proxy.server_hostname_ = std::string(optarg);
-                break;
-            case 'p':
-                proxy.server_port_ = std::atoi(optarg);
-                break;
-            case 's':
-                proxy.server_type_ = std::string(optarg);
-                break;
-            case 'n':
-                proxy.server_count_ = std::atoi(optarg);
-                break;
-            case 'w':
-                proxy.workload_file_ = std::string(optarg);
-                break;
-            case 'l':
-                proxy.key_size_ = std::atoi(optarg);
-                break;
-            case 'v':
-                proxy.object_size_ = std::atoi(optarg);
-                break;
-            case 'b':
-                proxy.security_batch_size_ = std::atoi(optarg);
-                break;
-            case 'c':
-                proxy.storage_batch_size_ = std::atoi(optarg);
-                break;
-            case 't':
-                proxy.pthreads_ = std::atoi(optarg);
-                break;
-            case 'o':
-                proxy.output_location_ = std::string(optarg);
-                break;
-            case 'd':
-                proxy.core_ = std::atoi(optarg) - 1;
-                break;
-            default:
-                proxy.usage();
-                exit(-1);
-        }
-    }
-    proxy.init();
-    // TODO: Create various threads
-    while (true){
-        proxy.run();
-    }
-}

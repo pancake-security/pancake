@@ -1,34 +1,40 @@
-set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage)
-set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
 
 include_directories(${STORAGE_INCLUDE})
 
 # Proxy server
-add_executable(pancake_proxy
+add_executable(pancake_thrift_server
+        src/pancake_thrift_server.cpp
+        src/pancake_thrift_server.h
         src/pancake_proxy.cpp
         src/pancake_proxy.h
         src/proxy.h
         src/operation.h
         ../libstorage/src/storage_interface.h
-        ../libstorage/src/redis.cpp
         ../libstorage/src/redis.h
+        ../libstorage/src/redis.cpp
         ../libstorage/src/rocksdb.cpp
         ../libstorage/src/rocksdb.h
-        ../libstorage/src/memcached.cpp
-        ../libstorage/src/memcached.h
+        #../libstorage/src/memcached.cpp
+        #../libstorage/src/memcached.h
         src/distribution.h
         src/distribution.cpp
         src/queue.h
-        src/queue.cpp
         src/update_cache.h
         src/update_cache.cpp
         src/encryption_engine.h
         src/encryption_engine.cpp
         src/util.h
         src/util.cpp
-        )
-add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
-target_link_libraries(pancake_proxy
+        ../gen-cpp/pancake_thrift.cpp
+        ../gen-cpp/pancake_thrift.h
+        ../gen-cpp/proxy_constants.h
+        ../gen-cpp/proxy_constants.cpp
+        ../gen-cpp/proxy_types.h
+        ../gen-cpp/proxy_types.cpp)
+#add_dependencies(pancake_proxy cpp_redis ssdb_rocks libcuckoo openssl_ep)
+add_dependencies(pancake_thrift_server cpp_redis ssdb_rocks openssl_ep)
+target_link_libraries(pancake_thrift_server
         ${THRIFT_LIBRARIES}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
@@ -39,7 +45,7 @@ target_link_libraries(pancake_proxy
         ${CMAKE_DL_LIBS}
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
-        ${LIBCUCKOO_LIBRARIES}
+        #${LIBCUCKOO_LIBRARIES}
         ${STORAGE_INCLUDE_LIBRARIES}
         #${LIBMEMCACHED_LIBRARIES}
         Threads::Threads)

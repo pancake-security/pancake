@@ -33,7 +33,7 @@ if (BUILD_STRESS_TESTS)
 endif()
 
 # Client library
-add_subdirectory(libclient)
+#add_subdirectory(libclient)
 
 # Storage library
 add_subdirectory(libstorage)
@@ -44,7 +44,9 @@ add_subdirectory(tests)
 # Proxy
 add_subdirectory(proxy)
 
-if (BUILD_BENCHMARK)
-  # RPC Framework
-  add_subdirectory(benchmark)
-endif()
+add_subdirectory(benchmark)
+
+#if (BUILD_BENCHMARK)
+#  # RPC Framework
+#  add_subdirectory(benchmark)
+#endif()

@@ -22,7 +22,7 @@ public:
     void check_if_missing(std::string key, std::string value, update_cache * cache);
     int sample_a_replica(std::string key, int num_replicas, bool access_is_real, int frequency, double p_max);
     int size_in_bytes ();
-    locked_table get_locked_table();
+    cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table get_locked_table();
 
 private:
     cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>> map;

@@ -3,51 +3,48 @@
 //
 
 #include "queue.h"
-
-#include <queue>
-#include <mutex>
-#include <condition_variable>
-
 template<typename T>
-T queue::pop() {
-    std::unique_lock<std::mutex> mlock(m_mtx);
-    while (m_queue.empty()) {
-        m_cond.wait(mlock);
+T queue<T>::pop() {
+    std::unique_lock<std::mutex> mlock(m_mtx_);
+    while (m_queue_.empty()) {
+        m_cond_.wait(mlock);
     }
-    size--;
-    auto item = std::move(m_queue.front());
-    m_queue.pop();
+    size_--;
+    auto item = std::move(m_queue_.front());
+    m_queue_.pop();
     return item;
 }
 
-void queue::pop(T &item) {
-    std::unique_lock<std::mutex> mlock(m_mtx);
-    while (m_queue.empty()) {
-        m_cond.wait(mlock);
+template<typename T>
+void queue<T>::pop(T &item) {
+    std::unique_lock<std::mutex> mlock(m_mtx_);
+    while (m_queue_.empty()) {
+        m_cond_.wait(mlock);
     };
-    size--;
-    item = m_queue.front();
-    m_queue.pop();
+    size_--;
+    item = m_queue_.front();
+    m_queue_.pop();
 }
 
-void queue::push(const T &item) {
-    std::unique_lock<std::mutex> mlock(m_mtx);
-    m_queue.push(item);
-    size++;
+template<typename T>
+void queue<T>::push(const T &item) {
+    std::unique_lock<std::mutex> mlock(m_mtx_);
+    m_queue_.push(item);
+    size_++;
     mlock.unlock();
-    m_cond.notify_one();
+    this->m_cond.notify_one();
 }
 
-void queue::push(T &&item) {
-    std::unique_lock<std::mutex> mlock(m_mtx);
-    m_queue.push(std::move(item));
-    size++;
+template<typename T>
+void queue<T>::push(T &&item) {
+    std::unique_lock<std::mutex> mlock(m_mtx_);
+    m_queue_.push(std::move(item));
+    size_++;
     mlock.unlock();
-    m_cond.notify_one();
+    m_cond_.notify_one();
 }
 
-int size() {
+template<typename T>
+int queue<T>::size() {
     return size_;
 }
-
-};

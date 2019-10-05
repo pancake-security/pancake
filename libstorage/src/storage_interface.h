@@ -13,5 +13,6 @@ public:
     virtual void put(std::string &key, std::string &value) = 0;
     virtual std::vector<std::string> get_batch(std::vector<std::string> * keys) = 0;
     virtual void put_batch(std::vector<std::string> * keys, std::vector<std::string> * values) = 0;
+    virtual void add_server(std::string host_name, int port) = 0;
 };
 #endif //STORAGE_INTERFACE_H

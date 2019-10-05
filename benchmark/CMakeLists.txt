@@ -1,36 +1,38 @@
-set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage)
-set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy)
+set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
+set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libclient/src)
+set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy/src)
+set(BENCHMARK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 include_directories(${STORAGE_INCLUDE} ${PROXY_INCLUDE})
 
-set (CMAKE_C_COMPILER "/usr/bin/gcc-5")
-set (CMAKE_CXX_COMPILER "/usr/bin/g++-5")
-
 # Proxy server
 add_executable(pancake_benchmark
-        src/pancake_benchmark.h
         src/pancake_benchmark.cpp
-        src/pancake_proxy.cpp
-        src/pancake_proxy.h
-        src/operation.cpp
-        src/operation.h
-        src/proxy.h
-        src/storage_interface.cpp
-        src/storage_interface.h
-        src/redis.cpp
-        src/redis.h
-        src/rocksdb.cpp
-        src/rocksdb.h
-        src/memcached.cpp
-        src/memcached.h
-        src/distribution.h
-        src/update_cache.h
-        src/encryption_engine.h
+        src/pancake_benchmark.h
+        ../proxy/src/pancake_thrift_server.h
+        ../proxy/src/pancake_thrift_server.cpp
+        ../proxy/src/pancake_proxy.cpp
+        ../proxy/src/pancake_proxy.h
+        ../proxy/src/operation.h
+        ../proxy/src/proxy.h
+        ../libstorage/src/storage_interface.h
+        ../libstorage/src/redis.cpp
+        ../libstorage/src/redis.h
+        ../libstorage/src/rocksdb.cpp
+        ../libstorage/src/rocksdb.h
+        #../libstorage/src/memcached.cpp
+        #../libstorage/src/memcached.h
+        ../proxy/src/distribution.h
+        ../proxy/src/update_cache.h
+        ../proxy/src/encryption_engine.h
         src/timer.h
+        ../libclient/src/client.h
+        ../libclient/src/proxy_client.h
+        ../libclient/src/proxy_client.cpp
         )
 add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep)
-target_link_libraries(pancake_proxy
-        #${THRIFT_LIBRARIES}
+target_link_libraries(pancake_benchmark
+        ${THRIFT_LIBRARIES}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         ${SSDB_CLIENT_LIBRARY}
@@ -41,5 +43,8 @@ target_link_libraries(pancake_proxy
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
         ${LIBCUCKOO_LIBRARIES}
-        ${LIBMEMCACHED_LIBRARIES}
+        #${LIBMEMCACHED_LIBRARIES}
+        ${PROXY_INCLUDE_LIBRARIES}
+        ${STORAGE_INCLUDE_LIBRARIES}
+        ${BENCHMARK_INCLUDE_LIBRARIES}
         Threads::Threads)

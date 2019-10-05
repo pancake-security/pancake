@@ -11,7 +11,8 @@
 
 class memcached : public storage_interface {
 public:
-    memcached(std::string hostname, int port);
+    memcached(std::string host_name, int port);
+    void add_server(std::string host_name, int port);
     std::string get(std::string &key) override;
     void put(std::string &key, std::string &value) override;
     std::vector<std::string> get_batch(std::vector<std::string> * keys) override;
