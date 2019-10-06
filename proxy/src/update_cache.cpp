@@ -6,13 +6,13 @@
 
     update_cache::update_cache(){};
 
-    update_cache::update_cache(std::vector <std::pair<std::string, int>> * keys_replicas_pairs) {
-        for (auto key_replica_pair = keys_replicas_pairs->begin(); key_replica_pair != keys_replicas_pairs->end(); key_replica_pair++) {
+    update_cache::update_cache(const std::vector <std::pair<std::string, int>> &keys_replicas_pairs) {
+        for (auto key_replica_pair = keys_replicas_pairs.begin(); key_replica_pair != keys_replicas_pairs.end(); key_replica_pair++) {
             this->map.insert_or_assign(key_replica_pair->first, std::make_pair("", std::vector<bool>(key_replica_pair->second, false)));
         }
     };
 
-    std::string update_cache::check_for_update(std::string key, int replica_id) {
+    std::string update_cache::check_for_update(const std::string &key, int replica_id) {
         std::string to_send = "";
         auto update_fn = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
             auto &bit_vec = cache_entry.second;
@@ -29,7 +29,7 @@
         return to_send;
     };
 
-    void update_cache::edit_bit_vector_size(std::string &key, int size) {
+    void update_cache::edit_bit_vector_size(const std::string &key, int size) {
         if (map.contains(key))  {
             auto update_fn = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
                 auto new_bit_vector = std::vector<bool>(size, true);
@@ -44,7 +44,7 @@
         }
     };
 
-    bool update_cache::populate_replica_updates(std::string &key, std::string &val, int num_replicas){
+    bool update_cache::populate_replica_updates(const std::string &key, const std::string &val, int num_replicas){
         return map.insert_or_assign(key, std::make_pair(val, std::vector<bool>(num_replicas, true)));
     };
 
@@ -58,7 +58,7 @@
         return (int)count;
     };
 
-    int update_cache::hamming_weight(std::vector<bool> bit_vec){
+    int update_cache::hamming_weight(const std::vector<bool> &bit_vec){
         int count = 0;
         for (int i=0;i<bit_vec.size();i++){
             if (bit_vec[i] == true)
@@ -67,7 +67,7 @@
         return count;
     }
 
-    int update_cache::num_leading_zeros(std::vector<bool> bit_vec){
+    int update_cache::num_leading_zeros(const std::vector<bool> &bit_vec){
         int i = 0;
         for (;i<bit_vec.size();i++){
             if (bit_vec[i] == true)
@@ -76,7 +76,7 @@
         return i;
     }
 
-    bool update_cache::mirror_update_cache(std::string key, std::string value, std::vector<bool> bit_vec){
+    bool update_cache::mirror_update_cache(const std::string &key, const std::string &value, const std::vector<bool> &bit_vec){
         auto update_the_cache = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
             for(int i = num_leading_zeros(bit_vec); i < bit_vec.size(); i++)
                 cache_entry.second[i] = true;
@@ -86,15 +86,15 @@
         return true;
     }
 
-    void update_cache::check_if_missing(std::string key, std::string value, update_cache * cache){
+    void update_cache::check_if_missing(const std::string &key, const std::string &value, update_cache &cache){
         auto check_missing = [&](std::pair<std::string, std::vector<bool>> & cache_entry) {
             auto bit_vec = cache_entry.second;
-            return cache->mirror_update_cache(key, value, bit_vec);
+            return cache.mirror_update_cache(key, value, bit_vec);
         };
         map.erase_fn(key, check_missing);
     }
 
-    int update_cache::sample_a_replica(std::string key, int num_replicas, bool access_is_real, int frequency, double p_max){
+    int update_cache::sample_a_replica(const std::string &key, int num_replicas, bool access_is_real, int frequency, double p_max){
         int ret;
         auto sample_from_missing = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
             auto bit_vec = cache_entry.second;

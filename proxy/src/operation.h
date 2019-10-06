@@ -9,18 +9,16 @@
 
 class operation {
 public:
-    operation(const operation&){};
+    operation(const operation&) = default;
     operation& operator=(const operation&){
         return *this;
     };
-    operation() : key(), value(), keys(), values(){
+    operation() : key(), value(){
     }
 
-    ~operation(){};
+    ~operation() = default;
     std::string key;
-    std::vector<std::string> keys;
     std::string value;
-    std::vector<std::string> values;
 
     bool operator == (const operation & rhs) const
     {

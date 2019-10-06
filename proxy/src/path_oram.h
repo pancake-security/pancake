@@ -12,12 +12,17 @@
 
 class path_oram : public proxy {
 public:
-    void init() override;
+    void init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args) override;
     void run() override;
     std::string get(const std::string &key, const std::string &value) override;
     void put(const std::string &key, const std::string &value) override;
-    std::shared_ptr<std::vector<const std::string>> get_batch(std::shared_ptr<std::vector<const std::string>> keys) override;
-    virtual void put_batch(std::shared_ptr<std::vector<const std::string>> keys, std::shared_ptr<std::vector<const std::string>> values) override;
+    std::vector<std::string> get_batch(const std::vector<std::string> &keys) override;
+    void put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
+
+    std::string get(int queue_id, const std::string &key) override;
+    void put(int queue_id, const std::string &key, const std::string &value) override;
+    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys) override;
+    void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
 
 private:
     std::string get(const uint32_t & key);

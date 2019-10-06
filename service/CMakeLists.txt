@@ -1,0 +1,3 @@
+set(SERVICE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+include_directories(${SERVICE_INCLUDE})

@@ -21,5 +21,5 @@ std::string rand_str(const int len) {
 };
 
 bool prob(double p){
-    return rand()/(RAND_MAX+1.0) < p;
+    return rand_uint32(0,RAND_MAX)/(RAND_MAX+1.0) < p;
 };

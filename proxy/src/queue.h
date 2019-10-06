@@ -13,6 +13,12 @@ template<typename T>
 class queue {
 public:
 
+    queue (const queue &q) : m_queue_(), m_mtx_(), m_cond_() {
+        m_queue_ = q.m_queue_;
+        m_mtx_ = q.m_mtx_;
+        m_cond_ = q.m_cond_;
+    }
+
     T pop() {
         std::unique_lock<std::mutex> mlock(m_mtx_);
         while (m_queue_.empty()) {

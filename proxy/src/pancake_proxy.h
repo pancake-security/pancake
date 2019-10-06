@@ -27,22 +27,22 @@
 class pancake_proxy : public proxy {
 public:
 
-    void init(std::vector<std::string> * keys, std::vector<std::string> * values, void ** args) override;
+    void init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args) override;
     void run() override;
     std::string get(const std::string &key) override;
     void put(const std::string &key, const std::string &value) override;
-    std::vector<std::string> get_batch(const std::vector<std::string> *  keys) override;
-    void put_batch(const std::vector<std::string> * keys, const std::vector<std::string> *  values) override;
+    std::vector<std::string> get_batch(const std::vector<std::string> &keys) override;
+    void put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
 
     std::string get(int queue_id, const std::string &key) override;
     void put(int queue_id, const std::string &key, const std::string &value) override;
-    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> *  keys) override;
-    void put_batch(int queue_id, const std::vector<std::string> * keys, const std::vector<std::string> *  values) override;
+    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys) override;
+    void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
 
     std::string get(int queue_id, const std::string &key, std::string& _return);
     void put(int queue_id, const std::string &key, const std::string &value, std::string& _return);
-    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> *  keys, std::vector<std::string> & _return);
-    void put_batch(int queue_id, const std::vector<std::string> * keys, const std::vector<std::string> * values, std::string& _return);
+    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys, std::vector<std::string> & _return);
+    void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values, std::string& _return);
 
     std::string output_location_ = "log";
     std::string server_host_name_ = "127.0.0.1";
@@ -53,30 +53,29 @@ public:
     int key_size_ = 16;
     int server_count_ = 1;
     std::string server_type_ = "redis";
-    int pthreads_ = 1;
+    int p_threads_ = 1;
     int storage_batch_size_ = 50;
     int core_ = 0;
     bool is_static_ = true;
 
 private:
-    void create_security_batch(queue <std::pair<operation, void *>> * op_queue,
-                               std::vector<operation> * storage_batch,
-                               std::vector<void *> * is_trues);
+    void create_security_batch(queue <std::pair<operation, void *>> &op_queue,
+                               std::vector<operation> &storage_batch,
+                               std::vector<void *> &is_trues);
     void create_replicas();
-    void insert_replicas(std::string key, int num_replicas);
-    void recompute_fake_distribution(distribution * new_distribution);
-    void prepare_for_swapping(std::string key, int r_new, int r_old,
-                              std::vector<std::string> * unassigned_labels,
-                              std::vector<std::pair<std::string, int>> * needs_labels);
-    int perform_swapping(std::vector<std::string> * unassigned_labels,
-                         std::vector<std::pair<std::string, int>> * needs_labels);
-    void update_distribution(distribution * new_distribution);
+    void insert_replicas(const std::string &key, int num_replicas);
+    void recompute_fake_distribution(const distribution &new_distribution);
+    void prepare_for_swapping(const std::string &key, int r_new, int r_old,
+                              std::vector<std::string> &unassigned_labels,
+                              std::vector<std::pair<std::string, int>> &needs_labels);
+    int perform_swapping(const std::vector<std::string> &unassigned_labels,
+                         const std::vector<std::pair<std::string, int>> &needs_labels);
+    void update_distribution(const distribution &new_distribution);
     bool distribution_changed();
     bool is_true_distribution();
-    void execute_batch(const std::vector<operation> * operations, std::vector<std::string> * _returns,
-                       std::vector<void *> * is_trues, storage_interface* storage_interface);
+    void execute_batch(const std::vector<operation> &operations, std::vector<std::string> &_returns,
+                       std::vector<void *> &is_trues, storage_interface &storage_interface);
     void service_thread(int id);
-    std::vector<std::string> perform_op(queue<std::pair<operation, void *>> * operation_queue);
 
     storage_interface * storage_interface_;
     std::vector<queue<std::pair<operation, void *>>> operation_queues_;

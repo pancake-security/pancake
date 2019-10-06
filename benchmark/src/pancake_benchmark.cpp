@@ -44,7 +44,6 @@ distribution pancake_benchmark::load_frequencies_from_trace(const std::string &t
         }
         assert (key != "PUT");
         assert (key != "GET");
-        assert (key.length() < object_size_);
         if (key_to_frequency.count(key) == 0){
             key_to_frequency[key] = 1;
             frequency_sum += 1;
@@ -70,31 +69,30 @@ distribution pancake_benchmark::load_frequencies_from_trace(const std::string &t
         frequencies.push_back(pair.second/(double)frequency_sum);
     }
     in_workload_file.close();
-    distribution = distribution(keys, frequencies);
-    return distribution;
+    distribution dist(keys, frequencies);
+    return dist;
 };
 
-void pancake_benchmark::run_benchmark(int run_time, bool stats, std::vector<int> * latencies) {
-    std::string dummy(std::stoi(object_size), '0');s
+void pancake_benchmark::run_benchmark(int run_time, bool stats, std::vector<int> &latencies) {
+    std::string dummy(object_size_, '0');
     int numerrors = 0;
     int ops = 0;
     size_t chunknum = 0;
     uint64_t start, end;
     std::pair<std::string, std::string> res;
     auto ticks_per_ns = static_cast<double>(rdtscuhz()) / 1000;
-    auto s = chrono::high_resolution_clock::now();
-    auto e = chrono::high_resolution_clock::now();
+    auto s = std::chrono::high_resolution_clock::now();
+    auto e = std::chrono::high_resolution_clock::now();
     int elapsed = 0;
     std::vector<std::string> results;
     int i = 0;
-    std::vector
     while (elapsed*1000000 < run_time) {
         if (stats) {
             rdtscll(start);
         }
         auto keys_values_pair = trace_[i];
-        auto keys = keys_vals_pair.first;
-        auto values = keys_vals_pair.second;
+        auto keys = keys_values_pair.first;
+        auto values = keys_values_pair.second;
         if (values.size() == 0){
             client_.get_batch(keys);
         }
@@ -104,37 +102,118 @@ void pancake_benchmark::run_benchmark(int run_time, bool stats, std::vector<int>
         if (stats) {
             rdtscll(end);
             double cycles = static_cast<double>(end - start);
-            latencies->push_back((cycles / ticks_per_ns) / client_batch_size_);
+            latencies.push_back((cycles / ticks_per_ns) / client_batch_size_);
             rdtscll(start);
             ops += keys.size();
         }
-        e = chrono::high_resolution_clock::now();
-        elapsed = static_cast<int>(chrono::duration_cast<chrono::milliseconds>(e - s).count());
+        e = std::chrono::high_resolution_clock::now();
+        elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
         i = (i+1)%keys.size();
     }
     if (stats)
-        xput_ = ((static_cast<double>(ops) / elapsed));
-    return ops;
+        xput_ += ((static_cast<double>(ops) / elapsed));
 }
 
-void pancake_benchmark::warmup(std::vector<int> *latencies) {
+void pancake_benchmark::warmup(std::vector<int> &latencies) {
     run_benchmark(15, false, latencies);
 }
 
-void pancake_benchmark::cooldown(std::vector<int> *latencies) {
+void pancake_benchmark::cooldown(std::vector<int> &latencies) {
     run_benchmark(15, false, latencies);
 }
 
-int pancake_benchmark::main(int argc, char ** argv){
-    auto dist = load_frequencies_from_trace(argv[1]);
-    pancake_ = pancake_thriftHandler(dist);
-    pancake_.main()
-    std::vector<int> latencies;
-    warmup(&latencies);
-    run_benchmark(20, true, &latencies);
-    cooldown(&latencies);
-    for (auto latency: latencies){
-        std::cout << latency << std::endl;
+void pancake_benchmark::usage() {
+    std::cout << "Pancake proxy: frequency flattening kvs\n";
+    // Network Parameters
+    std::cout << "\t -h: Storage server host name\n";
+    std::cout << "\t -p: Storage server port\n";
+    std::cout << "\t -s: Storage server type (redis, rocksdb, memcached)\n";
+    std::cout << "\t -n: Storage server count\n";
+    std::cout << "\t -z: Proxy server type\n";
+    // Workload parameters
+    std::cout << "\t -w: Clients' workload file\n";
+    std::cout << "\t -l: key size\n";
+    std::cout << "\t -v: Value size\n";
+    std::cout << "\t -b: Security batch size\n";
+    std::cout << "\t -c: Storage batch size\n";
+    std::cout << "\t -t: Number of worker threads for cpp_redis\n";
+    // Other parameters
+    std::cout << "\t -o: Output location for sizing thread\n";
+    std::cout << "\t -d: Core to run on\n";
+};
+
+int pancake_benchmark::main(int argc, char **argv) {
+    auto proxy = std::make_shared<pancake_proxy>(new pancake_proxy());
+
+    int port = 9090;
+    int o;
+    std::string proxy_type = "pancake";
+    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:")) != -1) {
+        switch (o) {
+            case 'h':
+                proxy->server_host_name_ = std::string(optarg);
+                break;
+            case 'p':
+                proxy->server_port_ = std::atoi(optarg);
+                break;
+            case 's':
+                proxy->server_type_ = std::string(optarg);
+                break;
+            case 'n':
+                proxy->server_count_ = std::atoi(optarg);
+                break;
+            case 'w':
+                proxy->workload_file_ = std::string(optarg);
+                break;
+            case 'l':
+                proxy->key_size_ = std::atoi(optarg);
+                break;
+            case 'v':
+                proxy->object_size_ = std::atoi(optarg);
+                break;
+            case 'b':
+                proxy->security_batch_size_ = std::atoi(optarg);
+                break;
+            case 'c':
+                proxy->storage_batch_size_ = std::atoi(optarg);
+                break;
+            case 't':
+                proxy->p_threads_ = std::atoi(optarg);
+                break;
+            case 'o':
+                proxy->output_location_ = std::string(optarg);
+                break;
+            case 'd':
+                proxy->core_ = std::atoi(optarg) - 1;
+                break;
+            case 'z':
+                proxy_type = std::string(optarg);
+            default:
+                usage();
+                exit(-1);
+        }
     }
-    std::cout << "Xput: " << xput_ << std::endl;
+
+    void *arguments[3];
+    arguments[0] = malloc(sizeof(distribution * ));
+    arguments[1] = malloc(sizeof(double *));
+    arguments[2] = malloc(sizeof(double *));
+
+    auto dist = load_frequencies_from_trace(argv[1]);
+    arguments[0] = &dist;
+    auto items = dist.get_items();
+    double alpha = 1.0 / items.size();
+    double delta = 1.0 / (2 * items.size()) * 1 / alpha;
+    arguments[1] = &alpha;
+    arguments[2] = &delta;
+    std::string dummy(object_size_, '0');
+    proxy->init(items, std::vector<std::string>(items.size(), dummy), arguments);
+
+    auto server = thrift_server::create(proxy, proxy_type);
+    server->serve()
+    std::vector<int> latencies;
+    warmup(latencies);
+    run_benchmark(20, true, latencies);
+    cooldown(latencies);
+    return 0;
 }

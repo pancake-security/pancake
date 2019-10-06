@@ -4,11 +4,11 @@
 
 #include "encryption_engine.h"
 
-    encryption_engine::encryption_engine(){
+    encryption_engine::encryption_engine() {
         OpenSSL_add_all_algorithms();
 
-        encryption_key_ = (unsigned char *)gen_random(32).c_str();
-        iv_ = (unsigned char *)gen_random(16).c_str();
+        encryption_key_ = (unsigned char *)rand_str(32).c_str();
+        iv_ = (unsigned char *)rand_str(16).c_str();
 
         int rc = make_keys(&skey_, &vkey_);
         if (rc != 0)
@@ -21,28 +21,12 @@
             exit(1);
     };
 
-    uint32_t encryption_engine::rand_uint32(const uint32_t &min, const uint32_t &max) {
-        static thread_local std::mt19937 generator;
-        std::uniform_int_distribution<uint32_t> distribution(min, max);
-        return distribution(generator);
-    };
-
-    std::string encryption_engine::gen_random(const int len) {
-        static const char alphanum[] = "0123456789";
-        std::string ret;
-        ret.resize(len);
-        for (int i = 0; i < len; ++i) {
-            ret[i] = alphanum[encryption_engine::rand_uint32(0, 500) % (sizeof(alphanum) - 1)];
-        }
-        return ret;
-    }
-
-    void encryption_engine::handle_errors(void){
+    void encryption_engine::handle_errors(void) {
         ERR_print_errors_fp(stderr);
         abort();
     };
 
-    int encryption_engine::sign_it(const byte* msg, size_t mlen, byte** sig, size_t* slen, EVP_PKEY* pkey){
+    int encryption_engine::sign_it(const byte* msg, size_t mlen, byte** sig, size_t* slen, EVP_PKEY* pkey) {
         /* Returned to caller */
         int result = -1;
 
@@ -145,7 +129,7 @@
     };
 
     int encryption_engine::encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-                unsigned char *iv, unsigned char *ciphertext){
+                unsigned char *iv, unsigned char *ciphertext) {
         EVP_CIPHER_CTX *ctx;
 
         int len;
@@ -220,7 +204,7 @@
         return plaintext_len;
     };
 
-    int encryption_engine::verify_it(const byte* msg, size_t mlen, const byte* sig, size_t slen, EVP_PKEY* pkey){
+    int encryption_engine::verify_it(const byte* msg, size_t mlen, const byte* sig, size_t slen, EVP_PKEY* pkey) {
         /* Returned to caller */
         int result = -1;
 
@@ -388,7 +372,7 @@
         return !!result;
     };
 
-    int encryption_engine::hmac_it(const byte* msg, size_t mlen, byte** val, size_t* vlen, EVP_PKEY* pkey){
+    int encryption_engine::hmac_it(const byte* msg, size_t mlen, byte** val, size_t* vlen, EVP_PKEY* pkey) {
         /* Returned to caller */
         int result = -1;
 
@@ -490,7 +474,7 @@
         return !!result;
     };
 
-    std::string encryption_engine::encrypt(const std::string &plain_text){
+    std::string encryption_engine::encrypt(const std::string &plain_text) {
         unsigned char cipher_text[4096];
         int text_len = encrypt((unsigned char *)plain_text.c_str(), plain_text.length(), encryption_key_, iv_, cipher_text);
         assert(text_len > 0);
@@ -498,14 +482,14 @@
         return str;
     };
 
-    std::string encryption_engine::decrypt(const std::string &cipher_text){
+    std::string encryption_engine::decrypt(const std::string &cipher_text) {
         unsigned char text[4096];
         int text_len = decrypt((unsigned char *)cipher_text.c_str(), cipher_text.length(), encryption_key_, iv_, text);
         assert(text_len > 0);
         return std::string(text, std::find(text, text + text_len, '\0'));
     };
 
-    std::string encryption_engine::hmac(const std::string &key){
+    std::string encryption_engine::hmac(const std::string &key) {
         byte *val = NULL;
         size_t val_len = 256;
         int res = hmac_it((byte *)key.c_str(), key.size(), &val, &val_len, skey_);

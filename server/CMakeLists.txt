@@ -1,19 +1,12 @@
 set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
-set(CLIENT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libclient/src)
 set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy/src)
 set(SERVICE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../service/src)
-set(BENCHMARK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${BENCHMARK_INCLUDE} ${SERVICE_INCLUDE} )
+include_directories(${STORAGE_INCLUDE} ${PROXY_INCLUDE} ${SERVICE_INCLUDE})
 
-
-add_executable(pancake_benchmark
-        src/pancake_benchmark.cpp
-        src/pancake_benchmark.h
-
-        ../libclient/src/client.h
-        ../libclient/src/proxy_client.cpp
-        ../libclient/src/proxy_client.h
+# Proxy server
+add_executable(proxy_server
+        src/proxy_server.cpp
 
         ../service/src/thrift_server.cpp
         ../service/src/thrift_server.h
@@ -50,8 +43,8 @@ add_executable(pancake_benchmark
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
         )
-add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep)
-target_link_libraries(pancake_benchmark
+add_dependencies(proxy_server cpp_redis ssdb_rocks libcuckoo openssl_ep)
+target_link_libraries(proxy_server
         ${THRIFT_LIBRARIES}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
@@ -63,10 +56,8 @@ target_link_libraries(pancake_benchmark
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
         ${LIBCUCKOO_LIBRARIES}
-        #${LIBMEMCACHED_LIBRARIES}
-        ${PROXY_INCLUDE_LIBRARIES}
         ${STORAGE_INCLUDE_LIBRARIES}
-        ${BENCHMARK_INCLUDE_LIBRARIES}
+        ${PROXY_INCLUDE_LIBRARIES}
         ${SERVICE_INCLUDE_LIBRARIES}
-        ${CLIENT_INCLUDE_LIBRARIES}
+        #${LIBMEMCACHED_LIBRARIES}
         Threads::Threads)
