@@ -8,7 +8,7 @@ using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 
-void proxy_client::init(const std::string host_name, int port) {
+void proxy_client::init(const std::string &host_name, int port) {
     auto socket = std::make_shared<TSocket>(host_name, port);;
     auto transport = std::shared_ptr<TTransport>(new TFramedTransport(socket));
     auto protocol = std::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
