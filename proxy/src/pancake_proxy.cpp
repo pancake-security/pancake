@@ -266,7 +266,7 @@ void pancake_proxy::put_batch(const std::vector<std::string> &keys, const std::v
 
 std::string pancake_proxy::get(int queue_id, const std::string &key) {
     std::string _return;
-    get(queue_id, key, _return);
+    return get(queue_id, key, _return);
 };
 
 void pancake_proxy::put(int queue_id, const std::string &key, const std::string &value) {

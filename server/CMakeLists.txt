@@ -43,9 +43,10 @@ add_executable(proxy_server
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
         )
-add_dependencies(proxy_server cpp_redis ssdb_rocks libcuckoo openssl_ep)
+add_dependencies(proxy_server cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
 target_link_libraries(proxy_server
-        ${THRIFT_LIBRARIES}
+        ${THRIFTNB_LIBRARY}
+        ${THRIFT_LIBRARY}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         ${SSDB_CLIENT_LIBRARY}

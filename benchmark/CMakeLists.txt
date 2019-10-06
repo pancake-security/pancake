@@ -50,9 +50,11 @@ add_executable(pancake_benchmark
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
         )
-add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep)
+add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
 target_link_libraries(pancake_benchmark
-        ${THRIFT_LIBRARIES}
+        ${THRIFTNB_LIBRARY}
+        ${THRIFT_LIBRARY}
+        ${LIBEVENT_LIBRARY}
         ${CPP_REDIS_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         ${SSDB_CLIENT_LIBRARY}
