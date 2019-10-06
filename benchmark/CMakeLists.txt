@@ -62,7 +62,7 @@ target_link_libraries(pancake_benchmark
         ${CMAKE_DL_LIBS}
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
-        ${LIBCUCKOO_LIBRARIES}
+        #${LIBCUCKOO_LIBRARIES}
         #${LIBMEMCACHED_LIBRARIES}
         ${PROXY_INCLUDE_LIBRARIES}
         ${STORAGE_INCLUDE_LIBRARIES}

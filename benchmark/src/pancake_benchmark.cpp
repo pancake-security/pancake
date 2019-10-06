@@ -143,48 +143,49 @@ void pancake_benchmark::usage() {
 };
 
 int pancake_benchmark::main(int argc, char **argv) {
-    auto proxy = std::make_shared<pancake_proxy>(new pancake_proxy());
+    std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
 
+    //std::shared_ptr<proxy> proxy_ = std::make_shared<proxy>(dynamic_cast<pancake_proxy&>(*proxy_));
     int port = 9090;
     int o;
     std::string proxy_type = "pancake";
     while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:")) != -1) {
         switch (o) {
             case 'h':
-                proxy->server_host_name_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
                 break;
             case 'p':
-                proxy->server_port_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_port_ = std::atoi(optarg);
                 break;
             case 's':
-                proxy->server_type_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_type_ = std::string(optarg);
                 break;
             case 'n':
-                proxy->server_count_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_count_ = std::atoi(optarg);
                 break;
             case 'w':
-                proxy->workload_file_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).workload_file_ = std::string(optarg);
                 break;
             case 'l':
-                proxy->key_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).key_size_ = std::atoi(optarg);
                 break;
             case 'v':
-                proxy->object_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).object_size_ = std::atoi(optarg);
                 break;
             case 'b':
-                proxy->security_batch_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).security_batch_size_ = std::atoi(optarg);
                 break;
             case 'c':
-                proxy->storage_batch_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).storage_batch_size_ = std::atoi(optarg);
                 break;
             case 't':
-                proxy->p_threads_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).p_threads_ = std::atoi(optarg);
                 break;
             case 'o':
-                proxy->output_location_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).output_location_ = std::string(optarg);
                 break;
             case 'd':
-                proxy->core_ = std::atoi(optarg) - 1;
+                dynamic_cast<pancake_proxy&>(*proxy_).core_ = std::atoi(optarg) - 1;
                 break;
             case 'z':
                 proxy_type = std::string(optarg);
@@ -207,10 +208,11 @@ int pancake_benchmark::main(int argc, char **argv) {
     arguments[1] = &alpha;
     arguments[2] = &delta;
     std::string dummy(object_size_, '0');
-    proxy->init(items, std::vector<std::string>(items.size(), dummy), arguments);
+    dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
+    //proxy_ = dynamic_cast<pancake_proxy&>(*proxy_);
 
-    auto server = thrift_server::create(proxy, proxy_type);
-    server->serve()
+    auto server = thrift_server::create(proxy_, proxy_type, port, 1);
+    server->serve();
     std::vector<int> latencies;
     warmup(latencies);
     run_benchmark(20, true, latencies);

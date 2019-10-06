@@ -183,19 +183,19 @@ bool pancake_proxy::is_true_distribution() {
     return rand()/(RAND_MAX+1.0) < prob(1.0*(2.0 * p_max_ * key_to_frequency_.size()));
 };
 
-void pancake_proxy::create_security_batch(queue <std::pair<operation, void *>> &op_queue,
+void pancake_proxy::create_security_batch(std::shared_ptr<queue <std::pair<operation, void *>>> op_queue,
                                           std::vector<operation> &storage_batch,
                                           std::vector<void *> &is_trues) {
     for (int i = 0; i < security_batch_size_; i++) {
         if (is_true_distribution()) {
-            if (op_queue.size() == 0) {
+            if (op_queue->size() == 0) {
                 struct operation operat;
                 operat.key = real_distribution_->sample();
                 operat.value = "";
                 storage_batch.push_back(operat);
                 is_trues.push_back(nullptr);
             } else {
-                auto operation_return_pair = op_queue.pop();
+                auto operation_return_pair = op_queue->pop();
                 storage_batch.push_back(operation_return_pair.first);
                 is_trues.push_back((void *)operation_return_pair.second);
             }
@@ -232,7 +232,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
         auto plaintext = encryption_engine_.decrypt(cipher);
         auto plaintext_update = update_cache_.check_for_update(operations[i].key, replica_ids[i]);
         plaintext = plaintext_update == "" ? plaintext : plaintext_update;
-        missing_new_replicas_.check_if_missing(operations[i].key, plaintext, &update_cache_);
+        missing_new_replicas_.check_if_missing(operations[i].key, plaintext, update_cache_);
         if (is_trues[i] == nullptr) {
             _returns.push_back(plaintext);
             is_trues_iterator--;
@@ -287,7 +287,7 @@ std::string pancake_proxy::get(int queue_id, const std::string &key, std::string
     struct operation operat;
     operat.key = key;
     operat.value = "";
-    operation_queues_[queue_id % operation_queues_.size()].push(std::make_pair(operat, (void *)&_return));
+    operation_queues_[queue_id % operation_queues_.size()]->push(std::make_pair(operat, (void *)&_return));
     return _return;
 };
 
@@ -295,14 +295,14 @@ void pancake_proxy::put(int queue_id, const std::string &key, const std::string 
     struct operation operat;
     operat.key = key;
     operat.value = value;
-    operation_queues_[queue_id % operation_queues_.size()].push(std::make_pair(operat, (void *)&_return));
+    operation_queues_[queue_id % operation_queues_.size()]->push(std::make_pair(operat, (void *)&_return));
 };
 std::vector<std::string> pancake_proxy::get_batch(int queue_id, const std::vector<std::string> &keys, std::vector<std::string> & _return) {
     for (const auto &key: keys) {
         struct operation operat;
         operat.key = key;
         operat.value = "";
-        operation_queues_[queue_id % operation_queues_.size()].push(std::make_pair(operat, (void *)&_return));
+        operation_queues_[queue_id % operation_queues_.size()]->push(std::make_pair(operat, (void *)&_return));
     }
     return _return;
 };
@@ -313,7 +313,7 @@ void pancake_proxy::put_batch(int queue_id, const std::vector<std::string> &keys
         struct operation operat;
         operat.key = key;
         operat.value = values[i];
-        operation_queues_[queue_id % operation_queues_.size()].push(std::make_pair(operat, (void *)&_return));
+        operation_queues_[queue_id % operation_queues_.size()]->push(std::make_pair(operat, (void *)&_return));
         i++;
     }
 };

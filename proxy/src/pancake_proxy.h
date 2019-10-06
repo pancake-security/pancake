@@ -59,7 +59,7 @@ public:
     bool is_static_ = true;
 
 private:
-    void create_security_batch(queue <std::pair<operation, void *>> &op_queue,
+    void create_security_batch(std::shared_ptr<queue <std::pair<operation, void *>>> op_queue,
                                std::vector<operation> &storage_batch,
                                std::vector<void *> &is_trues);
     void create_replicas();
@@ -78,7 +78,7 @@ private:
     void service_thread(int id);
 
     storage_interface * storage_interface_;
-    std::vector<queue<std::pair<operation, void *>>> operation_queues_;
+    std::vector<std::shared_ptr<queue<std::pair<operation, void *>>>> operation_queues_;
     update_cache update_cache_;
     update_cache  missing_new_replicas_;
     std::unordered_map<std::string, int> key_to_frequency_;

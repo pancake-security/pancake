@@ -17,7 +17,7 @@ void run_basic_test(){
 
 
     // Initialize distribution
-    distribution dist = distribution(std::move(items), std::move(frequencies));
+    distribution dist(std::move(items), std::move(frequencies));
 
 
     for (int i = 0; i < 10000000; i++){

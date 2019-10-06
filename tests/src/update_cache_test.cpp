@@ -11,7 +11,7 @@ void run_basic_test(){
     std::string val = "10";
     std::vector<std::pair<std::string, int>> pairs;
     pairs.push_back(std::make_pair("1", 8));
-    update_cache cache = update_cache(&pairs);
+    update_cache cache = update_cache(pairs);
 
     std::cout << "Check basic insertion and update logic" << std::endl;
     assert(cache.check_for_update(key, 1) == "");
@@ -40,7 +40,7 @@ void run_basic_test(){
         big_pairs.push_back(std::make_pair(std::to_string(i), 64));
     }
 
-    update_cache big_cache = update_cache(&big_pairs);
+    update_cache big_cache = update_cache(big_pairs);
 
     int current_size = 1000000*8;
     for (int i = 1000000; i < 2000000; i++){
