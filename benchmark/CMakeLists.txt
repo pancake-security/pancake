@@ -9,7 +9,6 @@ include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${BENC
 
 add_executable(pancake_benchmark
         src/pancake_benchmark.cpp
-        src/pancake_benchmark.h
 
         ../libclient/src/client.h
         ../libclient/src/proxy_client.cpp

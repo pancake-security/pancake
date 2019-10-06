@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <algorithm>
+#include <thread>
 
 #include "proxy.h"
 #include "operation.h"
@@ -28,7 +29,7 @@ class pancake_proxy : public proxy {
 public:
 
     void init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args) override;
-    void run() override;
+    void close() override;
     std::string get(const std::string &key) override;
     void put(const std::string &key, const std::string &value) override;
     std::vector<std::string> get_batch(const std::vector<std::string> &keys) override;
@@ -72,10 +73,12 @@ private:
                          const std::vector<std::pair<std::string, int>> &needs_labels);
     void update_distribution(const distribution &new_distribution);
     bool distribution_changed();
+    distribution load_new_distribution();
     bool is_true_distribution();
     void execute_batch(const std::vector<operation> &operations, std::vector<std::string> &_returns,
                        std::vector<void *> &is_trues, storage_interface &storage_interface);
     void service_thread(int id);
+    void distribution_thread();
 
     storage_interface * storage_interface_;
     std::vector<std::shared_ptr<queue<std::pair<operation, void *>>>> operation_queues_;
@@ -95,6 +98,7 @@ private:
     distribution * fake_distribution_;
     distribution * real_distribution_;
     encryption_engine encryption_engine_;
+    std::vector<std::thread> threads_;
 };
 
 #endif //PANCAKE_PROXY_H

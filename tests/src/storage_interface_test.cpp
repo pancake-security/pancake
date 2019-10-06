@@ -30,10 +30,10 @@ void run_basic_test(storage_interface * client){
         keys.push_back(std::to_string(i));
         values.push_back(std::to_string(i+1));
     }
-    client->put_batch(&keys, &values);
+    client->put_batch(keys, values);
 
     std::cout << "Testing basic multiget" << std::endl;
-    auto return_vector = client->get_batch(&keys);
+    auto return_vector = client->get_batch(keys);
     int i = 0;
     for (auto value: return_vector){
         assert(value == values[i]);

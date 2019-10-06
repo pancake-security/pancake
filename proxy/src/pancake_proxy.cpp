@@ -21,24 +21,36 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     for (int i = 1; i < server_count_; i++) {
         storage_interface_->add_server(server_host_name_, server_port_+i);
     }
-    int num_cores = 32;
+    int num_cores = sysconf(_SC_NPROCESSORS_ONLN);;
     for (int i = 0; i < num_cores; i++) {
         operation_queues_.emplace_back();
     }
 
     create_replicas();
-    run();
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < num_cores; i++){
+        threads_.push_back(std::thread(&pancake_proxy::service_thread, this, i));
+    }
+    threads_.push_back(std::thread(&pancake_proxy::distribution_thread, this));
 }
 
 void pancake_proxy::insert_replicas(const std::string &key, int num_replicas){
     std::string value_cipher = encryption_engine_.encrypt(rand_str(object_size_));
+    std::vector<std::string> labels;
     for (int i = 0; i < num_replicas; i++){
         std::string replica = key+std::to_string(i);
         std::string replica_cipher = std::to_string(label_count_);
         replica_to_label_[replica] = label_count_;
-        //TODO add initial writes
-        //storage_interfaces_[label_count_ % s_ifs.size()]->write(encryption_engine_.hmac(std::to_string(label_count_)), value_cipher);
+        labels.push_back(std::to_string(label_count_));
+        if (labels.size() >= 50){
+            storage_interface_->put_batch(labels, std::vector<std::string>(labels.size(), value_cipher));
+            labels.clear();
+        }
         label_count_++;
+    }
+    if (!labels.empty()){
+        storage_interface_->put_batch(labels, std::vector<std::string>(labels.size(), value_cipher));
     }
 }
 
@@ -223,7 +235,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
         labels.push_back(std::to_string(replica_to_label_[operations[i].key+std::to_string(replica_ids[i])]));
         storage_keys.push_back(labels[i]);
     }
-    auto responses = storage_interface.get_batch(&storage_keys);
+    auto responses = storage_interface.get_batch(storage_keys);
     std::vector<std::string> storage_values;
     auto is_trues_iterator = is_trues.end();
     is_trues_iterator--;
@@ -245,7 +257,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
 
         storage_values.push_back(encryption_engine_.encrypt(plaintext));
     }
-    storage_interface.put_batch(&storage_keys, &storage_values);
+    storage_interface.put_batch(storage_keys, storage_values);
 }
 
 std::string pancake_proxy::get(const std::string &key) {
@@ -382,10 +394,20 @@ bool pancake_proxy::distribution_changed(){
     return false;
 }
 
-void pancake_proxy::run() {
+distribution pancake_proxy::load_new_distribution(){
+    distribution dist;
+    return dist;
+}
+
+void pancake_proxy::distribution_thread() {
+    // TODO: Pause other threads?
     if (distribution_changed()){
-        auto dist = distribution();
-        update_distribution(dist);
+        update_distribution(load_new_distribution());
         sleep(1);
     }
+}
+
+void pancake_proxy::close() {
+    for (int i = 0; i < threads_.size(); i++)
+        threads_[i].join();
 };

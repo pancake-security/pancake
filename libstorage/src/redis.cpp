@@ -4,7 +4,7 @@
 
 #include "redis.h"
 
-    redis::redis(const std::string host_name, int port){
+    redis::redis(const std::string &host_name, int port){
         this->clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
         this->clients.back()->connect(host_name, port,
                 [](const std::string &host, std::size_t port, cpp_redis::client::connect_state status) {
@@ -15,7 +15,7 @@
                 });
     }
 
-    void redis::add_server(const std::string host_name, int port){
+    void redis::add_server(const std::string &host_name, int port){
         this->clients.push_back(std::move(std::make_shared<cpp_redis::client>()));
         this->clients.back()->connect(host_name, port,
                                   [](const std::string &host, std::size_t port, cpp_redis::client::connect_state status) {
@@ -26,7 +26,7 @@
                                   });
     }
 
-    std::string redis::get(std::string &key){
+    std::string redis::get(const std::string &key){
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         auto fut = clients[idx]->get(key);
         clients[idx]->commit();
@@ -37,7 +37,7 @@
         return reply.as_string();
     }
 
-    void redis::put(std::string &key, std::string &value){
+    void redis::put(const std::string &key, const std::string &value){
         auto idx = (std::hash<std::string>{}(std::string(key)) % clients.size());
         auto fut = clients[idx]->set(key, value);
         clients[idx]->commit();
@@ -47,12 +47,12 @@
         }
     }
 
-    std::vector<std::string> redis::get_batch(std::vector<std::string> * keys){
+    std::vector<std::string> redis::get_batch(const std::vector<std::string> &keys){
         std::queue<std::future<cpp_redis::reply>> futures;
         std::unordered_map<int, std::vector<std::string>> key_vectors;
 
         // Gather all relevant storage interface's by id and create vector for key batch
-        for (auto key: *keys) {
+        for (const auto &key: keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_vectors[id].emplace_back(key);
         }
@@ -85,15 +85,15 @@
         return return_vector;
     }
 
-    void redis::put_batch(std::vector<std::string> * keys, std::vector<std::string> * values){
+    void redis::put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values){
         std::queue<std::future<cpp_redis::reply>> futures;
         std::unordered_map<int, std::vector<std::pair<std::string, std::string>>> key_value_vector_pairs;
 
         // Gather all relevant storage interface's by id and create vector for key batch
         int i = 0;
-        for (auto key: *keys) {
+        for (const auto &key: keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
-            key_value_vector_pairs[id].push_back(std::make_pair(key, (*values)[i]));
+            key_value_vector_pairs[id].push_back(std::make_pair(key, values[i]));
             i++;
         }
 

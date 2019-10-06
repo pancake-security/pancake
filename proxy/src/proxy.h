@@ -12,7 +12,7 @@ class proxy {
 public:
 
     virtual void init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args) = 0;
-    virtual void run() = 0;
+    virtual void close() = 0;
     virtual std::string get(const std::string &key) = 0;
     virtual void put(const std::string &key, const std::string &value) = 0;
     virtual std::vector<std::string> get_batch(const std::vector<std::string> &keys) = 0;

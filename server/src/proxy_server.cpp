@@ -5,7 +5,7 @@
 #include "proxy.h"
 #include "thrift_server.h"
 
-void proxy_server::usage() {
+void usage() {
     std::cout << "Pancake proxy: frequency flattening kvs\n";
     // Network Parameters
     std::cout << "\t -h: Storage server host name\n";
@@ -25,51 +25,51 @@ void proxy_server::usage() {
     std::cout << "\t -d: Core to run on\n";
 };
 
-int proxy_server::main(int argc, char **argv) {
+int main(int argc, char **argv) {
     int port = 9090;
-    auto proxy = std::make_shared(new pancake_proxy());
+    std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
     int o;
-    std::string proxy_type = "pancake"
-    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:")) != -1) {
+    std::string proxy_type_ = "pancake";
+    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:z:")) != -1) {
         switch (o) {
             case 'h':
-                proxy->server_host_name_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
                 break;
             case 'p':
-                proxy->server_port_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_port_ = std::atoi(optarg);
                 break;
             case 's':
-                proxy->server_type_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_type_ = std::string(optarg);
                 break;
             case 'n':
-                proxy->server_count_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).server_count_ = std::atoi(optarg);
                 break;
             case 'w':
-                proxy->workload_file_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).workload_file_ = std::string(optarg);
                 break;
             case 'l':
-                proxy->key_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).key_size_ = std::atoi(optarg);
                 break;
             case 'v':
-                proxy->object_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).object_size_ = std::atoi(optarg);
                 break;
             case 'b':
-                proxy->security_batch_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).security_batch_size_ = std::atoi(optarg);
                 break;
             case 'c':
-                proxy->storage_batch_size_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).storage_batch_size_ = std::atoi(optarg);
                 break;
             case 't':
-                proxy->pthreads_ = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).p_threads_ = std::atoi(optarg);
                 break;
             case 'o':
-                proxy->output_location_ = std::string(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).output_location_ = std::string(optarg);
                 break;
             case 'd':
-                proxy->core_ = std::atoi(optarg) - 1;
+                dynamic_cast<pancake_proxy&>(*proxy_).core_ = std::atoi(optarg) - 1;
                 break;
             case 'z':
-                proxy_type = std::string(optarg);
+                proxy_type_ = std::string(optarg);
             default:
                 usage();
                 exit(-1);
@@ -77,20 +77,26 @@ int proxy_server::main(int argc, char **argv) {
     }
 
     std::vector<std::string> keys;
+    std::string dummy(dynamic_cast<pancake_proxy&>(*proxy_).object_size_, '0');
+    std::vector<std::string> values = std::vector<std::string>(1000, dummy);
+    for (int i = 0; i < 1000; i++){
+        keys.push_back(std::to_string(i));
+    }
     void *arguments[3];
-    arguments[0] = malloc(sizeof(distribution * ));
+    arguments[0] = malloc(sizeof(distribution *));
     arguments[1] = malloc(sizeof(double *));
     arguments[2] = malloc(sizeof(double *));
 
+    distribution distribution_(keys, std::vector<double>(1000, 1.0/keys.size()));
     arguments[0] = &distribution_;
-    double alpha = 1.0 / distribution_.get_items_and_frequencies().first->size();
-    double delta = 1.0 / (2 * distribution_.get_items_and_frequencies().first->size()) * 1 / alpha;
+    double alpha = 1.0 / keys.size();
+    double delta = 1.0 / (2 * keys.size()) * 1 / alpha;
     arguments[1] = &alpha;
     arguments[2] = &delta;
-    proxy->init(&keys, &keys, arguments);
-    proxy_ = proxy;
+    dynamic_cast<pancake_proxy&>(*proxy_).init(keys, values, arguments);
 
-    auto server = create(proxy, proxy_type);
-    server->serve()
+    auto server = thrift_server::create(proxy_, proxy_type_, port, 1);
+    server->serve();
+    dynamic_cast<pancake_proxy&>(*proxy_).close();
     return 0;
 }

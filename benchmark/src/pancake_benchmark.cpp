@@ -2,9 +2,19 @@
 // Created by Lloyd Brown on 10/3/19.
 //
 
-#include "pancake_benchmark.h"
+#include <unordered_map>
+#include <fstream>
+#include <iostream>
 
-distribution pancake_benchmark::load_frequencies_from_trace(const std::string &trace_location) {
+#include "timer.h"
+#include "distribution.h"
+#include "pancake_proxy.h"
+#include "thrift_server.h"
+#include "proxy_client.h"
+
+typedef std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_vector;
+
+distribution load_frequencies_from_trace(const std::string &trace_location, trace_vector &trace_, int client_batch_size_) {
     std::vector<std::string> get_keys;
     std::vector<std::string> put_keys;
     std::vector<std::string> put_values;
@@ -73,7 +83,8 @@ distribution pancake_benchmark::load_frequencies_from_trace(const std::string &t
     return dist;
 };
 
-void pancake_benchmark::run_benchmark(int run_time, bool stats, std::vector<int> &latencies) {
+void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int client_batch_size_,
+                   int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
     std::string dummy(object_size_, '0');
     int numerrors = 0;
     int ops = 0;
@@ -114,15 +125,17 @@ void pancake_benchmark::run_benchmark(int run_time, bool stats, std::vector<int>
         xput_ += ((static_cast<double>(ops) / elapsed));
 }
 
-void pancake_benchmark::warmup(std::vector<int> &latencies) {
-    run_benchmark(15, false, latencies);
+void warmup(std::vector<int> &latencies, int client_batch_size_,
+            int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
+    run_benchmark(15, false, latencies, client_batch_size_, object_size_, trace_, xput_, client_);
 }
 
-void pancake_benchmark::cooldown(std::vector<int> &latencies) {
-    run_benchmark(15, false, latencies);
+void cooldown(std::vector<int> &latencies, int client_batch_size_,
+              int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
+    run_benchmark(15, false, latencies, client_batch_size_, object_size_, trace_, xput_, client_);
 }
 
-void pancake_benchmark::usage() {
+void usage() {
     std::cout << "Pancake proxy: frequency flattening kvs\n";
     // Network Parameters
     std::cout << "\t -h: Storage server host name\n";
@@ -142,14 +155,20 @@ void pancake_benchmark::usage() {
     std::cout << "\t -d: Core to run on\n";
 };
 
-int pancake_benchmark::main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
+    std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
+    int client_batch_size_ = 50;
+    proxy_client client_;
+    double xput_ = 0.0;
+    int object_size_ = 1000;
+
     std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
 
     //std::shared_ptr<proxy> proxy_ = std::make_shared<proxy>(dynamic_cast<pancake_proxy&>(*proxy_));
     int port = 9090;
     int o;
-    std::string proxy_type = "pancake";
-    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:")) != -1) {
+    std::string proxy_type_ = "pancake";
+    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:z:q:")) != -1) {
         switch (o) {
             case 'h':
                 dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
@@ -188,7 +207,9 @@ int pancake_benchmark::main(int argc, char **argv) {
                 dynamic_cast<pancake_proxy&>(*proxy_).core_ = std::atoi(optarg) - 1;
                 break;
             case 'z':
-                proxy_type = std::string(optarg);
+                proxy_type_ = std::string(optarg);
+            case 'q':
+                client_batch_size_ = std::atoi(optarg);
             default:
                 usage();
                 exit(-1);
@@ -200,7 +221,7 @@ int pancake_benchmark::main(int argc, char **argv) {
     arguments[1] = malloc(sizeof(double *));
     arguments[2] = malloc(sizeof(double *));
 
-    auto dist = load_frequencies_from_trace(argv[1]);
+    auto dist = load_frequencies_from_trace(argv[1], trace_, client_batch_size_);
     arguments[0] = &dist;
     auto items = dist.get_items();
     double alpha = 1.0 / items.size();
@@ -209,13 +230,12 @@ int pancake_benchmark::main(int argc, char **argv) {
     arguments[2] = &delta;
     std::string dummy(object_size_, '0');
     dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
-    //proxy_ = dynamic_cast<pancake_proxy&>(*proxy_);
 
-    auto server = thrift_server::create(proxy_, proxy_type, port, 1);
+    auto server = thrift_server::create(proxy_, proxy_type_, port, 1);
     server->serve();
+    dynamic_cast<pancake_proxy&>(*proxy_).close();
     std::vector<int> latencies;
-    warmup(latencies);
-    run_benchmark(20, true, latencies);
-    cooldown(latencies);
-    return 0;
+    warmup(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
+    run_benchmark(20, true, latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
+    cooldown(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
 }

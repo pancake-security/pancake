@@ -13,7 +13,7 @@
 class path_oram : public proxy {
 public:
     void init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args) override;
-    void run() override;
+    void close() override;
     std::string get(const std::string &key, const std::string &value) override;
     void put(const std::string &key, const std::string &value) override;
     std::vector<std::string> get_batch(const std::vector<std::string> &keys) override;

@@ -7,7 +7,6 @@ include_directories(${STORAGE_INCLUDE} ${PROXY_INCLUDE} ${SERVICE_INCLUDE})
 # Proxy server
 add_executable(proxy_server
         src/proxy_server.cpp
-
         ../service/src/thrift_server.cpp
         ../service/src/thrift_server.h
         ../service/src/thrift_handler_factory.cpp
@@ -20,7 +19,6 @@ add_executable(proxy_server
         ../service/src/proxy_types.h
         ../service/src/proxy_constants.cpp
         ../service/src/proxy_constants.h
-
         ../proxy/src/pancake_proxy.cpp
         ../proxy/src/pancake_proxy.h
         ../proxy/src/proxy.h
@@ -34,7 +32,6 @@ add_executable(proxy_server
         ../proxy/src/encryption_engine.cpp
         ../proxy/src/util.h
         ../proxy/src/util.cpp
-
         ../libstorage/src/storage_interface.h
         ../libstorage/src/redis.h
         ../libstorage/src/redis.cpp
@@ -56,7 +53,8 @@ target_link_libraries(proxy_server
         ${CMAKE_DL_LIBS}
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
-        ${LIBCUCKOO_LIBRARIES}
+        #${LIBCUCKOO_LIBRARIES}
+        ${LIBEVENT_LIBRARY}
         ${STORAGE_INCLUDE_LIBRARIES}
         ${PROXY_INCLUDE_LIBRARIES}
         ${SERVICE_INCLUDE_LIBRARIES}
