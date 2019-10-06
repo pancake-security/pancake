@@ -26,7 +26,7 @@ void proxy_client::put(const std::string &key, const std::string &value) {
     client_->put(_return, key, value);
 }
 
-std::vector<std::string> proxy_client::get_batch(const std::vector<std::string> keys) {
+std::vector<std::string> proxy_client::get_batch(const std::vector<std::string> &keys) {
     std::vector<std::string> _return;
     client_->get_batch(_return, keys);
     return _return;
