@@ -45,11 +45,13 @@ int main(){
     client_.init(HOST, PROXY_PORT);
 
     for (std::size_t i = 1000; i < 2000; ++i) {
+        std::cout << "Passed tests" << std::endl;
         client_.put(std::to_string(i), std::to_string(i));
     }
     for (std::size_t i = 1000; i < 2000; ++i) {
         assert(client_.get(std::to_string(i)) == std::to_string(i));
     }
+
     for (std::size_t i = 5000; i < 6000; ++i) {
         try {
             client_.get(std::to_string(i));
@@ -59,11 +61,14 @@ int main(){
             assert(true);
         }
     }
+    for (std::size_t i = 1000; i < 2000; ++i) {
+
+    }
     std::cout << "Passed tests" << std::endl;
 
+    proxy_->close();
     proxy_server->stop();
     if (proxy_serve_thread.joinable()) {
         proxy_serve_thread.join();
     }
-    proxy_->close();
 }

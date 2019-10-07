@@ -99,4 +99,5 @@ int main(int argc, char **argv) {
     server->serve();
     dynamic_cast<pancake_proxy&>(*proxy_).close();
     return 0;
+    // TODO: Perform waiting
 }

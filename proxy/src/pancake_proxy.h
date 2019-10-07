@@ -54,7 +54,7 @@ public:
     int server_count_ = 1;
     std::string server_type_ = "redis";
     int p_threads_ = 1;
-    int storage_batch_size_ = 50;
+    int storage_batch_size_ = 40;
     int core_ = 0;
     bool is_static_ = true;
 

@@ -341,14 +341,16 @@ void pancake_proxy::service_thread(int id){
     }
     std::vector<bool> is_trues;
     std::vector<std::string> _returns;
-    while (!finished_) {
-        while (operation_queues_[id]->size() == 0)
-            sleep(1);
+    // TODO: Perform proper waiting
+    while (!finished_ || !operation_queues_.empty()) {
+        while (operation_queues_[id]->size() == 0 && !finished_)
+           sleep(1);
         std::vector <operation> storage_batch;
         std::vector<std::shared_ptr<std::promise<std::string>>> promises;
         while (storage_batch.size() < storage_batch_size_) {
             create_security_batch(operation_queues_[id], storage_batch, is_trues, promises);
         }
+        execute_batch(storage_batch, is_trues, promises, storage_interface);
     }
 };
 

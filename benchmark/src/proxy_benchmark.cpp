@@ -239,4 +239,5 @@ int main(int argc, char *argv[]) {
     run_benchmark(20, true, latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     cooldown(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     dynamic_cast<pancake_proxy&>(*proxy_).close();
+    // TODO: Perform waiting
 }
