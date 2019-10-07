@@ -4,7 +4,7 @@
 
 #include "update_cache.h"
 
-    update_cache::update_cache(){};
+    update_cache::update_cache() = default;
 
     update_cache::update_cache(const std::vector <std::pair<std::string, int>> &keys_replicas_pairs) {
         for (auto key_replica_pair = keys_replicas_pairs.begin(); key_replica_pair != keys_replicas_pairs.end(); key_replica_pair++) {
@@ -16,9 +16,9 @@
         std::string to_send = "";
         auto update_fn = [&](std::pair<std::string, std::vector<bool>> &cache_entry) {
             auto &bit_vec = cache_entry.second;
-            if (bit_vec[replica_id - 1])
+            if (bit_vec[replica_id])
             {
-                bit_vec[replica_id - 1] = false;
+                bit_vec[replica_id] = false;
                 to_send = cache_entry.first;
             }
             if (hamming_weight(bit_vec) == 0)

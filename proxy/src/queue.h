@@ -16,7 +16,7 @@ public:
     /*
     queue (const queue &q) : m_queue_(), m_mtx_(), m_cond_() {
         m_queue_ = q.m_queue_;
-        m_mtx_ = q.m_mtx_;
+        m_mtx_ = std::move(q.m_mtx_);
         m_cond_ = q.m_cond_;
     }
      */

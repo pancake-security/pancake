@@ -13,6 +13,7 @@ void proxy_client::init(const std::string &host_name, int port) {
     auto transport = std::shared_ptr<TTransport>(new TFramedTransport(socket));
     auto protocol = std::shared_ptr<TProtocol>(new TBinaryProtocol(transport));
     client_ = std::make_shared<pancake_thriftClient>(protocol);
+    transport->open();
 }
 
 std::string proxy_client::get(const std::string &key) {
@@ -32,7 +33,7 @@ std::vector<std::string> proxy_client::get_batch(const std::vector<std::string> 
     return _return;
 }
 
-void proxy_client::put_batch(const std::vector<std::string> keys, const std::vector<std::string> values) {
+void proxy_client::put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values) {
     std::string _return;
     client_->put_batch(_return, keys, values);
 }

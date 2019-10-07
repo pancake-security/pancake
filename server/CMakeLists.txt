@@ -39,7 +39,7 @@ add_executable(proxy_server
         ../libstorage/src/rocksdb.h
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
-        )
+        ../service/src/thrift_utils.h)
 add_dependencies(proxy_server cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
 target_link_libraries(proxy_server
         ${THRIFTNB_LIBRARY}

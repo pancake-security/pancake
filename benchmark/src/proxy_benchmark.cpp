@@ -159,6 +159,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     int client_batch_size_ = 50;
     proxy_client client_;
+    client_.init("127.0.0.1", 9090);
     double xput_ = 0.0;
     int object_size_ = 1000;
 
@@ -233,9 +234,9 @@ int main(int argc, char *argv[]) {
 
     auto server = thrift_server::create(proxy_, proxy_type_, port, 1);
     server->serve();
-    dynamic_cast<pancake_proxy&>(*proxy_).close();
     std::vector<int> latencies;
     warmup(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     run_benchmark(20, true, latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     cooldown(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
+    dynamic_cast<pancake_proxy&>(*proxy_).close();
 }

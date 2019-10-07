@@ -15,7 +15,7 @@ struct options {
 
 int usage();
 
-void run_basic_test(storage_interface * client){
+void run_basic_test(std::shared_ptr<storage_interface> client){
     std::string one = "1";
     std::string two = "2";
     std::cout << "Testing basic put" << std::endl;
@@ -54,13 +54,11 @@ int main(int argc, char* argv[]) {
     }
 
     if (opts.testing_redis){
-        auto redis_client = new redis("127.0.0.1", 5000);
-        run_basic_test(redis_client);
+        run_basic_test(std::make_shared<redis>("127.0.0.1", 5000));
     }
 
     if (opts.testing_rocksdb){
-        auto rocksdb_client = new rocksdb("127.0.0.1", 5001);
-        run_basic_test(rocksdb_client);
+        run_basic_test(std::make_shared<rocksdb>("127.0.0.1", 5001));
     }
 
     if (opts.testing_memcached){

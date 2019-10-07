@@ -7,8 +7,8 @@ set(BENCHMARK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${BENCHMARK_INCLUDE} ${SERVICE_INCLUDE} )
 
 
-add_executable(pancake_benchmark
-        src/pancake_benchmark.cpp
+add_executable(proxy_benchmark
+        src/proxy_benchmark.cpp
 
         ../libclient/src/client.h
         ../libclient/src/proxy_client.cpp
@@ -48,9 +48,9 @@ add_executable(pancake_benchmark
         ../libstorage/src/rocksdb.h
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
-        )
-add_dependencies(pancake_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
-target_link_libraries(pancake_benchmark
+        ../service/src/thrift_utils.h)
+add_dependencies(proxy_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
+target_link_libraries(proxy_benchmark
         ${THRIFTNB_LIBRARY}
         ${THRIFT_LIBRARY}
         ${LIBEVENT_LIBRARY}

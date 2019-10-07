@@ -11,6 +11,7 @@
 #include <fstream>
 #include <algorithm>
 #include <thread>
+#include <future>
 
 #include "proxy.h"
 #include "operation.h"
@@ -40,17 +41,15 @@ public:
     std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys) override;
     void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
 
-    std::string get(int queue_id, const std::string &key, std::string& _return);
-    void put(int queue_id, const std::string &key, const std::string &value, std::string& _return);
-    std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys, std::vector<std::string> & _return);
-    void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values, std::string& _return);
+    std::future<std::string> get_future(int queue_id, const std::string &key);
+    std::future<std::string> put_future(int queue_id, const std::string &key, const std::string &value);
 
     std::string output_location_ = "log";
     std::string server_host_name_ = "127.0.0.1";
     int server_port_ = 50054;
     std::string workload_file_ = "keysets/Uniform/xtrace1";
     int security_batch_size_ = 4;
-    int object_size_ = 1000;
+    int object_size_ = 1024;
     int key_size_ = 16;
     int server_count_ = 1;
     std::string server_type_ = "redis";
@@ -60,9 +59,9 @@ public:
     bool is_static_ = true;
 
 private:
-    void create_security_batch(std::shared_ptr<queue <std::pair<operation, void *>>> op_queue,
-                               std::vector<operation> &storage_batch,
-                               std::vector<void *> &is_trues);
+    void create_security_batch(std::shared_ptr<queue <std::pair<operation, std::shared_ptr<std::promise<std::string>>>>> &op_queue,
+                               std::vector<operation> &storage_batch, std::vector<bool> &is_trues,
+                               std::vector<std::shared_ptr<std::promise<std::string>>> &promises);
     void create_replicas();
     void insert_replicas(const std::string &key, int num_replicas);
     void recompute_fake_distribution(const distribution &new_distribution);
@@ -75,13 +74,13 @@ private:
     bool distribution_changed();
     distribution load_new_distribution();
     bool is_true_distribution();
-    void execute_batch(const std::vector<operation> &operations, std::vector<std::string> &_returns,
-                       std::vector<void *> &is_trues, storage_interface &storage_interface);
+    void execute_batch(const std::vector<operation> &operations, std::vector<bool> &is_trues,
+                       std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface);
     void service_thread(int id);
     void distribution_thread();
 
-    storage_interface * storage_interface_;
-    std::vector<std::shared_ptr<queue<std::pair<operation, void *>>>> operation_queues_;
+    std::shared_ptr<storage_interface> storage_interface_;
+    std::vector<std::shared_ptr<queue<std::pair<operation, std::shared_ptr<std::promise<std::string>>>>>> operation_queues_;
     update_cache update_cache_;
     update_cache  missing_new_replicas_;
     std::unordered_map<std::string, int> key_to_frequency_;
@@ -93,12 +92,13 @@ private:
     double alpha_;
     double delta_;
     std::string dummy_key_ = rand_str(16);
-    std::unordered_map<std::string, int> key_to_number_of_replicas_;
+    std::unordered_map<std::string, double> key_to_number_of_replicas_;
     std::unordered_map<std::string, int> replica_to_label_;
-    distribution * fake_distribution_;
-    distribution * real_distribution_;
+    distribution fake_distribution_;
+    distribution real_distribution_;
     encryption_engine encryption_engine_;
     std::vector<std::thread> threads_;
+    bool finished_ = false;
 };
 
 #endif //PANCAKE_PROXY_H
