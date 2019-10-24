@@ -49,8 +49,3 @@ add_subdirectory(benchmark)
 
 # Proxy Server
 add_subdirectory(server)
-
-#if (BUILD_BENCHMARK)
-#  # RPC Framework
-#  add_subdirectory(benchmark)
-#endif()

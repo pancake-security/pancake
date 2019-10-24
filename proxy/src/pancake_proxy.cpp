@@ -8,7 +8,7 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     real_distribution_ = *(distribution *)args[0];
     alpha_ = *((double *)args[1]);
     delta_ = *((double *)args[2]);
-    encryption_engine_ = encryption_engine();
+    //encryption_engine_ = encryption_engine();
     if (server_type_ == "redis") {
         storage_interface_ = std::make_shared<redis>(server_host_name_, server_port_);
         cpp_redis::network::set_default_nb_workers(std::min(10, p_threads_));
@@ -27,7 +27,7 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     for (int i = 0; i < num_cores; i++) {
         auto q = std::make_shared<queue<std::pair<operation, std::shared_ptr<std::promise<std::string>>>>>();
         operation_queues_.push_back(q);
-        threads_.push_back(std::thread(&pancake_proxy::service_thread, this, i));
+        threads_.push_back(std::thread(&pancake_proxy::consumer_thread, this, i));
     }
     if (!is_static_)
         threads_.push_back(std::thread(&pancake_proxy::distribution_thread, this));
@@ -239,7 +239,6 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
     std::vector<std::string> storage_values;
     for(int i = 0, j = 0; i < operations.size(); i++){
         auto cipher = responses[i];
-        // TODO: Threadsafe encryption
         auto plaintext = cipher;//encryption_engine_.decrypt(cipher);
         auto plaintext_update = update_cache_.check_for_update(operations[i].key, replica_ids[i]);
         plaintext = plaintext_update == "" ? plaintext : plaintext_update;
@@ -248,9 +247,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
             promises[j]->set_value(plaintext);
             j++;
         }
-        // TODO: Threadsafe encryption
-        //storage_values.push_back(encryption_engine_.encrypt(plaintext));
-        storage_values.push_back(plaintext);
+        storage_values.push_back(plaintext);//storage_values.push_back(encryption_engine_.encrypt(plaintext));
     }
     storage_interface->put_batch(storage_keys, storage_values);
 }
@@ -326,7 +323,7 @@ std::future<std::string> pancake_proxy::put_future(int queue_id, const std::stri
     return waiter;
 };
 
-void pancake_proxy::service_thread(int id){
+void pancake_proxy::consumer_thread(int id){
     std::shared_ptr<storage_interface> storage_interface;
     if (server_type_ == "redis") {
         storage_interface = std::make_shared<redis>(server_host_name_, server_port_);
@@ -339,16 +336,22 @@ void pancake_proxy::service_thread(int id){
     for (int i = 1; i < server_count_; i++) {
         storage_interface->add_server(server_host_name_, server_port_+i);
     }
-    std::vector<bool> is_trues;
-    std::vector<std::string> _returns;
-    // TODO: Perform proper waiting
-    while (!finished_ || !operation_queues_.empty()) {
-        while (operation_queues_[id]->size() == 0 && !finished_)
-           sleep(1);
+    int operations_serviced = 0;
+    int previous_total_operations = 0;
+    int total_operations = 0;
+    while (!finished_) {
         std::vector <operation> storage_batch;
         std::vector<std::shared_ptr<std::promise<std::string>>> promises;
-        while (storage_batch.size() < storage_batch_size_) {
-            create_security_batch(operation_queues_[id], storage_batch, is_trues, promises);
+        std::vector<bool> is_trues;
+        while (storage_batch.size() < storage_batch_size_ && !finished_) {
+            total_operations = operation_queues_[id]->size() + operations_serviced;
+            int i = 0;
+            for (; i < total_operations - previous_total_operations; i++)
+                create_security_batch(operation_queues_[id], storage_batch, is_trues, promises);
+            if (i != 0) {
+                operations_serviced += i;
+                previous_total_operations = total_operations;
+            }
         }
         execute_batch(storage_batch, is_trues, promises, storage_interface);
     }
@@ -364,7 +367,6 @@ distribution pancake_proxy::load_new_distribution(){
 }
 
 void pancake_proxy::distribution_thread() {
-    // TODO: Pause other threads?
     while (!finished_) {
         if (distribution_changed()) {
             update_distribution(load_new_distribution());
@@ -373,8 +375,19 @@ void pancake_proxy::distribution_thread() {
     }
 }
 
+void pancake_proxy::flush() {
+    for (auto operation_queue : operation_queues_){
+        for (int i = 0; i < operation_queue->size(); i++) {
+            auto operation_promise_pair = operation_queue->pop();
+            auto read_result = storage_interface_->get(operation_promise_pair.first.key);
+            storage_interface_->put(operation_promise_pair.first.key, read_result);
+            operation_promise_pair.second->set_value(read_result);
+        }
+    }
+}
+
 void pancake_proxy::close() {
     finished_ = true;
     for (int i = 0; i < threads_.size(); i++)
         threads_[i].join();
-};
+}

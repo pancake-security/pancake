@@ -11,6 +11,10 @@
 #include "pancake_proxy.h"
 #include "thrift_server.h"
 #include "proxy_client.h"
+#include "thrift_utils.h"
+
+#define HOST "127.0.0.1"
+#define PROXY_PORT 9090
 
 typedef std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_vector;
 
@@ -102,24 +106,22 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
             rdtscll(start);
         }
         auto keys_values_pair = trace_[i];
-        auto keys = keys_values_pair.first;
-        auto values = keys_values_pair.second;
-        if (values.size() == 0){
-            client_.get_batch(keys);
+        if (keys_values_pair.second.empty()){
+            client_.get_batch(keys_values_pair.first);
         }
         else {
-            client_.put_batch(keys, values);
+            client_.put_batch(keys_values_pair.first, keys_values_pair.second);
         }
         if (stats) {
             rdtscll(end);
             double cycles = static_cast<double>(end - start);
             latencies.push_back((cycles / ticks_per_ns) / client_batch_size_);
             rdtscll(start);
-            ops += keys.size();
+            ops += keys_values_pair.first.size();
         }
         e = std::chrono::high_resolution_clock::now();
         elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
-        i = (i+1)%keys.size();
+        i = (i+1)%keys_values_pair.first.size();
     }
     if (stats)
         xput_ += ((static_cast<double>(ops) / elapsed));
@@ -156,17 +158,11 @@ void usage() {
 };
 
 int main(int argc, char *argv[]) {
-    std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     int client_batch_size_ = 50;
-    proxy_client client_;
-    client_.init("127.0.0.1", 9090);
     double xput_ = 0.0;
     int object_size_ = 1000;
 
     std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
-
-    //std::shared_ptr<proxy> proxy_ = std::make_shared<proxy>(dynamic_cast<pancake_proxy&>(*proxy_));
-    int port = 9090;
     int o;
     std::string proxy_type_ = "pancake";
     while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:z:q:")) != -1) {
@@ -222,7 +218,9 @@ int main(int argc, char *argv[]) {
     arguments[1] = malloc(sizeof(double *));
     arguments[2] = malloc(sizeof(double *));
 
+    std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     auto dist = load_frequencies_from_trace(argv[1], trace_, client_batch_size_);
+
     arguments[0] = &dist;
     auto items = dist.get_items();
     double alpha = 1.0 / items.size();
@@ -230,14 +228,20 @@ int main(int argc, char *argv[]) {
     arguments[1] = &alpha;
     arguments[2] = &delta;
     std::string dummy(object_size_, '0');
-    dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
 
-    auto server = thrift_server::create(proxy_, proxy_type_, port, 1);
-    server->serve();
+    dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
+    std::cout << "Initialized pancake" << std::endl;
+    auto proxy_server = thrift_server::create(proxy_, "pancake", PROXY_PORT, 1);
+    std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
+    wait_for_server_start(HOST, PROXY_PORT);
+    std::cout << "Proxy server is reachable" << std::endl;
+    proxy_client client_;
+    client_.init(HOST, PROXY_PORT);
+
     std::vector<int> latencies;
     warmup(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     run_benchmark(20, true, latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
     cooldown(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
-    dynamic_cast<pancake_proxy&>(*proxy_).close();
-    // TODO: Perform waiting
+    proxy_->close();
+    proxy_server->stop();
 }

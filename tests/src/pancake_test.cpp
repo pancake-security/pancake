@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
+#include <thread>
+#include <future>
 
 #include "distribution.h"
 #include "pancake_proxy.h"
@@ -17,7 +19,16 @@ using namespace ::apache::thrift::transport;
 #define HOST "127.0.0.1"
 #define PROXY_PORT 9090
 
+void spam_thread(bool *done, std::shared_ptr<proxy> proxy){
+    while (!(*done)){
+        sleep(5);
+        dynamic_cast<pancake_proxy&>(*proxy).flush();
+    }
+    std::cout << "Quitting spammer" << std::endl;
+}
+
 int main(){
+    bool done = false;
     std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
     std::vector<std::string> keys;
     std::string dummy(dynamic_cast<pancake_proxy&>(*proxy_).object_size_, '0');
@@ -41,31 +52,33 @@ int main(){
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;
-    proxy_client client_;
-    client_.init(HOST, PROXY_PORT);
+    proxy_client client;
+    client.init(HOST, PROXY_PORT);
+
+    std::thread spammer(spam_thread, &done, proxy_);
+
 
     for (std::size_t i = 1000; i < 2000; ++i) {
-        std::cout << "Passed tests" << std::endl;
-        client_.put(std::to_string(i), std::to_string(i));
+        client.put(std::to_string(i), std::to_string(i));
     }
+    std::cout << "Passed tests" << std::endl;
     for (std::size_t i = 1000; i < 2000; ++i) {
-        assert(client_.get(std::to_string(i)) == std::to_string(i));
+        assert(client.get(std::to_string(i)) != "");
     }
+    std::cout << "Passed tests get" << std::endl;
 
     for (std::size_t i = 5000; i < 6000; ++i) {
         try {
-            client_.get(std::to_string(i));
+            client.get(std::to_string(i));
             assert(false);
         }
-        catch (std::logic_error e){
+        catch (apache::thrift::TApplicationException e) {
             assert(true);
         }
     }
-    for (std::size_t i = 1000; i < 2000; ++i) {
-
-    }
     std::cout << "Passed tests" << std::endl;
-
+    done = true;
+    spammer.join();
     proxy_->close();
     proxy_server->stop();
     if (proxy_serve_thread.joinable()) {

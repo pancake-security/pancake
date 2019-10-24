@@ -44,6 +44,8 @@ public:
     std::future<std::string> get_future(int queue_id, const std::string &key);
     std::future<std::string> put_future(int queue_id, const std::string &key, const std::string &value);
 
+    void flush();
+
     std::string output_location_ = "log";
     std::string server_host_name_ = "127.0.0.1";
     int server_port_ = 50054;
@@ -54,7 +56,7 @@ public:
     int server_count_ = 1;
     std::string server_type_ = "redis";
     int p_threads_ = 1;
-    int storage_batch_size_ = 40;
+    int storage_batch_size_ = 1;
     int core_ = 0;
     bool is_static_ = true;
 
@@ -76,7 +78,7 @@ private:
     bool is_true_distribution();
     void execute_batch(const std::vector<operation> &operations, std::vector<bool> &is_trues,
                        std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface);
-    void service_thread(int id);
+    void consumer_thread(int id);
     void distribution_thread();
 
     std::shared_ptr<storage_interface> storage_interface_;
