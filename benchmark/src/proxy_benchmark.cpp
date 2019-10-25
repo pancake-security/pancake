@@ -1,10 +1,18 @@
 //
-// Created by Lloyd Brown on 10/3/19.
+// Created by Lloyd Brown on 10/24/19.
 //
+
+// for windows mkdir
+#ifdef _WIN32
+#include <direct.h>
+#endif
 
 #include <unordered_map>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <sys/stat.h>
+#include <thread>
 
 #include "timer.h"
 #include "distribution.h"
@@ -13,12 +21,9 @@
 #include "proxy_client.h"
 #include "thrift_utils.h"
 
-#define HOST "127.0.0.1"
-#define PROXY_PORT 9090
-
 typedef std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_vector;
 
-distribution load_frequencies_from_trace(const std::string &trace_location, trace_vector &trace_, int client_batch_size_) {
+void load_trace(const std::string &trace_location, trace_vector &trace, int client_batch_size) {
     std::vector<std::string> get_keys;
     std::vector<std::string> put_keys;
     std::vector<std::string> put_values;
@@ -42,16 +47,16 @@ distribution load_frequencies_from_trace(const std::string &trace_location, trac
         }
         if(val == ""){
             get_keys.push_back(key);
-            if (get_keys.size() == client_batch_size_){
-                trace_.push_back(std::make_pair(get_keys, std::vector<std::string>()));
+            if (get_keys.size() == client_batch_size){
+                trace.push_back(std::make_pair(get_keys, std::vector<std::string>()));
                 get_keys.clear();
             }
         }
         else {
             put_keys.push_back(key);
             put_values.push_back(val);
-            if (put_keys.size() == client_batch_size_){
-                trace_.push_back(std::make_pair(put_keys, put_values));
+            if (put_keys.size() == client_batch_size){
+                trace.push_back(std::make_pair(put_keys, put_values));
                 put_keys.clear();
                 put_values.clear();
             }
@@ -68,54 +73,43 @@ distribution load_frequencies_from_trace(const std::string &trace_location, trac
         }
     }
     if (get_keys.size() > 0){
-        trace_.push_back(std::make_pair(get_keys, std::vector<std::string>()));
+        trace.push_back(std::make_pair(get_keys, std::vector<std::string>()));
         get_keys.clear();
     }
     if (put_keys.size() > 0){
-        trace_.push_back(std::make_pair(put_keys, put_values));
+        trace.push_back(std::make_pair(put_keys, put_values));
         put_keys.clear();
         put_values.clear();
     }
-    std::vector<std::string> keys;
-    std::vector<double> frequencies;
-    for (auto pair: key_to_frequency){
-        keys.push_back(pair.first);
-        frequencies.push_back(pair.second/(double)frequency_sum);
-    }
     in_workload_file.close();
-    distribution dist(keys, frequencies);
-    return dist;
 };
 
-void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int client_batch_size_,
-                   int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
-    std::string dummy(object_size_, '0');
-    int numerrors = 0;
+void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int client_batch_size,
+                   int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+    std::string dummy(object_size, '0');
     int ops = 0;
-    size_t chunknum = 0;
     uint64_t start, end;
-    std::pair<std::string, std::string> res;
     auto ticks_per_ns = static_cast<double>(rdtscuhz()) / 1000;
     auto s = std::chrono::high_resolution_clock::now();
     auto e = std::chrono::high_resolution_clock::now();
     int elapsed = 0;
     std::vector<std::string> results;
     int i = 0;
-    while (elapsed*1000000 < run_time) {
+    while (elapsed < run_time*1000000) {
         if (stats) {
             rdtscll(start);
         }
-        auto keys_values_pair = trace_[i];
+        auto keys_values_pair = trace[i];
         if (keys_values_pair.second.empty()){
-            client_.get_batch(keys_values_pair.first);
+            client.get_batch(keys_values_pair.first);
         }
         else {
-            client_.put_batch(keys_values_pair.first, keys_values_pair.second);
+            client.put_batch(keys_values_pair.first, keys_values_pair.second);
         }
         if (stats) {
             rdtscll(end);
             double cycles = static_cast<double>(end - start);
-            latencies.push_back((cycles / ticks_per_ns) / client_batch_size_);
+            latencies.push_back((cycles / ticks_per_ns) / client_batch_size);
             rdtscll(start);
             ops += keys_values_pair.first.size();
         }
@@ -124,124 +118,118 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
         i = (i+1)%keys_values_pair.first.size();
     }
     if (stats)
-        xput_ += ((static_cast<double>(ops) / elapsed));
+        xput += (int)(static_cast<double>(ops) * 1000000 / elapsed);
 }
 
-void warmup(std::vector<int> &latencies, int client_batch_size_,
-            int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
-    run_benchmark(15, false, latencies, client_batch_size_, object_size_, trace_, xput_, client_);
+void warmup(std::vector<int> &latencies, int client_batch_size,
+            int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+    run_benchmark(15, false, latencies, client_batch_size, object_size, trace, xput, client);
 }
 
-void cooldown(std::vector<int> &latencies, int client_batch_size_,
-              int object_size_, trace_vector &trace_, double xput_, proxy_client client_) {
-    run_benchmark(15, false, latencies, client_batch_size_, object_size_, trace_, xput_, client_);
+void cooldown(std::vector<int> &latencies, int client_batch_size,
+              int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+    run_benchmark(15, false, latencies, client_batch_size, object_size, trace, xput, client);
+}
+
+void client(int idx, int client_batch_size, int object_size, trace_vector &trace, std::string &output_directory, std::string &host, int proxy_port, std::atomic<int> &xput) {
+    proxy_client client;
+    client.init(host, proxy_port);
+    std::atomic<int> indiv_xput;
+    std::atomic_init(&indiv_xput, 0);
+    std::vector<int> latencies;
+    warmup(latencies, client_batch_size, object_size, trace, indiv_xput, client);
+    run_benchmark(20, true, latencies, client_batch_size, object_size, trace, indiv_xput, client);
+    cooldown(latencies, client_batch_size, object_size, trace, indiv_xput, client);
+
+    std::string location = output_directory + "/" + std::to_string(idx);
+    std::ofstream out(location);
+    std::string line("");
+    for (auto lat : latencies) {
+        line.append(std::to_string(lat) + "\n");
+        out << line;
+        line.clear();
+    }
+    line.append("Xput: " + std::to_string(indiv_xput) + "\n");
+    out << line;
+    xput += indiv_xput;
 }
 
 void usage() {
-    std::cout << "Pancake proxy: frequency flattening kvs\n";
-    // Network Parameters
-    std::cout << "\t -h: Storage server host name\n";
-    std::cout << "\t -p: Storage server port\n";
-    std::cout << "\t -s: Storage server type (redis, rocksdb, memcached)\n";
-    std::cout << "\t -n: Storage server count\n";
-    std::cout << "\t -z: Proxy server type\n";
-    // Workload parameters
-    std::cout << "\t -w: Clients' workload file\n";
-    std::cout << "\t -l: key size\n";
-    std::cout << "\t -v: Value size\n";
-    std::cout << "\t -b: Security batch size\n";
-    std::cout << "\t -c: Storage batch size\n";
-    std::cout << "\t -t: Number of worker threads for cpp_redis\n";
-    // Other parameters
-    std::cout << "\t -o: Output location for sizing thread\n";
-    std::cout << "\t -d: Core to run on\n";
+    std::cout << "Proxy client\n";
+    std::cout << "\t -h: Proxy host name\n";
+    std::cout << "\t -p: Proxy port\n";
+    std::cout << "\t -t: Trace Location\n";
+    std::cout << "\t -n: Number of threads to spawn\n";
+    std::cout << "\t -s: Object Size\n";
+    std::cout << "\t -o: Output Directory\n";
 };
 
-int main(int argc, char *argv[]) {
-    int client_batch_size_ = 50;
-    double xput_ = 0.0;
-    int object_size_ = 1000;
+int _mkdir(const char *path) {
+#ifdef _WIN32
+    return ::_mkdir(path);
+#else
+#if _POSIX_C_SOURCE
+    return ::mkdir(path);
+#else
+    return ::mkdir(path, 0755); // not sure if this works on mac
+#endif
+#endif
+}
 
-    std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
+int main(int argc, char *argv[]) {
+    std::string proxy_host = "127.0.0.1";
+    int proxy_port = 9090;
+    std::string trace_location = "";
+    int client_batch_size = 50;
+    int object_size = 1000;
+    int num_clients = 1;
+
+    std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto date_string = std::string(std::ctime(&end_time));
+    date_string = date_string.substr(0, date_string.rfind(":"));
+    date_string.erase(remove(date_string.begin(), date_string.end(), ' '), date_string.end());
+    std::string output_directory = "data/"+date_string;
+
     int o;
     std::string proxy_type_ = "pancake";
-    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:z:q:")) != -1) {
+    while ((o = getopt(argc, argv, "h:p:t:s:b:n:o:")) != -1) {
         switch (o) {
             case 'h':
-                dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
+                proxy_host = std::string(optarg);
                 break;
             case 'p':
-                dynamic_cast<pancake_proxy&>(*proxy_).server_port_ = std::atoi(optarg);
-                break;
-            case 's':
-                dynamic_cast<pancake_proxy&>(*proxy_).server_type_ = std::string(optarg);
-                break;
-            case 'n':
-                dynamic_cast<pancake_proxy&>(*proxy_).server_count_ = std::atoi(optarg);
-                break;
-            case 'w':
-                dynamic_cast<pancake_proxy&>(*proxy_).workload_file_ = std::string(optarg);
-                break;
-            case 'l':
-                dynamic_cast<pancake_proxy&>(*proxy_).key_size_ = std::atoi(optarg);
-                break;
-            case 'v':
-                dynamic_cast<pancake_proxy&>(*proxy_).object_size_ = std::atoi(optarg);
-                break;
-            case 'b':
-                dynamic_cast<pancake_proxy&>(*proxy_).security_batch_size_ = std::atoi(optarg);
-                break;
-            case 'c':
-                dynamic_cast<pancake_proxy&>(*proxy_).storage_batch_size_ = std::atoi(optarg);
+                proxy_port = std::atoi(optarg);
                 break;
             case 't':
-                dynamic_cast<pancake_proxy&>(*proxy_).p_threads_ = std::atoi(optarg);
+                trace_location = std::string(optarg);
+                break;
+            case 's':
+                object_size = std::atoi(optarg);
+                break;
+            case 'n':
+                num_clients = std::atoi(optarg);
                 break;
             case 'o':
-                dynamic_cast<pancake_proxy&>(*proxy_).output_location_ = std::string(optarg);
+                output_directory = std::string(optarg);
                 break;
-            case 'd':
-                dynamic_cast<pancake_proxy&>(*proxy_).core_ = std::atoi(optarg) - 1;
-                break;
-            case 'z':
-                proxy_type_ = std::string(optarg);
-            case 'q':
-                client_batch_size_ = std::atoi(optarg);
             default:
                 usage();
                 exit(-1);
         }
     }
 
-    void *arguments[3];
-    arguments[0] = malloc(sizeof(distribution * ));
-    arguments[1] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(double *));
+    _mkdir((output_directory).c_str());
+    std::atomic<int> xput;
+    std::atomic_init(&xput, 0);
 
-    std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
-    auto dist = load_frequencies_from_trace(argv[1], trace_, client_batch_size_);
+    trace_vector trace;
+    load_trace(trace_location, trace, client_batch_size);
 
-    arguments[0] = &dist;
-    auto items = dist.get_items();
-    double alpha = 1.0 / items.size();
-    double delta = 1.0 / (2 * items.size()) * 1 / alpha;
-    arguments[1] = &alpha;
-    arguments[2] = &delta;
-    std::string dummy(object_size_, '0');
-
-    dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
-    std::cout << "Initialized pancake" << std::endl;
-    auto proxy_server = thrift_server::create(proxy_, "pancake", PROXY_PORT, 1);
-    std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
-    wait_for_server_start(HOST, PROXY_PORT);
-    std::cout << "Proxy server is reachable" << std::endl;
-    proxy_client client_;
-    client_.init(HOST, PROXY_PORT);
-
-    std::vector<int> latencies;
-    warmup(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
-    run_benchmark(20, true, latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
-    cooldown(latencies, client_batch_size_, dynamic_cast<pancake_proxy&>(*proxy_).object_size_, trace_, xput_, client_);
-    proxy_->close();
-    proxy_server->stop();
+    std::vector<std::thread> threads;
+    for (int i = 0; i < num_clients; i++) {
+        threads.push_back(std::thread(client, std::ref(i), std::ref(client_batch_size), std::ref(object_size), std::ref(trace), std::ref(output_directory), std::ref(proxy_host), std::ref(proxy_port)));
+    }
+    for (int i = 0; i < num_clients; i++)
+        threads[i].join();
+    std::cout << "Xput was: " << xput << std::endl;
 }

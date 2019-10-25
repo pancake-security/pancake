@@ -3,10 +3,8 @@
 //
 
 #include <unordered_map>
-#include <fstream>
 #include <iostream>
 #include <thread>
-#include <future>
 
 #include "distribution.h"
 #include "pancake_proxy.h"
