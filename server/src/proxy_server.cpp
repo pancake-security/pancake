@@ -85,6 +85,14 @@ distribution load_frequencies_from_trace(const std::string &trace_location, trac
     return dist;
 };
 
+void flush_thread(std::shared_ptr<proxy> proxy){
+    while (true){
+        sleep(1);
+        dynamic_cast<pancake_proxy&>(*proxy).flush();
+    }
+    std::cout << "Quitting flush thread" << std::endl;
+}
+
 void usage() {
     std::cout << "Pancake proxy: frequency flattening kvs\n";
     // Network Parameters
@@ -156,7 +164,7 @@ int main(int argc, char *argv[]) {
                 client_batch_size = std::atoi(optarg);
                 break;
             case 'l':
-                client_batch_size = std::atoi(optarg);
+                dynamic_cast<pancake_proxy&>(*proxy_).trace_location_ = std::string(optarg);
                 break;
             default:
                 usage();
@@ -187,7 +195,7 @@ int main(int argc, char *argv[]) {
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;
-    sleep(1000);
+    flush_thread(proxy_);
     //proxy_->close();
     //proxy_server->stop();
 }

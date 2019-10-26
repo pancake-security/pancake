@@ -18,8 +18,8 @@ using namespace ::apache::thrift::transport;
 #define HOST "127.0.0.1"
 #define PROXY_PORT 9090
 
-void spam_thread(bool *done, std::shared_ptr<proxy> proxy){
-    while (!(*done)){
+void flush_thread(bool &done, std::shared_ptr<proxy> proxy){
+    while (!done){
         sleep(5);
         dynamic_cast<pancake_proxy&>(*proxy).flush();
     }
@@ -54,7 +54,7 @@ int main(){
     proxy_client client;
     client.init(HOST, PROXY_PORT);
 
-    std::thread spammer(spam_thread, &done, proxy_);
+    std::thread flusher(flush_thread, std::ref(done), proxy_);
 
 
     for (std::size_t i = 1000; i < 2000; ++i) {
@@ -77,7 +77,7 @@ int main(){
     }
     std::cout << "Passed tests" << std::endl;
     done = true;
-    spammer.join();
+    flusher.join();
     proxy_->close();
     proxy_server->stop();
     if (proxy_serve_thread.joinable()) {

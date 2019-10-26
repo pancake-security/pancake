@@ -7,6 +7,7 @@
 
 #include "storage_interface.h"
 #include "SSDB.h"
+#include "assert.h"
 
 #include <iostream>
 

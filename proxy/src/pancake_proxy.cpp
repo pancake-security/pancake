@@ -377,7 +377,7 @@ void pancake_proxy::distribution_thread() {
 
 void pancake_proxy::flush() {
     for (auto operation_queue : operation_queues_){
-        for (int i = 0; i < operation_queue->size(); i++) {
+        if (operation_queue->size() != 0) {
             auto operation_promise_pair = operation_queue->pop();
             auto read_result = storage_interface_->get(operation_promise_pair.first.key);
             storage_interface_->put(operation_promise_pair.first.key, read_result);
