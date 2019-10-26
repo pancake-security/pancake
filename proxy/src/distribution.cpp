@@ -7,7 +7,7 @@
     distribution::distribution() = default;
 
     distribution::distribution(const std::vector<std::string> &items, const std::vector<double> &probabilities) {
-        std::discrete_distribution<double> new_distribution_(probabilities.begin(), probabilities.end());
+        std::discrete_distribution<int> new_distribution_(probabilities.begin(), probabilities.end());
         distribution_ = new_distribution_;
         items_ = items;
         probabilities_ = probabilities;

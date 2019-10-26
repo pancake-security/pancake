@@ -47,16 +47,17 @@ public:
     void flush();
 
     std::string output_location_ = "log";
+    std::string trace_location_ = "";
     std::string server_host_name_ = "127.0.0.1";
     int server_port_ = 50054;
     std::string workload_file_ = "keysets/Uniform/xtrace1";
-    int security_batch_size_ = 10;
+    int security_batch_size_ = 3;
     int object_size_ = 1024;
     int key_size_ = 16;
     int server_count_ = 1;
     std::string server_type_ = "redis";
     int p_threads_ = 1;
-    int storage_batch_size_ = 1;
+    int storage_batch_size_ = 40;
     int core_ = 0;
     bool is_static_ = true;
 

@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
     int o;
     std::string proxy_type_ = "pancake";
-    while ((o = getopt(argc, argv, "a:p:s:n:w:v:b:c:p:o:d:t:x:f:z:q:")) != -1) {
+    while ((o = getopt(argc, argv, "h:p:s:n:w:v:b:c:t:o:d:z:q:l:")) != -1) {
         switch (o) {
             case 'h':
                 dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
@@ -130,9 +130,6 @@ int main(int argc, char *argv[]) {
                 break;
             case 'w':
                 dynamic_cast<pancake_proxy&>(*proxy_).workload_file_ = std::string(optarg);
-                break;
-            case 'l':
-                dynamic_cast<pancake_proxy&>(*proxy_).key_size_ = std::atoi(optarg);
                 break;
             case 'v':
                 dynamic_cast<pancake_proxy&>(*proxy_).object_size_ = std::atoi(optarg);
@@ -154,8 +151,13 @@ int main(int argc, char *argv[]) {
                 break;
             case 'z':
                 proxy_type_ = std::string(optarg);
+                break;
             case 'q':
                 client_batch_size = std::atoi(optarg);
+                break;
+            case 'l':
+                client_batch_size = std::atoi(optarg);
+                break;
             default:
                 usage();
                 exit(-1);
@@ -168,7 +170,8 @@ int main(int argc, char *argv[]) {
     arguments[2] = malloc(sizeof(double *));
 
     std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
-    auto dist = load_frequencies_from_trace(argv[1], trace_, client_batch_size);
+    assert(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_ != "");
+    auto dist = load_frequencies_from_trace(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_, trace_, client_batch_size);
 
     arguments[0] = &dist;
     auto items = dist.get_items();

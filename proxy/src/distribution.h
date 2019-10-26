@@ -17,7 +17,7 @@ public:
     const std::vector<double>& get_probabilities() const;
 
 private:
-    std::discrete_distribution<double> distribution_;
+    std::discrete_distribution<int> distribution_;
     std::default_random_engine random_;
     std::vector<std::string> items_;
     std::vector<double> probabilities_;

@@ -3,6 +3,7 @@
 //
 
 #include "update_cache.h"
+#include "assert.h"
 
 #include <iostream>
 

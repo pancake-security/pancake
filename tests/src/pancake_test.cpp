@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <thread>
+#include "assert.h"
 
 #include "distribution.h"
 #include "pancake_proxy.h"

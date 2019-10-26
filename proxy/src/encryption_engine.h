@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <string>
 #include <random>
+#include <algorithm>
 
 #include <openssl/evp.h>
 #include <openssl/err.h>

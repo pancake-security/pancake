@@ -2,6 +2,8 @@ set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
 set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy/src)
 set(CLIENT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libclient/src)
 set(SERVICE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../service/src)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${BENCHMARK_INCLUDE} ${SERVICE_INCLUDE} )
 
@@ -17,6 +19,7 @@ add_executable(storage_interface_test
         )
 add_dependencies(storage_interface_test cpp_redis ssdb_rocks)
 target_link_libraries(storage_interface_test
+        Threads::Threads
         ${CPP_REDIS_LIBRARIES}
         ${SSDB_CLIENT_LIBRARY}
         ${LEVELDB_LIBRARY}
@@ -37,6 +40,7 @@ add_executable(distribution_test
         ../proxy/src/distribution.cpp
         )
 target_link_libraries(distribution_test
+        Threads::Threads
         ${PROXY_INCLUDE_LIBRARIES}
         )
 
@@ -48,8 +52,10 @@ add_executable(encryption_test
         ../proxy/src/util.cpp
         )
 target_link_libraries(encryption_test
+        Threads::Threads
         ${PROXY_INCLUDE_LIBRARIES}
         ${OPENSSL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
 
 add_executable(update_cache_test
@@ -60,6 +66,7 @@ add_executable(update_cache_test
         ../proxy/src/util.cpp
         )
 target_link_libraries(update_cache_test
+        Threads::Threads
         ${PROXY_INCLUDE_LIBRARIES}
         )
 
@@ -108,6 +115,7 @@ add_executable(pancake_test
         ../service/src/thrift_utils.h)
 add_dependencies(pancake_test cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
 target_link_libraries(pancake_test
+        Threads::Threads
         ${THRIFTNB_LIBRARY}
         ${THRIFT_LIBRARY}
         ${LIBEVENT_LIBRARY}

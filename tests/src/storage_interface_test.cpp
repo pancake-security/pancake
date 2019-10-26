@@ -5,7 +5,9 @@
 #include "redis.h"
 //#include "memcached.h"
 #include "rocksdb.h"
+#include "assert.h"
 #include <iostream>
+#include <cstring>
 
 struct options {
     bool testing_redis;

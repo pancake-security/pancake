@@ -165,15 +165,15 @@ void usage() {
 };
 
 int _mkdir(const char *path) {
-#ifdef _WIN32
-    return ::_mkdir(path);
-#else
-#if _POSIX_C_SOURCE
-    return ::mkdir(path);
-#else
-    return ::mkdir(path, 0755); // not sure if this works on mac
-#endif
-#endif
+    #ifdef _WIN32
+        return ::_mkdir(path);
+    #else
+        #if _POSIX_C_SOURCE
+            return ::mkdir(path, 0755);
+        #else
+            return ::mkdir(path, 0755); // not sure if this works on mac
+        #endif
+    #endif
 }
 
 int main(int argc, char *argv[]) {
@@ -227,7 +227,8 @@ int main(int argc, char *argv[]) {
 
     std::vector<std::thread> threads;
     for (int i = 0; i < num_clients; i++) {
-        threads.push_back(std::thread(client, std::ref(i), std::ref(client_batch_size), std::ref(object_size), std::ref(trace), std::ref(output_directory), std::ref(proxy_host), std::ref(proxy_port)));
+        threads.push_back(std::thread(client, std::ref(i), std::ref(client_batch_size), std::ref(object_size), std::ref(trace),
+                          std::ref(output_directory), std::ref(proxy_host), std::ref(proxy_port), std::ref(xput)));
     }
     for (int i = 0; i < num_clients; i++)
         threads[i].join();
