@@ -18,4 +18,8 @@ std::string rand_str(const int len) {
         ret[i] = alphanum[rand_uint32(0, 500) % (sizeof(alphanum) - 1)];
     }
     return ret;
-}
+};
+
+bool prob(double p){
+    return rand_uint32(0,RAND_MAX)/(RAND_MAX+1.0) < p;
+};

@@ -2,13 +2,15 @@ set(STORAGE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
 set(CLIENT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libclient/src)
 set(PROXY_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../proxy/src)
 set(SERVICE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../service/src)
-set(BENCHMARK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SERVER_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
-include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${BENCHMARK_INCLUDE} ${SERVICE_INCLUDE} )
+include_directories(${STORAGE_INCLUDE} ${CLIENT_INCLUDE} ${PROXY_INCLUDE} ${SERVICE_INCLUDE} ${SERVER_INCLUDE} )
 
 
-add_executable(proxy_benchmark
-        src/proxy_benchmark.cpp
+add_executable(proxy_server
+        src/proxy_server.cpp
 
         ../libclient/src/client.h
         ../libclient/src/proxy_client.cpp
@@ -49,8 +51,9 @@ add_executable(proxy_benchmark
         #../libstorage/src/memcached.cpp
         #../libstorage/src/memcached.h
         ../service/src/thrift_utils.h)
-add_dependencies(proxy_benchmark cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
-target_link_libraries(proxy_benchmark
+add_dependencies(proxy_server cpp_redis ssdb_rocks libcuckoo openssl_ep thrift_ep)
+target_link_libraries(proxy_server
+        Threads::Threads
         ${THRIFTNB_LIBRARY}
         ${THRIFT_LIBRARY}
         ${LIBEVENT_LIBRARY}
@@ -63,7 +66,6 @@ target_link_libraries(proxy_benchmark
         ${CMAKE_DL_LIBS}
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
-        #${LIBCUCKOO_LIBRARIES}
         #${LIBMEMCACHED_LIBRARIES}
         ${PROXY_INCLUDE_LIBRARIES}
         ${STORAGE_INCLUDE_LIBRARIES}

@@ -9,20 +9,18 @@
 
 class operation {
 public:
-    operation(const Operation&);
-    operation& operator=(const Operation&);
-    operation() : key(), value() {
+    operation(const operation&) = default;
+    operation& operator=(const operation&){
+        return *this;
+    };
+    operation() : key(), value(){
     }
 
-    virtual ~operation() throw();
+    ~operation() = default;
     std::string key;
     std::string value;
 
-    void __set_key(const std::string& val);
-
-    void __set_value(const std::string& val);
-
-    bool operator == (const Operation & rhs) const
+    bool operator == (const operation & rhs) const
     {
         if (!(key == rhs.key))
             return false;
@@ -30,7 +28,7 @@ public:
             return false;
         return true;
     }
-    bool operator != (const Operation &rhs) const {
+    bool operator != (const operation &rhs) const {
         return !(*this == rhs);
     }
 };

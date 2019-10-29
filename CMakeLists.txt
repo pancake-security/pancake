@@ -5,14 +5,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if (APPLE)
-    set (CMAKE_C_COMPILER "/usr/bin/clang")
-    set (CMAKE_CXX_COMPILER "/usr/bin/clang++")
-else()
-    set (CMAKE_C_COMPILER "/usr/local/bin/gcc-5")
-    set (CMAKE_CXX_COMPILER "/usr/local/bin/g++-5")
-endif()
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake-modules")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
@@ -36,11 +28,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_SOURCE_DIR}/cmake")
 # Dependencies
 include(Dependencies)
 
-# Testing
-if (BUILD_TESTS)
-    include(CTest)
-endif()
-
 if (BUILD_STRESS_TESTS)
     add_definitions(-DSTRESS_TEST)
 endif()
@@ -54,7 +41,11 @@ add_subdirectory(libstorage)
 # Tests 
 add_subdirectory(tests)
 
-if (BUILD_BENCHMARK)
-  # RPC Framework
-  add_subdirectory(benchmark)
-endif()
+# Proxy
+add_subdirectory(proxy)
+
+# Benchmark
+add_subdirectory(benchmark)
+
+# Proxy Server
+add_subdirectory(server)

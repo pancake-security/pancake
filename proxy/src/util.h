@@ -13,4 +13,6 @@ uint32_t rand_uint32(const uint32_t &min, const uint32_t &max);
 
 std::string rand_str(const int len);
 
+bool prob(double p);
+
 #endif //PANCAKE_UTIL_H

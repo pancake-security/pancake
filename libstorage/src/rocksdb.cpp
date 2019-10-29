@@ -5,9 +5,17 @@
 #include "rocksdb.h"
 
 
-    void rocksdb::init(const std::string hostname, int port){
-        clients.push_back(ssdb::Client::connect(hostname.c_str(), port));
-        if (clients.back() == NULL){
+    rocksdb::rocksdb(const std::string &host_name, int port){
+        this->clients.push_back(ssdb::Client::connect(host_name.c_str(), port));
+        if (this->clients.back() == NULL){
+            std::cerr << "Failed to connect" << std::endl;
+            exit(-1);
+        }
+    }
+
+    void rocksdb::add_server(const std::string &host_name, int port){
+        this->clients.push_back(ssdb::Client::connect(host_name.c_str(), port));
+        if (this->clients.back() == NULL){
             std::cerr << "Failed to connect" << std::endl;
             exit(-1);
         }
@@ -30,17 +38,17 @@
         assert(s.ok());
     }
 
-    std::vector<const std::string> rocksdb::get_batch(std::vector<const std::string> keys){
-        std::vector<const std::string> return_vector;
-        for (auto key: keys){
+    std::vector<std::string> rocksdb::get_batch(const std::vector<std::string> &keys){
+        std::vector<std::string> return_vector;
+        for (const auto &key: keys){
             return_vector.push_back(get(key));
         }
         return return_vector;
     }
 
-    void rocksdb::put_batch(std::vector<const std::string> keys, std::vector<const std::string> values){
+    void rocksdb::put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values){
         int i = 0;
-        for (auto key: keys){
+        for (const auto &key: keys){
             put(key, values[i]);
             i++;
         }

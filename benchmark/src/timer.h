@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <math.h>
+#include "unistd.h"
 
 #define rdtscll(val) do { \
     unsigned int __a,__d; \

@@ -1,0 +1,4 @@
+set(CLIENT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../libstorage/src)
+set(SERVICE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../service/src)
+
+include_directories(${CLIENT_INCLUDE} ${SERVICE_INCLUDE})
