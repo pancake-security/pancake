@@ -50,7 +50,6 @@ public:
     std::string trace_location_ = "";
     std::string server_host_name_ = "127.0.0.1";
     int server_port_ = 50054;
-    std::string workload_file_ = "keysets/Uniform/xtrace1";
     int security_batch_size_ = 3;
     int object_size_ = 1024;
     int key_size_ = 16;

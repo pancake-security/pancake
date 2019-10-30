@@ -102,8 +102,7 @@ void usage() {
     std::cout << "\t -n: Storage server count\n";
     std::cout << "\t -z: Proxy server type\n";
     // Workload parameters
-    std::cout << "\t -w: Clients' workload file\n";
-    std::cout << "\t -l: key size\n";
+    std::cout << "\t -l: Workload file\n";
     std::cout << "\t -v: Value size\n";
     std::cout << "\t -b: Security batch size\n";
     std::cout << "\t -c: Storage batch size\n";
@@ -122,7 +121,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<proxy> proxy_ = std::make_shared<pancake_proxy>();
     int o;
     std::string proxy_type_ = "pancake";
-    while ((o = getopt(argc, argv, "h:p:s:n:w:v:b:c:t:o:d:z:q:l:")) != -1) {
+    while ((o = getopt(argc, argv, "h:p:s:n:v:b:c:t:o:d:z:q:l:")) != -1) {
         switch (o) {
             case 'h':
                 dynamic_cast<pancake_proxy&>(*proxy_).server_host_name_ = std::string(optarg);
@@ -135,9 +134,6 @@ int main(int argc, char *argv[]) {
                 break;
             case 'n':
                 dynamic_cast<pancake_proxy&>(*proxy_).server_count_ = std::atoi(optarg);
-                break;
-            case 'w':
-                dynamic_cast<pancake_proxy&>(*proxy_).workload_file_ = std::string(optarg);
                 break;
             case 'v':
                 dynamic_cast<pancake_proxy&>(*proxy_).object_size_ = std::atoi(optarg);
