@@ -195,7 +195,8 @@ int main(int argc, char *argv[]) {
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;
-    flush_thread(proxy_);
+    sleep(10000);
+    //flush_thread(proxy_);
     //proxy_->close();
     //proxy_server->stop();
 }
