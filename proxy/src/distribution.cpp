@@ -4,13 +4,23 @@
 
 #include "distribution.h"
 
+    distribution::distribution() = default;
 
-    void distribution::init(std::shared_ptr<std::vector<std::string>> items, std::shared_ptr<std::vector<int> > frequencies) {
-        std::discrete_distribution<int> new_distribution_(frequencies->begin(), frequencies->end());
-        this->distribution_ = new_distribution_;
-        this->items_ = items;
-    };
+    distribution::distribution(const std::vector<std::string> &items, const std::vector<double> &probabilities) {
+        std::discrete_distribution<int> new_distribution_(probabilities.begin(), probabilities.end());
+        distribution_ = new_distribution_;
+        items_ = items;
+        probabilities_ = probabilities;
+    }
 
     std::string distribution::sample() {
-        return (*items_)[distribution_(random_)];
-    };
+        return items_[distribution_(random_)];
+    }
+
+    const std::vector<std::string>& distribution::get_items() const{
+        return items_;
+    }
+
+    const std::vector<double>& distribution::get_probabilities() const{
+        return probabilities_;
+    }

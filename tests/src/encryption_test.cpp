@@ -6,8 +6,7 @@
 #include <iostream>
 
 void run_basic_test(){
-    encryption_engine encryption;
-    encryption.init();
+    encryption_engine encryption = encryption_engine();
 
     std::cout << "Performing encryption sanity test" << std::endl;
     assert("12345675757" == encryption.decrypt(encryption.encrypt("12345675757")));
@@ -15,7 +14,7 @@ void run_basic_test(){
 
     std::cout << "Performing encryption stress test" << std::endl;
     for (int i = 0; i < 100000; i++){
-        std::string random_string = encryption.gen_random(1000);
+        std::string random_string = rand_str(1000);
         assert(encryption.encrypt(random_string) != random_string);
         assert(random_string == encryption.decrypt(encryption.encrypt(random_string)));
     }

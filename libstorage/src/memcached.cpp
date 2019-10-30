@@ -1,16 +1,32 @@
 #include "memcached.h"
 
 
-    void memcached::init(const std::string &server, int &port)
+    memcached::memcached(const std::string &host_name, int &port)
     {
         memcached_return rc;
         memcached_server_st *servers = NULL;
         memcached_st *memc;
         memc = memcached_create(NULL);
-        servers = memcached_server_list_append(servers, server.c_str(), port, &rc);
+        servers = memcached_server_list_append(servers, host_name.c_str(), port, &rc);
         rc = memcached_server_push(memc, servers);
         if (rc == MEMCACHED_SUCCESS) {
-            clients.push_back(memc);
+            this->clients.push_back(memc);
+        }
+        else {
+            throw std::runtime_error("Server connection failed: " + memcached_strerror(memc, rc));
+        }
+    }
+
+    void memcached::add_server(const std::string &host_name, int port)
+    {
+        memcached_return rc;
+        memcached_server_st *servers = NULL;
+        memcached_st *memc;
+        memc = memcached_create(NULL);
+        servers = memcached_server_list_append(host_name, host_name.c_str(), port, &rc);
+        rc = memcached_server_push(memc, servers);
+        if (rc == MEMCACHED_SUCCESS) {
+            this->clients.push_back(memc);
         }
         else {
             throw std::runtime_error("Server connection failed: " + memcached_strerror(memc, rc));
@@ -39,16 +55,16 @@
         }
     }
 
-    std::vector<const std::string> memcached::get_batch(std::vector<const std::string> keys) {
+    std::vector<std::string> memcached::get_batch(const std::vector<std::string> &keys) {
         std::unordered_map<int, std::vector<std::string>> key_vectors;
 
         // Gather all relevant storage interface's by id and create vector for key batch
-        for (auto key: keys) {
+        for (const auto &key: keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_vectors[id].emplace_back(key);
         }
 
-        std::vector<const std::string> return_values;
+        std::vector<std::string> return_values;
 
         for (auto it = key_vectors.begin(); it != key_vectors.end(); it++) {
             char return_key[MEMCACHED_MAX_KEY];
@@ -73,12 +89,12 @@
         return return_values;
     }
 
-    void memcached::put_batch(std::vector<const std::string> keys, std::vector<const std::string> values)
+    void memcached::put_batch(const std::vector<std::string> &keys, const std::vector<std::string> &values)
         std::unordered_map<int, std::pair<std::vector<std::string>, std::vector<std::string>>> key_value_vector_pairs;
 
         // Gather all relevant storage interface's by id and create vector for key batch
         int i = 0;
-        for (auto key: keys) {
+        for (const auto &key: keys) {
             auto id = (std::hash<std::string>{}(std::string(key)) % clients.size());
             key_value_vector_pairs[id].first.emplace_back(key);
             key_value_vector_pairs[id].second.emplace_back(values[i]);
