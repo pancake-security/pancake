@@ -139,8 +139,6 @@ void client(int idx, int client_batch_size, int object_size, trace_vector &trace
     std::vector<int> latencies;
     warmup(latencies, client_batch_size, object_size, trace, indiv_xput, client);
     run_benchmark(20, true, latencies, client_batch_size, object_size, trace, indiv_xput, client);
-    cooldown(latencies, client_batch_size, object_size, trace, indiv_xput, client);
-
     std::string location = output_directory + "/" + std::to_string(idx);
     std::ofstream out(location);
     std::string line("");
@@ -152,6 +150,7 @@ void client(int idx, int client_batch_size, int object_size, trace_vector &trace
     line.append("Xput: " + std::to_string(indiv_xput) + "\n");
     out << line;
     xput += indiv_xput;
+    cooldown(latencies, client_batch_size, object_size, trace, indiv_xput, client);
 }
 
 void usage() {
