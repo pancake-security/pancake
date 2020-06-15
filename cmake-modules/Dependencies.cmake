@@ -69,6 +69,7 @@ set(LIBCUCKOO_LIBRARIES ${LIBCUCKOO_LIBRARY})
 
 ExternalProject_Add(libcuckoo
         GIT_REPOSITORY https://github.com/efficient/libcuckoo.git
+        GIT_TAG 8785773896d74f72b6224e59d37f5f8c3c1e022a
         GIT_SUBMODULES
         LIST_SEPARATOR |
         CMAKE_ARGS ${LIBCUCKOO_CMAKE_ARGS}
