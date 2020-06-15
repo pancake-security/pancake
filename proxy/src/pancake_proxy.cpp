@@ -8,7 +8,6 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     real_distribution_ = *(distribution *)args[0];
     alpha_ = *((double *)args[1]);
     delta_ = *((double *)args[2]);
-    //encryption_engine_ = encryption_engine();
     if (server_type_ == "redis") {
         storage_interface_ = std::make_shared<redis>(server_host_name_, server_port_);
         cpp_redis::network::set_default_nb_workers(std::min(10, p_threads_));
@@ -31,11 +30,11 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     }
     if (!is_static_)
         threads_.push_back(std::thread(&pancake_proxy::distribution_thread, this));
+    std::cout << "Innter intiailizaiton finished" << std::endl;
 }
 
 void pancake_proxy::insert_replicas(const std::string &key, int num_replicas){
-    // TODO: Threadsafe encryption
-    std::string value_cipher = rand_str(object_size_);//encryption_engine_.encrypt(rand_str(object_size_));
+    std::string value_cipher = encryption_engine_.encrypt(rand_str(object_size_));
     std::vector<std::string> labels;
     for (int i = 0; i < num_replicas; i++){
         std::string replica = key+std::to_string(i);
@@ -239,7 +238,10 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
     std::vector<std::string> storage_values;
     for(int i = 0, j = 0; i < operations.size(); i++){
         auto cipher = responses[i];
-        auto plaintext = cipher;//encryption_engine_.decrypt(cipher);
+        auto plaintext = encryption_engine_.decrypt(cipher);
+        if(operations[i].value != ""){
+            update_cache_.populate_replica_updates(operations[i].key, operations[i].value, key_to_number_of_replicas_[operations[i].key]);
+        }
         auto plaintext_update = update_cache_.check_for_update(operations[i].key, replica_ids[i]);
         plaintext = plaintext_update == "" ? plaintext : plaintext_update;
         missing_new_replicas_.check_if_missing(operations[i].key, plaintext, update_cache_);
@@ -247,7 +249,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
             promises[j]->set_value(plaintext);
             j++;
         }
-        storage_values.push_back(plaintext);//storage_values.push_back(encryption_engine_.encrypt(plaintext));
+        storage_values.push_back(encryption_engine_.encrypt(plaintext));
     }
     storage_interface->put_batch(storage_keys, storage_values);
 }
