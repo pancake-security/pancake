@@ -26,11 +26,12 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
     for (int i = 0; i < num_cores; i++) {
         auto q = std::make_shared<queue<std::pair<operation, std::shared_ptr<std::promise<std::string>>>>>();
         operation_queues_.push_back(q);
+    }
+    for (int i = 0; i < num_cores; i++) {
         threads_.push_back(std::thread(&pancake_proxy::consumer_thread, this, i));
     }
     if (!is_static_)
         threads_.push_back(std::thread(&pancake_proxy::distribution_thread, this));
-    std::cout << "Innter intiailizaiton finished" << std::endl;
 }
 
 void pancake_proxy::insert_replicas(const std::string &key, int num_replicas){

@@ -66,7 +66,7 @@ private:
     std::queue<T> m_queue_;
     std::mutex m_mtx_;
     std::condition_variable m_cond_;
-    int size_ = 0;
+    std::atomic<int> size_{0};
 };
 
 #endif //PANCAKE_QUEUE_H
