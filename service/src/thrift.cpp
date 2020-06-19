@@ -4,9 +4,843 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "thrift.h"
+#include "pancake_thrift.h"
 
 
+
+
+pancake_thrift_get_client_id_args::~pancake_thrift_get_client_id_args() throw() {
+}
+
+
+uint32_t pancake_thrift_get_client_id_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_get_client_id_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_get_client_id_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_get_client_id_pargs::~pancake_thrift_get_client_id_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_get_client_id_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_get_client_id_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_get_client_id_result::~pancake_thrift_get_client_id_result() throw() {
+}
+
+
+uint32_t pancake_thrift_get_client_id_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_get_client_id_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("pancake_thrift_get_client_id_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I64, 0);
+    xfer += oprot->writeI64(this->success);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_get_client_id_presult::~pancake_thrift_get_client_id_presult() throw() {
+}
+
+
+uint32_t pancake_thrift_get_client_id_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+pancake_thrift_register_client_id_args::~pancake_thrift_register_client_id_args() throw() {
+}
+
+
+uint32_t pancake_thrift_register_client_id_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->block_id);
+          this->__isset.block_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->client_id);
+          this->__isset.client_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_register_client_id_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_register_client_id_args");
+
+  xfer += oprot->writeFieldBegin("block_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->block_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("client_id", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64(this->client_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_register_client_id_pargs::~pancake_thrift_register_client_id_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_register_client_id_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_register_client_id_pargs");
+
+  xfer += oprot->writeFieldBegin("block_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->block_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("client_id", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64((*(this->client_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_register_client_id_result::~pancake_thrift_register_client_id_result() throw() {
+}
+
+
+uint32_t pancake_thrift_register_client_id_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_register_client_id_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("pancake_thrift_register_client_id_result");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_register_client_id_presult::~pancake_thrift_register_client_id_presult() throw() {
+}
+
+
+uint32_t pancake_thrift_register_client_id_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+pancake_thrift_async_get_args::~pancake_thrift_async_get_args() throw() {
+}
+
+
+uint32_t pancake_thrift_async_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->seq_id.read(iprot);
+          this->__isset.seq_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->key);
+          this->__isset.key = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_async_get_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_get_args");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->seq_id.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->key);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_get_pargs::~pancake_thrift_async_get_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_async_get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_get_pargs");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->seq_id)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->key)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_put_args::~pancake_thrift_async_put_args() throw() {
+}
+
+
+uint32_t pancake_thrift_async_put_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->seq_id.read(iprot);
+          this->__isset.seq_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->key);
+          this->__isset.key = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->value);
+          this->__isset.value = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_async_put_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_put_args");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->seq_id.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->key);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->value);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_put_pargs::~pancake_thrift_async_put_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_async_put_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_put_pargs");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->seq_id)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->key)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->value)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_get_batch_args::~pancake_thrift_async_get_batch_args() throw() {
+}
+
+
+uint32_t pancake_thrift_async_get_batch_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->seq_id.read(iprot);
+          this->__isset.seq_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->keys.clear();
+            uint32_t _size2;
+            ::apache::thrift::protocol::TType _etype5;
+            xfer += iprot->readListBegin(_etype5, _size2);
+            this->keys.resize(_size2);
+            uint32_t _i6;
+            for (_i6 = 0; _i6 < _size2; ++_i6)
+            {
+              xfer += iprot->readString(this->keys[_i6]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.keys = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_async_get_batch_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_get_batch_args");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->seq_id.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->keys.size()));
+    std::vector<std::string> ::const_iterator _iter7;
+    for (_iter7 = this->keys.begin(); _iter7 != this->keys.end(); ++_iter7)
+    {
+      xfer += oprot->writeString((*_iter7));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_get_batch_pargs::~pancake_thrift_async_get_batch_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_async_get_batch_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_get_batch_pargs");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->seq_id)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->keys)).size()));
+    std::vector<std::string> ::const_iterator _iter8;
+    for (_iter8 = (*(this->keys)).begin(); _iter8 != (*(this->keys)).end(); ++_iter8)
+    {
+      xfer += oprot->writeString((*_iter8));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_put_batch_args::~pancake_thrift_async_put_batch_args() throw() {
+}
+
+
+uint32_t pancake_thrift_async_put_batch_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->seq_id.read(iprot);
+          this->__isset.seq_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->keys.clear();
+            uint32_t _size9;
+            ::apache::thrift::protocol::TType _etype12;
+            xfer += iprot->readListBegin(_etype12, _size9);
+            this->keys.resize(_size9);
+            uint32_t _i13;
+            for (_i13 = 0; _i13 < _size9; ++_i13)
+            {
+              xfer += iprot->readString(this->keys[_i13]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.keys = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->values.clear();
+            uint32_t _size14;
+            ::apache::thrift::protocol::TType _etype17;
+            xfer += iprot->readListBegin(_etype17, _size14);
+            this->values.resize(_size14);
+            uint32_t _i18;
+            for (_i18 = 0; _i18 < _size14; ++_i18)
+            {
+              xfer += iprot->readString(this->values[_i18]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.values = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t pancake_thrift_async_put_batch_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_put_batch_args");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->seq_id.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->keys.size()));
+    std::vector<std::string> ::const_iterator _iter19;
+    for (_iter19 = this->keys.begin(); _iter19 != this->keys.end(); ++_iter19)
+    {
+      xfer += oprot->writeString((*_iter19));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 3);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->values.size()));
+    std::vector<std::string> ::const_iterator _iter20;
+    for (_iter20 = this->values.begin(); _iter20 != this->values.end(); ++_iter20)
+    {
+      xfer += oprot->writeString((*_iter20));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+pancake_thrift_async_put_batch_pargs::~pancake_thrift_async_put_batch_pargs() throw() {
+}
+
+
+uint32_t pancake_thrift_async_put_batch_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("pancake_thrift_async_put_batch_pargs");
+
+  xfer += oprot->writeFieldBegin("seq_id", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->seq_id)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->keys)).size()));
+    std::vector<std::string> ::const_iterator _iter21;
+    for (_iter21 = (*(this->keys)).begin(); _iter21 != (*(this->keys)).end(); ++_iter21)
+    {
+      xfer += oprot->writeString((*_iter21));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 3);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->values)).size()));
+    std::vector<std::string> ::const_iterator _iter22;
+    for (_iter22 = (*(this->values)).begin(); _iter22 != (*(this->values)).end(); ++_iter22)
+    {
+      xfer += oprot->writeString((*_iter22));
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
 
 
 pancake_thrift_get_args::~pancake_thrift_get_args() throw() {
@@ -314,20 +1148,7 @@ uint32_t pancake_thrift_put_result::read(::apache::thrift::protocol::TProtocol* 
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -342,11 +1163,6 @@ uint32_t pancake_thrift_put_result::write(::apache::thrift::protocol::TProtocol*
 
   xfer += oprot->writeStructBegin("pancake_thrift_put_result");
 
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -376,20 +1192,7 @@ uint32_t pancake_thrift_put_presult::read(::apache::thrift::protocol::TProtocol*
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -428,14 +1231,14 @@ uint32_t pancake_thrift_get_batch_args::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->keys.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->keys.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size23;
+            ::apache::thrift::protocol::TType _etype26;
+            xfer += iprot->readListBegin(_etype26, _size23);
+            this->keys.resize(_size23);
+            uint32_t _i27;
+            for (_i27 = 0; _i27 < _size23; ++_i27)
             {
-              xfer += iprot->readString(this->keys[_i4]);
+              xfer += iprot->readString(this->keys[_i27]);
             }
             xfer += iprot->readListEnd();
           }
@@ -464,10 +1267,10 @@ uint32_t pancake_thrift_get_batch_args::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->keys.size()));
-    std::vector<std::string> ::const_iterator _iter5;
-    for (_iter5 = this->keys.begin(); _iter5 != this->keys.end(); ++_iter5)
+    std::vector<std::string> ::const_iterator _iter28;
+    for (_iter28 = this->keys.begin(); _iter28 != this->keys.end(); ++_iter28)
     {
-      xfer += oprot->writeString((*_iter5));
+      xfer += oprot->writeString((*_iter28));
     }
     xfer += oprot->writeListEnd();
   }
@@ -491,10 +1294,10 @@ uint32_t pancake_thrift_get_batch_pargs::write(::apache::thrift::protocol::TProt
   xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->keys)).size()));
-    std::vector<std::string> ::const_iterator _iter6;
-    for (_iter6 = (*(this->keys)).begin(); _iter6 != (*(this->keys)).end(); ++_iter6)
+    std::vector<std::string> ::const_iterator _iter29;
+    for (_iter29 = (*(this->keys)).begin(); _iter29 != (*(this->keys)).end(); ++_iter29)
     {
-      xfer += oprot->writeString((*_iter6));
+      xfer += oprot->writeString((*_iter29));
     }
     xfer += oprot->writeListEnd();
   }
@@ -535,14 +1338,14 @@ uint32_t pancake_thrift_get_batch_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size7;
-            ::apache::thrift::protocol::TType _etype10;
-            xfer += iprot->readListBegin(_etype10, _size7);
-            this->success.resize(_size7);
-            uint32_t _i11;
-            for (_i11 = 0; _i11 < _size7; ++_i11)
+            uint32_t _size30;
+            ::apache::thrift::protocol::TType _etype33;
+            xfer += iprot->readListBegin(_etype33, _size30);
+            this->success.resize(_size30);
+            uint32_t _i34;
+            for (_i34 = 0; _i34 < _size30; ++_i34)
             {
-              xfer += iprot->readString(this->success[_i11]);
+              xfer += iprot->readString(this->success[_i34]);
             }
             xfer += iprot->readListEnd();
           }
@@ -573,10 +1376,10 @@ uint32_t pancake_thrift_get_batch_result::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter12;
-      for (_iter12 = this->success.begin(); _iter12 != this->success.end(); ++_iter12)
+      std::vector<std::string> ::const_iterator _iter35;
+      for (_iter35 = this->success.begin(); _iter35 != this->success.end(); ++_iter35)
       {
-        xfer += oprot->writeString((*_iter12));
+        xfer += oprot->writeString((*_iter35));
       }
       xfer += oprot->writeListEnd();
     }
@@ -617,14 +1420,14 @@ uint32_t pancake_thrift_get_batch_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size13;
-            ::apache::thrift::protocol::TType _etype16;
-            xfer += iprot->readListBegin(_etype16, _size13);
-            (*(this->success)).resize(_size13);
-            uint32_t _i17;
-            for (_i17 = 0; _i17 < _size13; ++_i17)
+            uint32_t _size36;
+            ::apache::thrift::protocol::TType _etype39;
+            xfer += iprot->readListBegin(_etype39, _size36);
+            (*(this->success)).resize(_size36);
+            uint32_t _i40;
+            for (_i40 = 0; _i40 < _size36; ++_i40)
             {
-              xfer += iprot->readString((*(this->success))[_i17]);
+              xfer += iprot->readString((*(this->success))[_i40]);
             }
             xfer += iprot->readListEnd();
           }
@@ -675,14 +1478,14 @@ uint32_t pancake_thrift_put_batch_args::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->keys.clear();
-            uint32_t _size18;
-            ::apache::thrift::protocol::TType _etype21;
-            xfer += iprot->readListBegin(_etype21, _size18);
-            this->keys.resize(_size18);
-            uint32_t _i22;
-            for (_i22 = 0; _i22 < _size18; ++_i22)
+            uint32_t _size41;
+            ::apache::thrift::protocol::TType _etype44;
+            xfer += iprot->readListBegin(_etype44, _size41);
+            this->keys.resize(_size41);
+            uint32_t _i45;
+            for (_i45 = 0; _i45 < _size41; ++_i45)
             {
-              xfer += iprot->readString(this->keys[_i22]);
+              xfer += iprot->readString(this->keys[_i45]);
             }
             xfer += iprot->readListEnd();
           }
@@ -695,14 +1498,14 @@ uint32_t pancake_thrift_put_batch_args::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->values.clear();
-            uint32_t _size23;
-            ::apache::thrift::protocol::TType _etype26;
-            xfer += iprot->readListBegin(_etype26, _size23);
-            this->values.resize(_size23);
-            uint32_t _i27;
-            for (_i27 = 0; _i27 < _size23; ++_i27)
+            uint32_t _size46;
+            ::apache::thrift::protocol::TType _etype49;
+            xfer += iprot->readListBegin(_etype49, _size46);
+            this->values.resize(_size46);
+            uint32_t _i50;
+            for (_i50 = 0; _i50 < _size46; ++_i50)
             {
-              xfer += iprot->readString(this->values[_i27]);
+              xfer += iprot->readString(this->values[_i50]);
             }
             xfer += iprot->readListEnd();
           }
@@ -731,10 +1534,10 @@ uint32_t pancake_thrift_put_batch_args::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->keys.size()));
-    std::vector<std::string> ::const_iterator _iter28;
-    for (_iter28 = this->keys.begin(); _iter28 != this->keys.end(); ++_iter28)
+    std::vector<std::string> ::const_iterator _iter51;
+    for (_iter51 = this->keys.begin(); _iter51 != this->keys.end(); ++_iter51)
     {
-      xfer += oprot->writeString((*_iter28));
+      xfer += oprot->writeString((*_iter51));
     }
     xfer += oprot->writeListEnd();
   }
@@ -743,10 +1546,10 @@ uint32_t pancake_thrift_put_batch_args::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->values.size()));
-    std::vector<std::string> ::const_iterator _iter29;
-    for (_iter29 = this->values.begin(); _iter29 != this->values.end(); ++_iter29)
+    std::vector<std::string> ::const_iterator _iter52;
+    for (_iter52 = this->values.begin(); _iter52 != this->values.end(); ++_iter52)
     {
-      xfer += oprot->writeString((*_iter29));
+      xfer += oprot->writeString((*_iter52));
     }
     xfer += oprot->writeListEnd();
   }
@@ -770,10 +1573,10 @@ uint32_t pancake_thrift_put_batch_pargs::write(::apache::thrift::protocol::TProt
   xfer += oprot->writeFieldBegin("keys", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->keys)).size()));
-    std::vector<std::string> ::const_iterator _iter30;
-    for (_iter30 = (*(this->keys)).begin(); _iter30 != (*(this->keys)).end(); ++_iter30)
+    std::vector<std::string> ::const_iterator _iter53;
+    for (_iter53 = (*(this->keys)).begin(); _iter53 != (*(this->keys)).end(); ++_iter53)
     {
-      xfer += oprot->writeString((*_iter30));
+      xfer += oprot->writeString((*_iter53));
     }
     xfer += oprot->writeListEnd();
   }
@@ -782,10 +1585,10 @@ uint32_t pancake_thrift_put_batch_pargs::write(::apache::thrift::protocol::TProt
   xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->values)).size()));
-    std::vector<std::string> ::const_iterator _iter31;
-    for (_iter31 = (*(this->values)).begin(); _iter31 != (*(this->values)).end(); ++_iter31)
+    std::vector<std::string> ::const_iterator _iter54;
+    for (_iter54 = (*(this->values)).begin(); _iter54 != (*(this->values)).end(); ++_iter54)
     {
-      xfer += oprot->writeString((*_iter31));
+      xfer += oprot->writeString((*_iter54));
     }
     xfer += oprot->writeListEnd();
   }
@@ -820,20 +1623,7 @@ uint32_t pancake_thrift_put_batch_result::read(::apache::thrift::protocol::TProt
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->success);
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
@@ -848,11 +1638,6 @@ uint32_t pancake_thrift_put_batch_result::write(::apache::thrift::protocol::TPro
 
   xfer += oprot->writeStructBegin("pancake_thrift_put_batch_result");
 
-  if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
-    xfer += oprot->writeString(this->success);
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -882,26 +1667,206 @@ uint32_t pancake_thrift_put_batch_presult::read(::apache::thrift::protocol::TPro
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    switch (fid)
-    {
-      case 0:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString((*(this->success)));
-          this->__isset.success = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
+    xfer += iprot->skip(ftype);
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
   return xfer;
+}
+
+int64_t pancake_thriftClient::get_client_id()
+{
+  send_get_client_id();
+  return recv_get_client_id();
+}
+
+void pancake_thriftClient::send_get_client_id()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("get_client_id", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  pancake_thrift_get_client_id_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+int64_t pancake_thriftClient::recv_get_client_id()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("get_client_id") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  int64_t _return;
+  pancake_thrift_get_client_id_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_client_id failed: unknown result");
+}
+
+void pancake_thriftClient::register_client_id(const int32_t block_id, const int64_t client_id)
+{
+  send_register_client_id(block_id, client_id);
+  recv_register_client_id();
+}
+
+void pancake_thriftClient::send_register_client_id(const int32_t block_id, const int64_t client_id)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("register_client_id", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  pancake_thrift_register_client_id_pargs args;
+  args.block_id = &block_id;
+  args.client_id = &client_id;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void pancake_thriftClient::recv_register_client_id()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("register_client_id") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  pancake_thrift_register_client_id_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  return;
+}
+
+void pancake_thriftClient::async_get(const sequence_id& seq_id, const std::string& key)
+{
+  send_async_get(seq_id, key);
+}
+
+void pancake_thriftClient::send_async_get(const sequence_id& seq_id, const std::string& key)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("async_get", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_get_pargs args;
+  args.seq_id = &seq_id;
+  args.key = &key;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void pancake_thriftClient::async_put(const sequence_id& seq_id, const std::string& key, const std::string& value)
+{
+  send_async_put(seq_id, key, value);
+}
+
+void pancake_thriftClient::send_async_put(const sequence_id& seq_id, const std::string& key, const std::string& value)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("async_put", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_put_pargs args;
+  args.seq_id = &seq_id;
+  args.key = &key;
+  args.value = &value;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void pancake_thriftClient::async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys)
+{
+  send_async_get_batch(seq_id, keys);
+}
+
+void pancake_thriftClient::send_async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("async_get_batch", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_get_batch_pargs args;
+  args.seq_id = &seq_id;
+  args.keys = &keys;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void pancake_thriftClient::async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+{
+  send_async_put_batch(seq_id, keys, values);
+}
+
+void pancake_thriftClient::send_async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("async_put_batch", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_put_batch_pargs args;
+  args.seq_id = &seq_id;
+  args.keys = &keys;
+  args.values = &values;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
 }
 
 void pancake_thriftClient::get(std::string& _return, const std::string& key)
@@ -962,10 +1927,10 @@ void pancake_thriftClient::recv_get(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
 }
 
-void pancake_thriftClient::put(std::string& _return, const std::string& key, const std::string& value)
+void pancake_thriftClient::put(const std::string& key, const std::string& value)
 {
   send_put(key, value);
-  recv_put(_return);
+  recv_put();
 }
 
 void pancake_thriftClient::send_put(const std::string& key, const std::string& value)
@@ -983,7 +1948,7 @@ void pancake_thriftClient::send_put(const std::string& key, const std::string& v
   oprot_->getTransport()->flush();
 }
 
-void pancake_thriftClient::recv_put(std::string& _return)
+void pancake_thriftClient::recv_put()
 {
 
   int32_t rseqid = 0;
@@ -1009,16 +1974,11 @@ void pancake_thriftClient::recv_put(std::string& _return)
     iprot_->getTransport()->readEnd();
   }
   pancake_thrift_put_presult result;
-  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "put failed: unknown result");
+  return;
 }
 
 void pancake_thriftClient::get_batch(std::vector<std::string> & _return, const std::vector<std::string> & keys)
@@ -1079,10 +2039,10 @@ void pancake_thriftClient::recv_get_batch(std::vector<std::string> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_batch failed: unknown result");
 }
 
-void pancake_thriftClient::put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+void pancake_thriftClient::put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values)
 {
   send_put_batch(keys, values);
-  recv_put_batch(_return);
+  recv_put_batch();
 }
 
 void pancake_thriftClient::send_put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values)
@@ -1100,7 +2060,7 @@ void pancake_thriftClient::send_put_batch(const std::vector<std::string> & keys,
   oprot_->getTransport()->flush();
 }
 
-void pancake_thriftClient::recv_put_batch(std::string& _return)
+void pancake_thriftClient::recv_put_batch()
 {
 
   int32_t rseqid = 0;
@@ -1126,16 +2086,11 @@ void pancake_thriftClient::recv_put_batch(std::string& _return)
     iprot_->getTransport()->readEnd();
   }
   pancake_thrift_put_batch_presult result;
-  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
-  if (result.__isset.success) {
-    // _return pointer has now been filled
-    return;
-  }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "put_batch failed: unknown result");
+  return;
 }
 
 bool pancake_thriftProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, const std::string& fname, int32_t seqid, void* callContext) {
@@ -1155,6 +2110,261 @@ bool pancake_thriftProcessor::dispatchCall(::apache::thrift::protocol::TProtocol
   }
   (this->*(pfn->second))(seqid, iprot, oprot, callContext);
   return true;
+}
+
+void pancake_thriftProcessor::process_get_client_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.get_client_id", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.get_client_id");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.get_client_id");
+  }
+
+  pancake_thrift_get_client_id_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.get_client_id", bytes);
+  }
+
+  pancake_thrift_get_client_id_result result;
+  try {
+    result.success = iface_->get_client_id();
+    result.__isset.success = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.get_client_id");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("get_client_id", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "pancake_thrift.get_client_id");
+  }
+
+  oprot->writeMessageBegin("get_client_id", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "pancake_thrift.get_client_id", bytes);
+  }
+}
+
+void pancake_thriftProcessor::process_register_client_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.register_client_id", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.register_client_id");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.register_client_id");
+  }
+
+  pancake_thrift_register_client_id_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.register_client_id", bytes);
+  }
+
+  pancake_thrift_register_client_id_result result;
+  try {
+    iface_->register_client_id(args.block_id, args.client_id);
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.register_client_id");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("register_client_id", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "pancake_thrift.register_client_id");
+  }
+
+  oprot->writeMessageBegin("register_client_id", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "pancake_thrift.register_client_id", bytes);
+  }
+}
+
+void pancake_thriftProcessor::process_async_get(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.async_get", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.async_get");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.async_get");
+  }
+
+  pancake_thrift_async_get_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.async_get", bytes);
+  }
+
+  try {
+    iface_->async_get(args.seq_id, args.key);
+  } catch (const std::exception&) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.async_get");
+    }
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->asyncComplete(ctx, "pancake_thrift.async_get");
+  }
+
+  return;
+}
+
+void pancake_thriftProcessor::process_async_put(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.async_put", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.async_put");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.async_put");
+  }
+
+  pancake_thrift_async_put_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.async_put", bytes);
+  }
+
+  try {
+    iface_->async_put(args.seq_id, args.key, args.value);
+  } catch (const std::exception&) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.async_put");
+    }
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->asyncComplete(ctx, "pancake_thrift.async_put");
+  }
+
+  return;
+}
+
+void pancake_thriftProcessor::process_async_get_batch(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.async_get_batch", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.async_get_batch");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.async_get_batch");
+  }
+
+  pancake_thrift_async_get_batch_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.async_get_batch", bytes);
+  }
+
+  try {
+    iface_->async_get_batch(args.seq_id, args.keys);
+  } catch (const std::exception&) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.async_get_batch");
+    }
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->asyncComplete(ctx, "pancake_thrift.async_get_batch");
+  }
+
+  return;
+}
+
+void pancake_thriftProcessor::process_async_put_batch(int32_t, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol*, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("pancake_thrift.async_put_batch", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "pancake_thrift.async_put_batch");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "pancake_thrift.async_put_batch");
+  }
+
+  pancake_thrift_async_put_batch_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "pancake_thrift.async_put_batch", bytes);
+  }
+
+  try {
+    iface_->async_put_batch(args.seq_id, args.keys, args.values);
+  } catch (const std::exception&) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "pancake_thrift.async_put_batch");
+    }
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->asyncComplete(ctx, "pancake_thrift.async_put_batch");
+  }
+
+  return;
 }
 
 void pancake_thriftProcessor::process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
@@ -1234,8 +2444,7 @@ void pancake_thriftProcessor::process_put(int32_t seqid, ::apache::thrift::proto
 
   pancake_thrift_put_result result;
   try {
-    iface_->put(result.success, args.key, args.value);
-    result.__isset.success = true;
+    iface_->put(args.key, args.value);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "pancake_thrift.put");
@@ -1342,8 +2551,7 @@ void pancake_thriftProcessor::process_put_batch(int32_t seqid, ::apache::thrift:
 
   pancake_thrift_put_batch_result result;
   try {
-    iface_->put_batch(result.success, args.keys, args.values);
-    result.__isset.success = true;
+    iface_->put_batch(args.keys, args.values);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "pancake_thrift.put_batch");
@@ -1378,6 +2586,262 @@ void pancake_thriftProcessor::process_put_batch(int32_t seqid, ::apache::thrift:
   ::apache::thrift::stdcxx::shared_ptr< pancake_thriftIf > handler(handlerFactory_->getHandler(connInfo), cleanup);
   ::apache::thrift::stdcxx::shared_ptr< ::apache::thrift::TProcessor > processor(new pancake_thriftProcessor(handler));
   return processor;
+}
+
+int64_t pancake_thriftConcurrentClient::get_client_id()
+{
+  int32_t seqid = send_get_client_id();
+  return recv_get_client_id(seqid);
+}
+
+int32_t pancake_thriftConcurrentClient::send_get_client_id()
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("get_client_id", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  pancake_thrift_get_client_id_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+int64_t pancake_thriftConcurrentClient::recv_get_client_id(const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("get_client_id") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      int64_t _return;
+      pancake_thrift_get_client_id_presult result;
+      result.success = &_return;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      if (result.__isset.success) {
+        sentry.commit();
+        return _return;
+      }
+      // in a bad state, don't commit
+      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get_client_id failed: unknown result");
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+void pancake_thriftConcurrentClient::register_client_id(const int32_t block_id, const int64_t client_id)
+{
+  int32_t seqid = send_register_client_id(block_id, client_id);
+  recv_register_client_id(seqid);
+}
+
+int32_t pancake_thriftConcurrentClient::send_register_client_id(const int32_t block_id, const int64_t client_id)
+{
+  int32_t cseqid = this->sync_.generateSeqId();
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("register_client_id", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  pancake_thrift_register_client_id_pargs args;
+  args.block_id = &block_id;
+  args.client_id = &client_id;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+  return cseqid;
+}
+
+void pancake_thriftConcurrentClient::recv_register_client_id(const int32_t seqid)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  // the read mutex gets dropped and reacquired as part of waitForWork()
+  // The destructor of this sentry wakes up other clients
+  ::apache::thrift::async::TConcurrentRecvSentry sentry(&this->sync_, seqid);
+
+  while(true) {
+    if(!this->sync_.getPending(fname, mtype, rseqid)) {
+      iprot_->readMessageBegin(fname, mtype, rseqid);
+    }
+    if(seqid == rseqid) {
+      if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+        ::apache::thrift::TApplicationException x;
+        x.read(iprot_);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+        sentry.commit();
+        throw x;
+      }
+      if (mtype != ::apache::thrift::protocol::T_REPLY) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+      }
+      if (fname.compare("register_client_id") != 0) {
+        iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+        iprot_->readMessageEnd();
+        iprot_->getTransport()->readEnd();
+
+        // in a bad state, don't commit
+        using ::apache::thrift::protocol::TProtocolException;
+        throw TProtocolException(TProtocolException::INVALID_DATA);
+      }
+      pancake_thrift_register_client_id_presult result;
+      result.read(iprot_);
+      iprot_->readMessageEnd();
+      iprot_->getTransport()->readEnd();
+
+      sentry.commit();
+      return;
+    }
+    // seqid != rseqid
+    this->sync_.updatePending(fname, mtype, rseqid);
+
+    // this will temporarily unlock the readMutex, and let other clients get work done
+    this->sync_.waitForWork(seqid);
+  } // end while(true)
+}
+
+void pancake_thriftConcurrentClient::async_get(const sequence_id& seq_id, const std::string& key)
+{
+  send_async_get(seq_id, key);
+}
+
+void pancake_thriftConcurrentClient::send_async_get(const sequence_id& seq_id, const std::string& key)
+{
+  int32_t cseqid = 0;
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("async_get", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_get_pargs args;
+  args.seq_id = &seq_id;
+  args.key = &key;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+}
+
+void pancake_thriftConcurrentClient::async_put(const sequence_id& seq_id, const std::string& key, const std::string& value)
+{
+  send_async_put(seq_id, key, value);
+}
+
+void pancake_thriftConcurrentClient::send_async_put(const sequence_id& seq_id, const std::string& key, const std::string& value)
+{
+  int32_t cseqid = 0;
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("async_put", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_put_pargs args;
+  args.seq_id = &seq_id;
+  args.key = &key;
+  args.value = &value;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+}
+
+void pancake_thriftConcurrentClient::async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys)
+{
+  send_async_get_batch(seq_id, keys);
+}
+
+void pancake_thriftConcurrentClient::send_async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys)
+{
+  int32_t cseqid = 0;
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("async_get_batch", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_get_batch_pargs args;
+  args.seq_id = &seq_id;
+  args.keys = &keys;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
+}
+
+void pancake_thriftConcurrentClient::async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+{
+  send_async_put_batch(seq_id, keys, values);
+}
+
+void pancake_thriftConcurrentClient::send_async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+{
+  int32_t cseqid = 0;
+  ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
+  oprot_->writeMessageBegin("async_put_batch", ::apache::thrift::protocol::T_ONEWAY, cseqid);
+
+  pancake_thrift_async_put_batch_pargs args;
+  args.seq_id = &seq_id;
+  args.keys = &keys;
+  args.values = &values;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+
+  sentry.commit();
 }
 
 void pancake_thriftConcurrentClient::get(std::string& _return, const std::string& key)
@@ -1464,10 +2928,10 @@ void pancake_thriftConcurrentClient::recv_get(std::string& _return, const int32_
   } // end while(true)
 }
 
-void pancake_thriftConcurrentClient::put(std::string& _return, const std::string& key, const std::string& value)
+void pancake_thriftConcurrentClient::put(const std::string& key, const std::string& value)
 {
   int32_t seqid = send_put(key, value);
-  recv_put(_return, seqid);
+  recv_put(seqid);
 }
 
 int32_t pancake_thriftConcurrentClient::send_put(const std::string& key, const std::string& value)
@@ -1489,7 +2953,7 @@ int32_t pancake_thriftConcurrentClient::send_put(const std::string& key, const s
   return cseqid;
 }
 
-void pancake_thriftConcurrentClient::recv_put(std::string& _return, const int32_t seqid)
+void pancake_thriftConcurrentClient::recv_put(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -1528,18 +2992,12 @@ void pancake_thriftConcurrentClient::recv_put(std::string& _return, const int32_
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
       pancake_thrift_put_presult result;
-      result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
-      if (result.__isset.success) {
-        // _return pointer has now been filled
-        sentry.commit();
-        return;
-      }
-      // in a bad state, don't commit
-      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "put failed: unknown result");
+      sentry.commit();
+      return;
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);
@@ -1633,10 +3091,10 @@ void pancake_thriftConcurrentClient::recv_get_batch(std::vector<std::string> & _
   } // end while(true)
 }
 
-void pancake_thriftConcurrentClient::put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values)
+void pancake_thriftConcurrentClient::put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values)
 {
   int32_t seqid = send_put_batch(keys, values);
-  recv_put_batch(_return, seqid);
+  recv_put_batch(seqid);
 }
 
 int32_t pancake_thriftConcurrentClient::send_put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values)
@@ -1658,7 +3116,7 @@ int32_t pancake_thriftConcurrentClient::send_put_batch(const std::vector<std::st
   return cseqid;
 }
 
-void pancake_thriftConcurrentClient::recv_put_batch(std::string& _return, const int32_t seqid)
+void pancake_thriftConcurrentClient::recv_put_batch(const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -1697,18 +3155,12 @@ void pancake_thriftConcurrentClient::recv_put_batch(std::string& _return, const 
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
       pancake_thrift_put_batch_presult result;
-      result.success = &_return;
       result.read(iprot_);
       iprot_->readMessageEnd();
       iprot_->getTransport()->readEnd();
 
-      if (result.__isset.success) {
-        // _return pointer has now been filled
-        sentry.commit();
-        return;
-      }
-      // in a bad state, don't commit
-      throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "put_batch failed: unknown result");
+      sentry.commit();
+      return;
     }
     // seqid != rseqid
     this->sync_.updatePending(fname, mtype, rseqid);

@@ -21,10 +21,16 @@
 class pancake_thriftIf {
  public:
   virtual ~pancake_thriftIf() {}
+  virtual int64_t get_client_id() = 0;
+  virtual void register_client_id(const int32_t block_id, const int64_t client_id) = 0;
+  virtual void async_get(const sequence_id& seq_id, const std::string& key) = 0;
+  virtual void async_put(const sequence_id& seq_id, const std::string& key, const std::string& value) = 0;
+  virtual void async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys) = 0;
+  virtual void async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values) = 0;
   virtual void get(std::string& _return, const std::string& key) = 0;
-  virtual void put(std::string& _return, const std::string& key, const std::string& value) = 0;
+  virtual void put(const std::string& key, const std::string& value) = 0;
   virtual void get_batch(std::vector<std::string> & _return, const std::vector<std::string> & keys) = 0;
-  virtual void put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values) = 0;
+  virtual void put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values) = 0;
 };
 
 class pancake_thriftIfFactory {
@@ -54,18 +60,460 @@ class pancake_thriftIfSingletonFactory : virtual public pancake_thriftIfFactory 
 class pancake_thriftNull : virtual public pancake_thriftIf {
  public:
   virtual ~pancake_thriftNull() {}
+  int64_t get_client_id() {
+    int64_t _return = 0;
+    return _return;
+  }
+  void register_client_id(const int32_t /* block_id */, const int64_t /* client_id */) {
+    return;
+  }
+  void async_get(const sequence_id& /* seq_id */, const std::string& /* key */) {
+    return;
+  }
+  void async_put(const sequence_id& /* seq_id */, const std::string& /* key */, const std::string& /* value */) {
+    return;
+  }
+  void async_get_batch(const sequence_id& /* seq_id */, const std::vector<std::string> & /* keys */) {
+    return;
+  }
+  void async_put_batch(const sequence_id& /* seq_id */, const std::vector<std::string> & /* keys */, const std::vector<std::string> & /* values */) {
+    return;
+  }
   void get(std::string& /* _return */, const std::string& /* key */) {
     return;
   }
-  void put(std::string& /* _return */, const std::string& /* key */, const std::string& /* value */) {
+  void put(const std::string& /* key */, const std::string& /* value */) {
     return;
   }
   void get_batch(std::vector<std::string> & /* _return */, const std::vector<std::string> & /* keys */) {
     return;
   }
-  void put_batch(std::string& /* _return */, const std::vector<std::string> & /* keys */, const std::vector<std::string> & /* values */) {
+  void put_batch(const std::vector<std::string> & /* keys */, const std::vector<std::string> & /* values */) {
     return;
   }
+};
+
+
+class pancake_thrift_get_client_id_args {
+ public:
+
+  pancake_thrift_get_client_id_args(const pancake_thrift_get_client_id_args&);
+  pancake_thrift_get_client_id_args& operator=(const pancake_thrift_get_client_id_args&);
+  pancake_thrift_get_client_id_args() {
+  }
+
+  virtual ~pancake_thrift_get_client_id_args() throw();
+
+  bool operator == (const pancake_thrift_get_client_id_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const pancake_thrift_get_client_id_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_get_client_id_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_get_client_id_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_get_client_id_pargs() throw();
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _pancake_thrift_get_client_id_result__isset {
+  _pancake_thrift_get_client_id_result__isset() : success(false) {}
+  bool success :1;
+} _pancake_thrift_get_client_id_result__isset;
+
+class pancake_thrift_get_client_id_result {
+ public:
+
+  pancake_thrift_get_client_id_result(const pancake_thrift_get_client_id_result&);
+  pancake_thrift_get_client_id_result& operator=(const pancake_thrift_get_client_id_result&);
+  pancake_thrift_get_client_id_result() : success(0) {
+  }
+
+  virtual ~pancake_thrift_get_client_id_result() throw();
+  int64_t success;
+
+  _pancake_thrift_get_client_id_result__isset __isset;
+
+  void __set_success(const int64_t val);
+
+  bool operator == (const pancake_thrift_get_client_id_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_get_client_id_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_get_client_id_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _pancake_thrift_get_client_id_presult__isset {
+  _pancake_thrift_get_client_id_presult__isset() : success(false) {}
+  bool success :1;
+} _pancake_thrift_get_client_id_presult__isset;
+
+class pancake_thrift_get_client_id_presult {
+ public:
+
+
+  virtual ~pancake_thrift_get_client_id_presult() throw();
+  int64_t* success;
+
+  _pancake_thrift_get_client_id_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _pancake_thrift_register_client_id_args__isset {
+  _pancake_thrift_register_client_id_args__isset() : block_id(false), client_id(false) {}
+  bool block_id :1;
+  bool client_id :1;
+} _pancake_thrift_register_client_id_args__isset;
+
+class pancake_thrift_register_client_id_args {
+ public:
+
+  pancake_thrift_register_client_id_args(const pancake_thrift_register_client_id_args&);
+  pancake_thrift_register_client_id_args& operator=(const pancake_thrift_register_client_id_args&);
+  pancake_thrift_register_client_id_args() : block_id(0), client_id(0) {
+  }
+
+  virtual ~pancake_thrift_register_client_id_args() throw();
+  int32_t block_id;
+  int64_t client_id;
+
+  _pancake_thrift_register_client_id_args__isset __isset;
+
+  void __set_block_id(const int32_t val);
+
+  void __set_client_id(const int64_t val);
+
+  bool operator == (const pancake_thrift_register_client_id_args & rhs) const
+  {
+    if (!(block_id == rhs.block_id))
+      return false;
+    if (!(client_id == rhs.client_id))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_register_client_id_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_register_client_id_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_register_client_id_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_register_client_id_pargs() throw();
+  const int32_t* block_id;
+  const int64_t* client_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_register_client_id_result {
+ public:
+
+  pancake_thrift_register_client_id_result(const pancake_thrift_register_client_id_result&);
+  pancake_thrift_register_client_id_result& operator=(const pancake_thrift_register_client_id_result&);
+  pancake_thrift_register_client_id_result() {
+  }
+
+  virtual ~pancake_thrift_register_client_id_result() throw();
+
+  bool operator == (const pancake_thrift_register_client_id_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const pancake_thrift_register_client_id_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_register_client_id_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_register_client_id_presult {
+ public:
+
+
+  virtual ~pancake_thrift_register_client_id_presult() throw();
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _pancake_thrift_async_get_args__isset {
+  _pancake_thrift_async_get_args__isset() : seq_id(false), key(false) {}
+  bool seq_id :1;
+  bool key :1;
+} _pancake_thrift_async_get_args__isset;
+
+class pancake_thrift_async_get_args {
+ public:
+
+  pancake_thrift_async_get_args(const pancake_thrift_async_get_args&);
+  pancake_thrift_async_get_args& operator=(const pancake_thrift_async_get_args&);
+  pancake_thrift_async_get_args() : key() {
+  }
+
+  virtual ~pancake_thrift_async_get_args() throw();
+  sequence_id seq_id;
+  std::string key;
+
+  _pancake_thrift_async_get_args__isset __isset;
+
+  void __set_seq_id(const sequence_id& val);
+
+  void __set_key(const std::string& val);
+
+  bool operator == (const pancake_thrift_async_get_args & rhs) const
+  {
+    if (!(seq_id == rhs.seq_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_async_get_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_async_get_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_async_get_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_async_get_pargs() throw();
+  const sequence_id* seq_id;
+  const std::string* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _pancake_thrift_async_put_args__isset {
+  _pancake_thrift_async_put_args__isset() : seq_id(false), key(false), value(false) {}
+  bool seq_id :1;
+  bool key :1;
+  bool value :1;
+} _pancake_thrift_async_put_args__isset;
+
+class pancake_thrift_async_put_args {
+ public:
+
+  pancake_thrift_async_put_args(const pancake_thrift_async_put_args&);
+  pancake_thrift_async_put_args& operator=(const pancake_thrift_async_put_args&);
+  pancake_thrift_async_put_args() : key(), value() {
+  }
+
+  virtual ~pancake_thrift_async_put_args() throw();
+  sequence_id seq_id;
+  std::string key;
+  std::string value;
+
+  _pancake_thrift_async_put_args__isset __isset;
+
+  void __set_seq_id(const sequence_id& val);
+
+  void __set_key(const std::string& val);
+
+  void __set_value(const std::string& val);
+
+  bool operator == (const pancake_thrift_async_put_args & rhs) const
+  {
+    if (!(seq_id == rhs.seq_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    if (!(value == rhs.value))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_async_put_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_async_put_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_async_put_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_async_put_pargs() throw();
+  const sequence_id* seq_id;
+  const std::string* key;
+  const std::string* value;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _pancake_thrift_async_get_batch_args__isset {
+  _pancake_thrift_async_get_batch_args__isset() : seq_id(false), keys(false) {}
+  bool seq_id :1;
+  bool keys :1;
+} _pancake_thrift_async_get_batch_args__isset;
+
+class pancake_thrift_async_get_batch_args {
+ public:
+
+  pancake_thrift_async_get_batch_args(const pancake_thrift_async_get_batch_args&);
+  pancake_thrift_async_get_batch_args& operator=(const pancake_thrift_async_get_batch_args&);
+  pancake_thrift_async_get_batch_args() {
+  }
+
+  virtual ~pancake_thrift_async_get_batch_args() throw();
+  sequence_id seq_id;
+  std::vector<std::string>  keys;
+
+  _pancake_thrift_async_get_batch_args__isset __isset;
+
+  void __set_seq_id(const sequence_id& val);
+
+  void __set_keys(const std::vector<std::string> & val);
+
+  bool operator == (const pancake_thrift_async_get_batch_args & rhs) const
+  {
+    if (!(seq_id == rhs.seq_id))
+      return false;
+    if (!(keys == rhs.keys))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_async_get_batch_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_async_get_batch_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_async_get_batch_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_async_get_batch_pargs() throw();
+  const sequence_id* seq_id;
+  const std::vector<std::string> * keys;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _pancake_thrift_async_put_batch_args__isset {
+  _pancake_thrift_async_put_batch_args__isset() : seq_id(false), keys(false), values(false) {}
+  bool seq_id :1;
+  bool keys :1;
+  bool values :1;
+} _pancake_thrift_async_put_batch_args__isset;
+
+class pancake_thrift_async_put_batch_args {
+ public:
+
+  pancake_thrift_async_put_batch_args(const pancake_thrift_async_put_batch_args&);
+  pancake_thrift_async_put_batch_args& operator=(const pancake_thrift_async_put_batch_args&);
+  pancake_thrift_async_put_batch_args() {
+  }
+
+  virtual ~pancake_thrift_async_put_batch_args() throw();
+  sequence_id seq_id;
+  std::vector<std::string>  keys;
+  std::vector<std::string>  values;
+
+  _pancake_thrift_async_put_batch_args__isset __isset;
+
+  void __set_seq_id(const sequence_id& val);
+
+  void __set_keys(const std::vector<std::string> & val);
+
+  void __set_values(const std::vector<std::string> & val);
+
+  bool operator == (const pancake_thrift_async_put_batch_args & rhs) const
+  {
+    if (!(seq_id == rhs.seq_id))
+      return false;
+    if (!(keys == rhs.keys))
+      return false;
+    if (!(values == rhs.values))
+      return false;
+    return true;
+  }
+  bool operator != (const pancake_thrift_async_put_batch_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const pancake_thrift_async_put_batch_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class pancake_thrift_async_put_batch_pargs {
+ public:
+
+
+  virtual ~pancake_thrift_async_put_batch_pargs() throw();
+  const sequence_id* seq_id;
+  const std::vector<std::string> * keys;
+  const std::vector<std::string> * values;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
 };
 
 typedef struct _pancake_thrift_get_args__isset {
@@ -228,30 +676,19 @@ class pancake_thrift_put_pargs {
 
 };
 
-typedef struct _pancake_thrift_put_result__isset {
-  _pancake_thrift_put_result__isset() : success(false) {}
-  bool success :1;
-} _pancake_thrift_put_result__isset;
 
 class pancake_thrift_put_result {
  public:
 
   pancake_thrift_put_result(const pancake_thrift_put_result&);
   pancake_thrift_put_result& operator=(const pancake_thrift_put_result&);
-  pancake_thrift_put_result() : success() {
+  pancake_thrift_put_result() {
   }
 
   virtual ~pancake_thrift_put_result() throw();
-  std::string success;
 
-  _pancake_thrift_put_result__isset __isset;
-
-  void __set_success(const std::string& val);
-
-  bool operator == (const pancake_thrift_put_result & rhs) const
+  bool operator == (const pancake_thrift_put_result & /* rhs */) const
   {
-    if (!(success == rhs.success))
-      return false;
     return true;
   }
   bool operator != (const pancake_thrift_put_result &rhs) const {
@@ -265,19 +702,12 @@ class pancake_thrift_put_result {
 
 };
 
-typedef struct _pancake_thrift_put_presult__isset {
-  _pancake_thrift_put_presult__isset() : success(false) {}
-  bool success :1;
-} _pancake_thrift_put_presult__isset;
 
 class pancake_thrift_put_presult {
  public:
 
 
   virtual ~pancake_thrift_put_presult() throw();
-  std::string* success;
-
-  _pancake_thrift_put_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -443,30 +873,19 @@ class pancake_thrift_put_batch_pargs {
 
 };
 
-typedef struct _pancake_thrift_put_batch_result__isset {
-  _pancake_thrift_put_batch_result__isset() : success(false) {}
-  bool success :1;
-} _pancake_thrift_put_batch_result__isset;
 
 class pancake_thrift_put_batch_result {
  public:
 
   pancake_thrift_put_batch_result(const pancake_thrift_put_batch_result&);
   pancake_thrift_put_batch_result& operator=(const pancake_thrift_put_batch_result&);
-  pancake_thrift_put_batch_result() : success() {
+  pancake_thrift_put_batch_result() {
   }
 
   virtual ~pancake_thrift_put_batch_result() throw();
-  std::string success;
 
-  _pancake_thrift_put_batch_result__isset __isset;
-
-  void __set_success(const std::string& val);
-
-  bool operator == (const pancake_thrift_put_batch_result & rhs) const
+  bool operator == (const pancake_thrift_put_batch_result & /* rhs */) const
   {
-    if (!(success == rhs.success))
-      return false;
     return true;
   }
   bool operator != (const pancake_thrift_put_batch_result &rhs) const {
@@ -480,19 +899,12 @@ class pancake_thrift_put_batch_result {
 
 };
 
-typedef struct _pancake_thrift_put_batch_presult__isset {
-  _pancake_thrift_put_batch_presult__isset() : success(false) {}
-  bool success :1;
-} _pancake_thrift_put_batch_presult__isset;
 
 class pancake_thrift_put_batch_presult {
  public:
 
 
   virtual ~pancake_thrift_put_batch_presult() throw();
-  std::string* success;
-
-  _pancake_thrift_put_batch_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -523,18 +935,32 @@ class pancake_thriftClient : virtual public pancake_thriftIf {
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
+  int64_t get_client_id();
+  void send_get_client_id();
+  int64_t recv_get_client_id();
+  void register_client_id(const int32_t block_id, const int64_t client_id);
+  void send_register_client_id(const int32_t block_id, const int64_t client_id);
+  void recv_register_client_id();
+  void async_get(const sequence_id& seq_id, const std::string& key);
+  void send_async_get(const sequence_id& seq_id, const std::string& key);
+  void async_put(const sequence_id& seq_id, const std::string& key, const std::string& value);
+  void send_async_put(const sequence_id& seq_id, const std::string& key, const std::string& value);
+  void async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys);
+  void send_async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys);
+  void async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values);
+  void send_async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values);
   void get(std::string& _return, const std::string& key);
   void send_get(const std::string& key);
   void recv_get(std::string& _return);
-  void put(std::string& _return, const std::string& key, const std::string& value);
+  void put(const std::string& key, const std::string& value);
   void send_put(const std::string& key, const std::string& value);
-  void recv_put(std::string& _return);
+  void recv_put();
   void get_batch(std::vector<std::string> & _return, const std::vector<std::string> & keys);
   void send_get_batch(const std::vector<std::string> & keys);
   void recv_get_batch(std::vector<std::string> & _return);
-  void put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values);
+  void put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values);
   void send_put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values);
-  void recv_put_batch(std::string& _return);
+  void recv_put_batch();
  protected:
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -550,6 +976,12 @@ class pancake_thriftProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (pancake_thriftProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
+  void process_get_client_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_register_client_id(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_async_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_async_put(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_async_get_batch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_async_put_batch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_put(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_batch(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -557,6 +989,12 @@ class pancake_thriftProcessor : public ::apache::thrift::TDispatchProcessor {
  public:
   pancake_thriftProcessor(::apache::thrift::stdcxx::shared_ptr<pancake_thriftIf> iface) :
     iface_(iface) {
+    processMap_["get_client_id"] = &pancake_thriftProcessor::process_get_client_id;
+    processMap_["register_client_id"] = &pancake_thriftProcessor::process_register_client_id;
+    processMap_["async_get"] = &pancake_thriftProcessor::process_async_get;
+    processMap_["async_put"] = &pancake_thriftProcessor::process_async_put;
+    processMap_["async_get_batch"] = &pancake_thriftProcessor::process_async_get_batch;
+    processMap_["async_put_batch"] = &pancake_thriftProcessor::process_async_put_batch;
     processMap_["get"] = &pancake_thriftProcessor::process_get;
     processMap_["put"] = &pancake_thriftProcessor::process_put;
     processMap_["get_batch"] = &pancake_thriftProcessor::process_get_batch;
@@ -589,6 +1027,60 @@ class pancake_thriftMultiface : virtual public pancake_thriftIf {
     ifaces_.push_back(iface);
   }
  public:
+  int64_t get_client_id() {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->get_client_id();
+    }
+    return ifaces_[i]->get_client_id();
+  }
+
+  void register_client_id(const int32_t block_id, const int64_t client_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->register_client_id(block_id, client_id);
+    }
+    ifaces_[i]->register_client_id(block_id, client_id);
+  }
+
+  void async_get(const sequence_id& seq_id, const std::string& key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->async_get(seq_id, key);
+    }
+    ifaces_[i]->async_get(seq_id, key);
+  }
+
+  void async_put(const sequence_id& seq_id, const std::string& key, const std::string& value) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->async_put(seq_id, key, value);
+    }
+    ifaces_[i]->async_put(seq_id, key, value);
+  }
+
+  void async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->async_get_batch(seq_id, keys);
+    }
+    ifaces_[i]->async_get_batch(seq_id, keys);
+  }
+
+  void async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->async_put_batch(seq_id, keys, values);
+    }
+    ifaces_[i]->async_put_batch(seq_id, keys, values);
+  }
+
   void get(std::string& _return, const std::string& key) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -599,14 +1091,13 @@ class pancake_thriftMultiface : virtual public pancake_thriftIf {
     return;
   }
 
-  void put(std::string& _return, const std::string& key, const std::string& value) {
+  void put(const std::string& key, const std::string& value) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->put(_return, key, value);
+      ifaces_[i]->put(key, value);
     }
-    ifaces_[i]->put(_return, key, value);
-    return;
+    ifaces_[i]->put(key, value);
   }
 
   void get_batch(std::vector<std::string> & _return, const std::vector<std::string> & keys) {
@@ -619,14 +1110,13 @@ class pancake_thriftMultiface : virtual public pancake_thriftIf {
     return;
   }
 
-  void put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values) {
+  void put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->put_batch(_return, keys, values);
+      ifaces_[i]->put_batch(keys, values);
     }
-    ifaces_[i]->put_batch(_return, keys, values);
-    return;
+    ifaces_[i]->put_batch(keys, values);
   }
 
 };
@@ -659,18 +1149,32 @@ class pancake_thriftConcurrentClient : virtual public pancake_thriftIf {
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
+  int64_t get_client_id();
+  int32_t send_get_client_id();
+  int64_t recv_get_client_id(const int32_t seqid);
+  void register_client_id(const int32_t block_id, const int64_t client_id);
+  int32_t send_register_client_id(const int32_t block_id, const int64_t client_id);
+  void recv_register_client_id(const int32_t seqid);
+  void async_get(const sequence_id& seq_id, const std::string& key);
+  void send_async_get(const sequence_id& seq_id, const std::string& key);
+  void async_put(const sequence_id& seq_id, const std::string& key, const std::string& value);
+  void send_async_put(const sequence_id& seq_id, const std::string& key, const std::string& value);
+  void async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys);
+  void send_async_get_batch(const sequence_id& seq_id, const std::vector<std::string> & keys);
+  void async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values);
+  void send_async_put_batch(const sequence_id& seq_id, const std::vector<std::string> & keys, const std::vector<std::string> & values);
   void get(std::string& _return, const std::string& key);
   int32_t send_get(const std::string& key);
   void recv_get(std::string& _return, const int32_t seqid);
-  void put(std::string& _return, const std::string& key, const std::string& value);
+  void put(const std::string& key, const std::string& value);
   int32_t send_put(const std::string& key, const std::string& value);
-  void recv_put(std::string& _return, const int32_t seqid);
+  void recv_put(const int32_t seqid);
   void get_batch(std::vector<std::string> & _return, const std::vector<std::string> & keys);
   int32_t send_get_batch(const std::vector<std::string> & keys);
   void recv_get_batch(std::vector<std::string> & _return, const int32_t seqid);
-  void put_batch(std::string& _return, const std::vector<std::string> & keys, const std::vector<std::string> & values);
+  void put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values);
   int32_t send_put_batch(const std::vector<std::string> & keys, const std::vector<std::string> & values);
-  void recv_put_batch(std::string& _return, const int32_t seqid);
+  void recv_put_batch(const int32_t seqid);
  protected:
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   apache::thrift::stdcxx::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;

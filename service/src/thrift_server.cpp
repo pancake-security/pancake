@@ -14,8 +14,22 @@ std::shared_ptr<TServer> thrift_server::create(std::shared_ptr<proxy> proxy_ptr,
     auto clone_factory = std::make_shared<thrift_handler_factory>(proxy_ptr, proxy_type);
     auto proc_factory = std::make_shared<pancake_thriftProcessorFactory>(clone_factory);
     auto socket = std::make_shared<TNonblockingServerSocket>(port);
-    auto server = std::make_shared<TNonblockingServer>(proc_factory, socket);
-    server->setUseHighPriorityIOThreads(true);
+    //auto socket = std::make_shared<TServerSocket>(port);
+    //auto server = std::make_shared<TNonblockingServer>(proc_factory, socket);
+
+    std::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(15);
+    std::shared_ptr<PosixThreadFactory> threadFactory = std::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
+    threadManager->threadFactory(threadFactory);
+    threadManager->start();
+    auto server = std::make_shared<TNonblockingServer>(proc_factory, std::make_shared<TBinaryProtocolFactory>(), socket, threadManager);
+
+    //server->setUseHighPriorityIOThreads(true);
     server->setNumIOThreads(num_threads);
+    /*  auto server = std::make_shared<TThreadedServer>(proc_factory,
+                                                    socket,  
+                                                    std::make_shared<TBufferedTransportFactory>(), 
+                                                    std::make_shared<TBinaryProtocolFactory>(), 
+                                                    std::make_shared<PosixThreadFactory>());
+    */
     return server;
 }
