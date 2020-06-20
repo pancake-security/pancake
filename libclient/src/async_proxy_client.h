@@ -50,8 +50,9 @@ private:
     std::shared_ptr<pancake_thriftConcurrentClient> client_;
 
     std::shared_ptr<queue<int>> requests_;
-    int total_ = 0;
-    bool done_ = false;
+    std::atomic_int* total_;
+    std::atomic_bool* done_;
+
     int sequence_num = 0;
     int client_id_;
     sequence_id seq_id_;

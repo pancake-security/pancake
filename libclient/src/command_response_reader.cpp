@@ -6,7 +6,7 @@ command_response_reader::command_response_reader(std::shared_ptr<apache::thrift:
 }
 
 int64_t command_response_reader::recv_response(std::vector<std::string> &out) {
-  /*
+  
   using namespace ::apache::thrift::protocol;
   using namespace ::apache::thrift;
   int32_t rseqid = 0;
@@ -31,10 +31,9 @@ int64_t command_response_reader::recv_response(std::vector<std::string> &out) {
     return result.seq_id.client_seq_no;
   }
   throw TApplicationException(TApplicationException::MISSING_RESULT, "Command failed: unknown result");
-*/
 
-  std::cout << "iprot ptr: " << this->iprot_ << std::endl;
-  std::cout << "iprot ptr: " << iprot_ << std::endl;
+  
+  /*
   ::apache::thrift::protocol::TInputRecursionTracker tracker(*this->iprot_);
   uint32_t xfer = 0;
   std::string fname;
@@ -99,5 +98,6 @@ int64_t command_response_reader::recv_response(std::vector<std::string> &out) {
 
   xfer += this->iprot_->readStructEnd();
   out = this_resp.result;
+  */
   
 }

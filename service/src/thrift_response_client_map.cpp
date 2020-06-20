@@ -17,8 +17,8 @@ void thrift_response_client_map::async_respond_client(const sequence_id &seq, in
   bool found = clients_.update_fn(seq.client_id, [&](std::shared_ptr<thrift_response_client> &client) {
     client->async_response(seq, op_code, result);
   });
-  if (!found)
-    throw std::runtime_error("ERROR: client with corresponding id not found");
+  //if (!found)
+  //  std::runtime_error("ERROR: client with corresponding id not found");
     //LOG(log_level::warn) << "Cannot respond to client since client id " << seq.client_id << " is not registered...";
 }
 
@@ -31,11 +31,13 @@ void thrift_response_client_map::send_failure() {
   fail.__set_client_id(-2);
   fail.__set_client_seq_no(-2);
   fail.__set_client_id(-2);
-  // for (const auto &x : clients_.lock_table()) {
-  //   try {
-  //     x.second->response(fail, {});
-  //   } catch (std::exception &e) {
-  //     continue;
-  //   }
-  // }
+  for (const auto &x : clients_.lock_table()) {
+  try {
+      std::vector<std::string> _result;
+      x.second->async_response(fail, 5, _result);
+  } 
+  catch (std::exception &e) {
+    continue;
+    }
+  }
 }

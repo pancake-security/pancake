@@ -104,7 +104,7 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
             rdtscll(start);
         }
         auto keys_values_pair = trace[i];
-        sleep(1);
+        // sleep(1);
         if (keys_values_pair.second.empty()){
             client.get_batch(keys_values_pair.first);
         }
@@ -122,8 +122,8 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
         elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
         i = (i+1)%keys_values_pair.first.size();
     }
-    std::cout << "got to ops" << std::endl;
-    ops = client.num_requests_satisfied() - ops;
+    if (stats) 
+        ops = client.num_requests_satisfied() - ops;
     e = std::chrono::high_resolution_clock::now(); 
     elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
     if (stats)
@@ -143,15 +143,14 @@ void cooldown(std::vector<int> &latencies, int client_batch_size,
 void client(int idx, int client_batch_size, int object_size, trace_vector &trace, std::string &output_directory, std::string &host, int proxy_port, std::atomic<int> &xput) {
     async_proxy_client client;
     client.init(host, proxy_port);
-    auto t = std::thread(&async_proxy_client::read_responses, client);
 
-    std::cout << "client initialized" << std::endl;
+    std::cout << "Client initialized" << std::endl;
     std::atomic<int> indiv_xput;
     std::atomic_init(&indiv_xput, 0);
     std::vector<int> latencies;
-    std::cout << "beginning warmup" << std::endl;
+    std::cout << "Beginning warmup" << std::endl;
     warmup(latencies, client_batch_size, object_size, trace, indiv_xput, client);
-    std::cout << "finished warmup beginning benchmark" << std::endl;
+    std::cout << "Beginning benchmark" << std::endl;
     run_benchmark(20, true, latencies, client_batch_size, object_size, trace, indiv_xput, client);
     std::string location = output_directory + "/" + std::to_string(idx);
     std::ofstream out(location);
@@ -164,11 +163,10 @@ void client(int idx, int client_batch_size, int object_size, trace_vector &trace
     line.append("Xput: " + std::to_string(indiv_xput) + "\n");
     out << line;
     xput += indiv_xput;
-    std::cout << "finished benchmark beginning cooldown" << std::endl;
+    std::cout << "Beginning cooldown" << std::endl;
     cooldown(latencies, client_batch_size, object_size, trace, indiv_xput, client);
 
     client.finish();
-    t.join();
 }
 
 void usage() {

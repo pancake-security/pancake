@@ -320,7 +320,6 @@ std::vector<std::string> pancake_proxy::get_batch(int queue_id, const std::vecto
     for (int i = 0; i < waiters.size(); i++){
         _return.push_back(waiters[i].get());
     }
-    std::cout << "fulfilled promis" << std::endl;
     return _return;
 };
 
