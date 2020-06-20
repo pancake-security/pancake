@@ -15,6 +15,8 @@ add_executable(proxy_benchmark
         ../libclient/src/proxy_client.h
         ../libclient/src/async_proxy_client.cpp
         ../libclient/src/async_proxy_client.h
+        ../libclient/src/command_response_reader.cpp
+        ../libclient/src/command_response_reader.h
 
         ../service/src/thrift_response_service.cpp
         ../service/src/thrift_response_service.cpp

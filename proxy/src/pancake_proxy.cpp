@@ -331,6 +331,7 @@ void pancake_proxy::async_get_batch(const sequence_id &seq_id, int queue_id, con
         waiters.push_back((get_future(queue_id, key)));
     }
     respond_queue_.push(std::make_pair(GET_BATCH, std::make_pair(seq_id, std::move(waiters))));
+    sequence_queue_.push(seq_id);
 };
 
 void pancake_proxy::put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) {
@@ -441,8 +442,7 @@ void pancake_proxy::responder_thread(){
         
         auto op_code = tuple.first;
         auto seq = tuple.second.first;
-        
-        //auto futures = tuple.second.second;
+        seq = sequence_queue_.pop();
         std::vector<std::string>results;
         for (int i = 0; i < tuple.second.second.size(); i++)
             results.push_back(tuple.second.second[i].get());

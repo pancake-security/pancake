@@ -47,7 +47,7 @@ public:
         m_queue_.push(item);
         size_++;
         mlock.unlock();
-        this->m_cond.notify_one();
+        m_cond_.notify_one();
     }
 
     void push(T &&item) {

@@ -121,6 +121,7 @@ private:
     int PUT_BATCH = 3;
 
     queue<std::pair<int, std::pair<const sequence_id&, std::vector<std::future<std::string>>>>> respond_queue_;
+    queue<sequence_id> sequence_queue_;
 };
 
 #endif //PANCAKE_PROXY_H

@@ -19,6 +19,7 @@
 #include "thrift.h"
 #include "thrift_response_service.h"
 #include "queue.h"
+#include "command_response_reader.h"
 
 #define GET 0
 #define PUT 1
@@ -32,30 +33,6 @@ using namespace apache::thrift::transport;
 class async_proxy_client : client {
 
 public:
-    /* Command response reader class */
-    class command_response_reader {
-    public:
-        command_response_reader() = default;
-
-        /**
-        * @brief Constructor
-        * @param prot Protocol
-        */
-
-        explicit command_response_reader(std::shared_ptr<apache::thrift::protocol::TProtocol> prot);
-
-        /**
-        * @brief Receive response
-        * @param out Response result to be returned
-        * @return Client sequence number
-        */
-
-        int64_t recv_response(std::vector<std::string> &out);
-        /* Thrift protocol */
-        std::shared_ptr<apache::thrift::protocol::TProtocol> prot_;
-        /* Thrift protocol */
-        apache::thrift::protocol::TProtocol *iprot_{};
-    };
 
     void init(const std::string &host_name, int port);
     int64_t get_client_id();
@@ -78,6 +55,9 @@ private:
     int sequence_num = 0;
     int client_id_;
     sequence_id seq_id_;
+    std::thread *response_thread_;
+
+    command_response_reader reader_;
 
     /* Transport */
     std::shared_ptr<apache::thrift::transport::TTransport> transport_{};
