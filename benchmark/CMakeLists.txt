@@ -13,7 +13,15 @@ add_executable(proxy_benchmark
         ../libclient/src/client.h
         ../libclient/src/proxy_client.cpp
         ../libclient/src/proxy_client.h
+        ../libclient/src/async_proxy_client.cpp
+        ../libclient/src/async_proxy_client.h
 
+        ../service/src/thrift_response_service.cpp
+        ../service/src/thrift_response_service.cpp
+        ../service/src/thrift_response_client.cpp
+        ../service/src/thrift_response_client.h
+        ../service/src/thrift_response_client_map.cpp
+        ../service/src/thrift_response_client_map.h
         ../service/src/thrift_server.cpp
         ../service/src/thrift_server.h
         ../service/src/thrift_handler_factory.cpp

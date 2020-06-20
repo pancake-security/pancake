@@ -8,7 +8,7 @@
 
 #include "distribution.h"
 #include "pancake_proxy.h"
-#include "thrift_reponse_client_map.h"
+//#include "thrift_response_client_map.h"
 #include "thrift_server.h"
 #include "thrift_utils.h"
 
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
     arguments[0] = malloc(sizeof(distribution * ));
     arguments[1] = malloc(sizeof(double *));
     arguments[2] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(thrift_response_client_map::thrift_response_client_map *))
+    arguments[3] = malloc(sizeof(std::shared_ptr<thrift_response_client_map>*));
 
     std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     assert(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_ != "");
@@ -187,15 +187,15 @@ int main(int argc, char *argv[]) {
     auto items = dist.get_items();
     double alpha = 1.0 / items.size();
     double delta = 1.0 / (2 * items.size()) * 1 / alpha;
-    thrift_response_client_map::thrift_response_client_map map();
+    auto id_to_client = std::make_shared<thrift_response_client_map>();
     arguments[1] = &alpha;
     arguments[2] = &delta;
-    arguments[3] = &map;
+    arguments[3] = &id_to_client;
     std::string dummy(object_size_, '0');
     std::cout <<"Initializing pancake" << std::endl;
     dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
     std::cout << "Initialized pancake" << std::endl;
-    auto proxy_server = thrift_server::create(proxy_, "pancake", PROXY_PORT, 1);
+    auto proxy_server = thrift_server::create(proxy_, "pancake", id_to_client, PROXY_PORT, 1);
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;

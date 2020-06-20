@@ -37,10 +37,12 @@ class thrift_response_client_map {
    * @param result Request result
    */
 
-  void respond_client(const sequence_id &seq, const std::vector<std::string> &result);
+  void async_respond_client(const sequence_id &seq, int op_code, const std::vector<std::string> &result);
 
   /**
-   * @brief Clear the map
+   * @brief Respond to the client
+   * @param seq Request sequence identifier
+   * @param result Request result
    */
 
   void clear();
@@ -52,5 +54,5 @@ class thrift_response_client_map {
 
  private:
   /* Response client map */
-  cuckoohash_map<int64_t, std::shared_ptr<thrift_response_client>> clients_;
+  libcuckoo::cuckoohash_map<int64_t, std::shared_ptr<thrift_response_client>> clients_;
 };

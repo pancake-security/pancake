@@ -22,6 +22,12 @@ add_executable(proxy_server
         ../service/src/thrift_handler_factory.h
         ../service/src/thrift_handler.cpp
         ../service/src/thrift_handler.h
+        ../service/src/thrift_response_client_map.cpp
+        ../service/src/thrift_response_client_map.h
+        ../service/src/thrift_response_client.cpp
+        ../service/src/thrift_response_client.h
+        ../service/src/thrift_response_service.cpp
+        ../service/src/thrift_response_service.h
         ../service/src/thrift.cpp
         ../service/src/thrift.h
         ../service/src/proxy_types.cpp

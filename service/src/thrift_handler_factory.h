@@ -20,13 +20,16 @@
 
 class thrift_handler_factory : public pancake_thriftIfFactory {
 public:
-    explicit thrift_handler_factory(std::shared_ptr<proxy> proxy, const std::string &proxy_type);
+    explicit thrift_handler_factory(std::shared_ptr<proxy> proxy, const std::string &proxy_type, 
+                                    std::shared_ptr<thrift_response_client_map> id_to_client);
     pancake_thriftIf *getHandler(const ::apache::thrift::TConnectionInfo &connInfo) override;
     void releaseHandler(pancake_thriftIf *anIf) override;
 
 private:
     std::shared_ptr<proxy> proxy_;
     std::string proxy_type_ = "pancake";
+    std::shared_ptr<thrift_response_client_map> id_to_client_;
+    std::atomic<int64_t> client_id_gen_;
 };
 
 #endif //PANCAKE_THRIFT_HANDLER_FACTORY_H
