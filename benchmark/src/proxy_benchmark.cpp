@@ -32,7 +32,6 @@ void load_trace(const std::string &trace_location, trace_vector &trace, int clie
     int frequency_sum = 0;
     std::string op, key, val;
     std::ifstream in_workload_file;
-    std::cout << "tracelocation: " << trace_location << std::endl;
     in_workload_file.open(trace_location, std::ios::in);
     if(!in_workload_file){
         std::perror("Unable to find workload file");
@@ -104,7 +103,6 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
             rdtscll(start);
         }
         auto keys_values_pair = trace[i];
-        // sleep(1);
         if (keys_values_pair.second.empty()){
             client.get_batch(keys_values_pair.first);
         }

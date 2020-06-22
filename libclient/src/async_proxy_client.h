@@ -47,7 +47,7 @@ public:
 
 
 private:
-    std::shared_ptr<pancake_thriftConcurrentClient> client_;
+    std::shared_ptr<pancake_thriftClient> client_;
 
     std::shared_ptr<queue<int>> requests_;
     std::atomic_int* total_;
@@ -64,8 +64,6 @@ private:
     std::shared_ptr<apache::thrift::transport::TTransport> transport_{};
     /* Protocol */
     std::shared_ptr<apache::thrift::protocol::TProtocol> protocol_{};
-    // /* Block request client */
-    // std::shared_ptr<thrift_client> client_{};
 };
 
 

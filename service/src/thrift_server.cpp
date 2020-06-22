@@ -14,6 +14,7 @@ std::shared_ptr<TServer> thrift_server::create(std::shared_ptr<proxy> proxy_ptr,
     auto clone_factory = std::make_shared<thrift_handler_factory>(proxy_ptr, proxy_type, id_to_client);
     auto proc_factory = std::make_shared<pancake_thriftProcessorFactory>(clone_factory);
     auto socket = std::make_shared<TNonblockingServerSocket>(port);
+    socket->setSendTimeout(1200000);
     //auto socket = std::make_shared<TServerSocket>(port);
     //auto server = std::make_shared<TNonblockingServer>(proc_factory, socket);
 

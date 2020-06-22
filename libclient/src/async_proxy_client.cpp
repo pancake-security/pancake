@@ -14,10 +14,10 @@ void async_proxy_client::init(const std::string &host_name, int port) {
 
     auto socket = std::make_shared<TSocket>(host_name, port);
     socket->setRecvTimeout(10000);
-    socket->setSendTimeout(120000);
+    socket->setSendTimeout(1200000);
     transport_ = std::shared_ptr<TTransport>(new TFramedTransport(socket));
     protocol_ = std::shared_ptr<TProtocol>(new TBinaryProtocol(transport_));
-    client_ = std::make_shared<pancake_thriftConcurrentClient>(protocol_);
+    client_ = std::make_shared<pancake_thriftClient>(protocol_);
     transport_->open();
     requests_ = std::make_shared<queue<int>>();
     client_id_ = get_client_id();
@@ -39,6 +39,9 @@ std::string async_proxy_client::get(const std::string &key) {
     seq_id_.__set_client_seq_no(sequence_num++);
     client_->async_get(seq_id_, key);
     requests_->push(GET);
+    while (requests_->size() > 63){
+        sleep(1);
+    }
     return "";
 }
 
@@ -46,16 +49,17 @@ void async_proxy_client::put(const std::string &key, const std::string &value) {
     seq_id_.__set_client_seq_no(sequence_num++);
     client_->async_put(seq_id_, key, value);
     requests_->push(PUT);
+    while (requests_->size() > 63){
+        sleep(1);
+    }
 }
 
 std::vector<std::string> async_proxy_client::get_batch(const std::vector<std::string> &keys) {
-    try {
-        seq_id_.__set_client_seq_no(sequence_num++);
-        client_->async_get_batch(seq_id_, keys);
-        requests_->push(GET_BATCH);
-    }
-    catch(apache::thrift::transport::TTransportException e) {
-        (void)0;
+    seq_id_.__set_client_seq_no(sequence_num++);
+    client_->async_get_batch(seq_id_, keys);
+    requests_->push(GET_BATCH);
+    while (requests_->size() > 63){
+        sleep(1);
     }
     std::vector<std::string> fake_vec;
     return fake_vec;
@@ -65,18 +69,22 @@ void async_proxy_client::put_batch(const std::vector<std::string> &keys, const s
     seq_id_.__set_client_seq_no(sequence_num++);
     client_->async_put_batch(seq_id_, keys, values);
     requests_->push(PUT_BATCH);
+    while (requests_->size() > 63){
+        sleep(1);
+    }
 }
 
 void async_proxy_client::read_responses() { 
+    std::vector<std::string> _return;
     while (!done_->load()) {
         auto type = requests_->pop();
-        std::vector<std::string> _return;
         try {
             reader_.recv_response(_return);
         } catch(apache::thrift::transport::TTransportException e){
             (void)0;
         }
         *total_ += _return.size();
+        _return.clear();
     }
 }
 

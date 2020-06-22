@@ -15,7 +15,12 @@ void thrift_response_client_map::async_respond_client(const sequence_id &seq, in
   if (seq.client_id == -1)
     return;
   bool found = clients_.update_fn(seq.client_id, [&](std::shared_ptr<thrift_response_client> &client) {
-    client->async_response(seq, op_code, result);
+    try {
+      client->async_response(seq, op_code, result);
+    }
+    catch (apache::thrift::transport::TTransportException e) {
+      std::cout << "sending error: " << e.what() << std::endl;
+    }
   });
   //if (!found)
   //  std::runtime_error("ERROR: client with corresponding id not found");

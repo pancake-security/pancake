@@ -16,6 +16,7 @@ thrift_handler_factory::thrift_handler_factory(std::shared_ptr<proxy> proxy, con
 
 pancake_thriftIf* thrift_handler_factory::getHandler(const ::apache::thrift::TConnectionInfo &conn_info) {
     std::shared_ptr<TSocket> sock = std::dynamic_pointer_cast<TSocket>(conn_info.transport);
+    sock->setSendTimeout(1200000);
     auto transport = std::make_shared<TFramedTransport>(conn_info.transport);
     std::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
     return new thrift_handler(proxy_, proxy_type_, client_id_gen_, protocol, id_to_client_);

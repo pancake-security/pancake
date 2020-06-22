@@ -4,7 +4,7 @@
 /* thrift response client */
 class thrift_response_client {
  public:
-  typedef pancake_thrift_responseConcurrentClient thrift_client;
+  typedef pancake_thrift_responseClient thrift_client;
 
   /**
    * @brief Constructor
