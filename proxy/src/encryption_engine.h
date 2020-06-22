@@ -44,6 +44,8 @@ private:
     int make_keys(EVP_PKEY** skey, EVP_PKEY** vkey);
     int hmac_it(const byte* msg, size_t mlen, byte** val, size_t* vlen, EVP_PKEY* pkey);
 
+    std::string encryption_string_;
+    std::string iv_string_;
     unsigned char * encryption_key_;
     unsigned char * iv_;
     EVP_PKEY * skey_, * vkey_;
