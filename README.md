@@ -6,6 +6,7 @@ libbzp2-dev
 zlib1g-dev
 cmake-3.5+
 gcc-5
+libssl-dev
 redis-server
 ssdb-rocks - https://github.com/anuragkh/ssdb-rocks
 
@@ -25,7 +26,8 @@ number of clients - NUM_CLIENTS
 workload file - WORKLOAD_FILE
 number of proxy threads - NUM_PROXY_THREADS
 
-Make sure to place the workload file in the root of the pancake directory.
+Download one of our workload files from s3 and place it into the root of pancale's directory.
+aws s3 --no-sign-request cp s3://pancaketranscripts/ycsb-c-1m .
 
 First start the storage server
 
