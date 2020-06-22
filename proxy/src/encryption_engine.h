@@ -27,6 +27,7 @@ const char hn[] = "SHA256";
 class encryption_engine {
 public:
     encryption_engine();
+    encryption_engine(const encryption_engine& enc_engine);
     std::string encrypt(const std::string &plain_text);
     std::string decrypt(const std::string &cipher_text);
     std::string hmac(const std::string &key);

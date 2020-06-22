@@ -88,8 +88,9 @@ private:
     distribution load_new_distribution();
     bool is_true_distribution();
     void execute_batch(const std::vector<operation> &operations, std::vector<bool> &is_trues,
-                       std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface);
-    void consumer_thread(int id);
+                       std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface,
+                       encryption_engine *enc_engine);
+    void consumer_thread(int id, encryption_engine *enc_engine);
     void distribution_thread();
     void responder_thread();
 

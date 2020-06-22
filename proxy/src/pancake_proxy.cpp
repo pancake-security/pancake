@@ -29,7 +29,7 @@ void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector
         operation_queues_.push_back(q);
     }
     for (int i = 0; i < num_cores; i++) {
-        threads_.push_back(std::thread(&pancake_proxy::consumer_thread, this, i));
+        threads_.push_back(std::thread(&pancake_proxy::consumer_thread, this, i, new encryption_engine(encryption_engine_)));
     }
     if (!is_static_)
         threads_.push_back(std::thread(&pancake_proxy::distribution_thread, this));
@@ -56,8 +56,6 @@ void pancake_proxy::insert_replicas(const std::string &key, int num_replicas){
 }
 
 void pancake_proxy::create_replicas() {
-    //int n = key_to_frequency_.size();
-    //int n_prime = 2*n;
     int keys_created = 0;
     std::vector<std::pair<std::string, int>> update_cache_pairs;
     
@@ -224,7 +222,8 @@ void pancake_proxy::create_security_batch(std::shared_ptr<queue <std::pair<opera
 };
 
 void pancake_proxy::execute_batch(const std::vector<operation> &operations, std::vector<bool> &is_trues,
-                                  std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface) {
+                                  std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface,
+                                  encryption_engine *enc_engine) {
 
     // Store which are real queries so we can return the values
     std::vector<int> replica_ids;
@@ -241,7 +240,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
     std::vector<std::string> storage_values;
     for(int i = 0, j = 0; i < operations.size(); i++){
         auto cipher = responses[i];
-        auto plaintext = encryption_engine_.decrypt(cipher);
+        auto plaintext = enc_engine->decrypt(cipher);
         if(operations[i].value != ""){
             update_cache_.populate_replica_updates(operations[i].key, operations[i].value, key_to_number_of_replicas_[operations[i].key]);
         }
@@ -252,7 +251,7 @@ void pancake_proxy::execute_batch(const std::vector<operation> &operations, std:
             promises[j]->set_value(plaintext);
             j++;
         }
-        storage_values.push_back(encryption_engine_.encrypt(plaintext));
+        storage_values.push_back(enc_engine->encrypt(plaintext));
     }
     storage_interface->put_batch(storage_keys, storage_values);
 }
@@ -383,7 +382,7 @@ std::future<std::string> pancake_proxy::put_future(int queue_id, const std::stri
     return waiter;
 };
 
-void pancake_proxy::consumer_thread(int id){
+void pancake_proxy::consumer_thread(int id, encryption_engine *enc_engine){
     std::shared_ptr<storage_interface> storage_interface;
     if (server_type_ == "redis") {
         storage_interface = std::make_shared<redis>(server_host_name_, server_port_);
@@ -413,7 +412,7 @@ void pancake_proxy::consumer_thread(int id){
                 previous_total_operations = total_operations;
             }
         }
-        execute_batch(storage_batch, is_trues, promises, storage_interface);
+        execute_batch(storage_batch, is_trues, promises, storage_interface, enc_engine);
     }
 };
 

@@ -10,6 +10,9 @@
         encryption_key_ = (unsigned char *)rand_str(32).c_str();
         iv_ = (unsigned char *)rand_str(16).c_str();
 
+        skey_ = NULL;
+        vkey_ = NULL;
+
         int rc = make_keys(&skey_, &vkey_);
         if (rc != 0)
             exit(1);
@@ -19,6 +22,13 @@
         assert(vkey_ != NULL);
         if (vkey_ == NULL)
             exit(1);
+    };
+
+    encryption_engine::encryption_engine(const encryption_engine& enc_engine) {
+        encryption_key_ = enc_engine.encryption_key_;
+        iv_ = enc_engine.iv_;
+        skey_ = enc_engine.skey_;
+        vkey_ = enc_engine.vkey_;
     };
 
     void encryption_engine::handle_errors(void) {
