@@ -52,11 +52,17 @@ private:
     std::shared_ptr<queue<int>> requests_;
     std::atomic_int* total_;
     std::atomic_bool* done_;
+    
+    std::condition_variable *m_cond_;
+    std::mutex *m_mtx_;
+
 
     int sequence_num = 0;
     int client_id_;
     sequence_id seq_id_;
     std::thread *response_thread_;
+
+    int in_flight_limit_ = 16;
 
     command_response_reader reader_;
 
