@@ -6,9 +6,9 @@
 
 void pancake_proxy::init(const std::vector<std::string> &keys, const std::vector<std::string> &values, void ** args){
     real_distribution_ = *(distribution *)args[0];
-    alpha_ = *((double *)args[1]);
-    delta_ = *((double *)args[2]);
-    id_to_client_ = *((std::shared_ptr<thrift_response_client_map>*)args[3]);
+    alpha_ = *(static_cast<double *>(args[1]));
+    delta_ = *(static_cast<double *>(args[2]));
+    id_to_client_ = *(static_cast<std::shared_ptr<thrift_response_client_map>*>(args[3]));
     if (server_type_ == "redis") {
         storage_interface_ = std::make_shared<redis>(server_host_name_, server_port_);
         cpp_redis::network::set_default_nb_workers(std::min(10, p_threads_));

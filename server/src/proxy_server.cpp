@@ -174,11 +174,6 @@ int main(int argc, char *argv[]) {
     }
 
     void *arguments[4];
-    arguments[0] = malloc(sizeof(distribution * ));
-    arguments[1] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(double *));
-    arguments[3] = malloc(sizeof(std::shared_ptr<thrift_response_client_map>*));
-
     std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     assert(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_ != "");
     auto dist = load_frequencies_from_trace(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_, trace_, client_batch_size);

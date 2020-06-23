@@ -1,6 +1,6 @@
 # Pancake
 
-`Pancake` is the first system designed to protect key-value stores from access pattern leakage attacks with small constant factor bandwidth overhead.
+`Pancake` is the first system designed to protect key-value stores from access pattern leakage attacks with small constant factor bandwidth overhead. `Pancake` uses a new approach, that we call frequency smoothing, to transform plaintext accesses into uniformly distributed encrypted accesses to an encrypted data store.
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ aws s3 --no-sign-request cp s3://pancaketranscripts/ycsb-c-1m .
 
 ## Running
 
-Running `Pancake` requires three machines
+Running `Pancake` requires at least three machines.
 
 1. Client with a CLIENT_IP and CLIENT_PORT
 2. Proxy with a PROXY_IP

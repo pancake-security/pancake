@@ -37,10 +37,6 @@ int main(){
     std::vector<std::string> values = std::vector<std::string>(keys.size(), dummy);
     auto id_to_client = std::make_shared<thrift_response_client_map>();
     void *arguments[4];
-    arguments[0] = malloc(sizeof(distribution *));
-    arguments[1] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(double *));
-    arguments[3] = malloc(sizeof(std::shared_ptr<thrift_response_client_map>*));
     distribution distribution_(keys, std::vector<double>(keys.size(), 1.0/keys.size()));
     arguments[0] = &distribution_;
     double alpha = 1.0 / keys.size();
