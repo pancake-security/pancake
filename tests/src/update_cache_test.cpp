@@ -14,12 +14,12 @@ void run_basic_test(){
     pairs.push_back(std::make_pair("1", 8));
     update_cache cache = update_cache(pairs);
 
-    std::cout << "Check basic insertion and update logic" << std::endl;
-    assert(cache.check_for_update(key, 1) == "");
-
-    std::cout << "Check basic sizing" << std::endl;
+     std::cout << "Check basic sizing" << std::endl;
     //std::cout << "Cache size in bytes: " << cache.size_in_bytes() << std::endl;
     assert(cache.size_in_bytes() == 1);
+
+    std::cout << "Check basic insertion and update logic" << std::endl;
+    assert(cache.check_for_update(key, 1) == "");
 
     std::cout << "Check basic write update" << std::endl;
     assert(cache.populate_replica_updates(key, val, 8));

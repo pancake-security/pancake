@@ -14,3 +14,141 @@
 
 
 
+sequence_id::~sequence_id() throw() {
+}
+
+
+void sequence_id::__set_client_id(const int64_t val) {
+  this->client_id = val;
+}
+
+void sequence_id::__set_client_seq_no(const int64_t val) {
+  this->client_seq_no = val;
+}
+
+void sequence_id::__set_server_seq_no(const int64_t val) {
+  this->server_seq_no = val;
+}
+std::ostream& operator<<(std::ostream& out, const sequence_id& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+uint32_t sequence_id::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  ::apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_client_id = false;
+  bool isset_client_seq_no = false;
+  bool isset_server_seq_no = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->client_id);
+          isset_client_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->client_seq_no);
+          isset_client_seq_no = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->server_seq_no);
+          isset_server_seq_no = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_client_id)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_client_seq_no)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_server_seq_no)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t sequence_id::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("sequence_id");
+
+  xfer += oprot->writeFieldBegin("client_id", ::apache::thrift::protocol::T_I64, 1);
+  xfer += oprot->writeI64(this->client_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("client_seq_no", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeI64(this->client_seq_no);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("server_seq_no", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeI64(this->server_seq_no);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(sequence_id &a, sequence_id &b) {
+  using ::std::swap;
+  swap(a.client_id, b.client_id);
+  swap(a.client_seq_no, b.client_seq_no);
+  swap(a.server_seq_no, b.server_seq_no);
+}
+
+sequence_id::sequence_id(const sequence_id& other0) {
+  client_id = other0.client_id;
+  client_seq_no = other0.client_seq_no;
+  server_seq_no = other0.server_seq_no;
+}
+sequence_id& sequence_id::operator=(const sequence_id& other1) {
+  client_id = other1.client_id;
+  client_seq_no = other1.client_seq_no;
+  server_seq_no = other1.server_seq_no;
+  return *this;
+}
+void sequence_id::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "sequence_id(";
+  out << "client_id=" << to_string(client_id);
+  out << ", " << "client_seq_no=" << to_string(client_seq_no);
+  out << ", " << "server_seq_no=" << to_string(server_seq_no);
+  out << ")";
+}
+
+

@@ -114,6 +114,6 @@
         return ret;
     }
 
-    cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table update_cache::get_locked_table(){
+    libcuckoo::cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table update_cache::get_locked_table(){
         return map.lock_table();
     };

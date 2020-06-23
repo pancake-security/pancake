@@ -23,6 +23,7 @@
 #include "storage_interface.h"
 #include "redis.h"
 #include "rocksdb.h"
+#include "thrift_response_client_map.h"
 //#include "memcached.h"
 
 
@@ -40,6 +41,16 @@ public:
     void put(int queue_id, const std::string &key, const std::string &value) override;
     std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys) override;
     void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) override;
+
+    void async_get(const sequence_id &seq_id, const std::string &key);
+    void async_put(const sequence_id &seq_id, const std::string &key, const std::string &value);
+    void async_get_batch(const sequence_id &seq_id, const std::vector<std::string> &keys);
+    void async_put_batch(const sequence_id &seq_id, const std::vector<std::string> &keys, const std::vector<std::string> &values);
+
+    void async_get(const sequence_id &seq_id, int queue_id, const std::string &key);
+    void async_put(const sequence_id &seq_id, int queue_id, const std::string &key, const std::string &value);
+    void async_get_batch(const sequence_id &seq_id, int queue_id, const std::vector<std::string> &keys);
+    void async_put_batch(const sequence_id &seq_id, int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values);
 
     std::future<std::string> get_future(int queue_id, const std::string &key);
     std::future<std::string> put_future(int queue_id, const std::string &key, const std::string &value);
@@ -77,9 +88,11 @@ private:
     distribution load_new_distribution();
     bool is_true_distribution();
     void execute_batch(const std::vector<operation> &operations, std::vector<bool> &is_trues,
-                       std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface);
-    void consumer_thread(int id);
+                       std::vector<std::shared_ptr<std::promise<std::string>>> &promises, std::shared_ptr<storage_interface> storage_interface,
+                       encryption_engine *enc_engine);
+    void consumer_thread(int id, encryption_engine *enc_engine);
     void distribution_thread();
+    void responder_thread();
 
     std::shared_ptr<storage_interface> storage_interface_;
     std::vector<std::shared_ptr<queue<std::pair<operation, std::shared_ptr<std::promise<std::string>>>>>> operation_queues_;
@@ -101,6 +114,15 @@ private:
     encryption_engine encryption_engine_;
     std::vector<std::thread> threads_;
     bool finished_ = false;
+    std::shared_ptr<thrift_response_client_map> id_to_client_;
+
+    int GET = 0;
+    int PUT = 1;
+    int GET_BATCH = 2;
+    int PUT_BATCH = 3;
+
+    queue<std::pair<int, std::pair<const sequence_id&, std::vector<std::future<std::string>>>>> respond_queue_;
+    queue<sequence_id> sequence_queue_;
 };
 
 #endif //PANCAKE_PROXY_H

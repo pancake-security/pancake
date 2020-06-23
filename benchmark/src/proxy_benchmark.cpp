@@ -13,12 +13,12 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <thread>
-
 #include "timer.h"
 #include "distribution.h"
 #include "pancake_proxy.h"
 #include "thrift_server.h"
 #include "proxy_client.h"
+#include "async_proxy_client.h"
 #include "thrift_utils.h"
 
 typedef std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_vector;
@@ -32,7 +32,7 @@ void load_trace(const std::string &trace_location, trace_vector &trace, int clie
     int frequency_sum = 0;
     std::string op, key, val;
     std::ifstream in_workload_file;
-    in_workload_file.open(trace_location);
+    in_workload_file.open(trace_location, std::ios::in);
     if(!in_workload_file){
         std::perror("Unable to find workload file");
     }
@@ -85,9 +85,12 @@ void load_trace(const std::string &trace_location, trace_vector &trace, int clie
 };
 
 void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int client_batch_size,
-                   int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+                   int object_size, trace_vector &trace, std::atomic<int> &xput, async_proxy_client client) {
     std::string dummy(object_size, '0');
     int ops = 0;
+    if (stats) {
+        ops = client.num_requests_satisfied();
+    }
     uint64_t start, end;
     auto ticks_per_ns = static_cast<double>(rdtscuhz()) / 1000;
     auto s = std::chrono::high_resolution_clock::now();
@@ -111,33 +114,41 @@ void run_benchmark(int run_time, bool stats, std::vector<int> &latencies, int cl
             double cycles = static_cast<double>(end - start);
             latencies.push_back((cycles / ticks_per_ns) / client_batch_size);
             rdtscll(start);
-            ops += keys_values_pair.first.size();
+            //ops += keys_values_pair.first.size();
         }
         e = std::chrono::high_resolution_clock::now();
         elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
         i = (i+1)%keys_values_pair.first.size();
     }
+    if (stats) 
+        ops = client.num_requests_satisfied() - ops;
+    e = std::chrono::high_resolution_clock::now(); 
+    elapsed = static_cast<int>(std::chrono::duration_cast<std::chrono::microseconds>(e - s).count());
     if (stats)
         xput += (int)(static_cast<double>(ops) * 1000000 / elapsed);
 }
 
 void warmup(std::vector<int> &latencies, int client_batch_size,
-            int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+            int object_size, trace_vector &trace, std::atomic<int> &xput, async_proxy_client client) {
     run_benchmark(15, false, latencies, client_batch_size, object_size, trace, xput, client);
 }
 
 void cooldown(std::vector<int> &latencies, int client_batch_size,
-              int object_size, trace_vector &trace, std::atomic<int> &xput, proxy_client client) {
+              int object_size, trace_vector &trace, std::atomic<int> &xput, async_proxy_client client) {
     run_benchmark(15, false, latencies, client_batch_size, object_size, trace, xput, client);
 }
 
 void client(int idx, int client_batch_size, int object_size, trace_vector &trace, std::string &output_directory, std::string &host, int proxy_port, std::atomic<int> &xput) {
-    proxy_client client;
+    async_proxy_client client;
     client.init(host, proxy_port);
+
+    std::cout << "Client initialized" << std::endl;
     std::atomic<int> indiv_xput;
     std::atomic_init(&indiv_xput, 0);
     std::vector<int> latencies;
+    std::cout << "Beginning warmup" << std::endl;
     warmup(latencies, client_batch_size, object_size, trace, indiv_xput, client);
+    std::cout << "Beginning benchmark" << std::endl;
     run_benchmark(20, true, latencies, client_batch_size, object_size, trace, indiv_xput, client);
     std::string location = output_directory + "/" + std::to_string(idx);
     std::ofstream out(location);
@@ -150,7 +161,10 @@ void client(int idx, int client_batch_size, int object_size, trace_vector &trace
     line.append("Xput: " + std::to_string(indiv_xput) + "\n");
     out << line;
     xput += indiv_xput;
+    std::cout << "Beginning cooldown" << std::endl;
     cooldown(latencies, client_batch_size, object_size, trace, indiv_xput, client);
+
+    client.finish();
 }
 
 void usage() {
@@ -223,6 +237,7 @@ int main(int argc, char *argv[]) {
 
     trace_vector trace;
     load_trace(trace_location, trace, client_batch_size);
+    std::cout << "trace loaded" << std::endl;
 
     std::vector<std::thread> threads;
     for (int i = 0; i < num_clients; i++) {

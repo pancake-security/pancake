@@ -22,10 +22,10 @@ public:
     void check_if_missing(const std::string &key, const std::string &value, update_cache &cache);
     int sample_a_replica(const std::string &key, int num_replicas, bool access_is_real, int frequency, double p_max);
     int size_in_bytes ();
-    cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table get_locked_table();
+    libcuckoo::cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>>::locked_table get_locked_table();
 
 private:
-    cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>> map;
+    libcuckoo::cuckoohash_map<std::string, std::pair<std::string, std::vector<bool>>> map;
 };
 
 #endif //PANCAKE_CUCKOO_UPDATE_CACHE_H
