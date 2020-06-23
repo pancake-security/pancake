@@ -4,7 +4,6 @@
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Requirements](#requirements)
 - [Building](#building)
 - [Running](#running)
@@ -41,7 +40,7 @@ Running `Pancake` requires three machines
 
 1. Client with a CLIENT_IP and CLIENT_PORT
 2. Proxy with a PROXY_IP
-3. Storage server with STORAGE_SERVER_IP and STORAGE_PORT
+3. `Redis` or `Rocksdb` backing storage server with STORAGE_SERVER_IP and STORAGE_PORT
 
 To run the benchmark code with a particular:
 
