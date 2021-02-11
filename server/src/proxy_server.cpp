@@ -8,6 +8,7 @@
 
 #include "distribution.h"
 #include "pancake_proxy.h"
+//#include "thrift_response_client_map.h"
 #include "thrift_server.h"
 #include "thrift_utils.h"
 
@@ -25,15 +26,19 @@ distribution load_frequencies_from_trace(const std::string &trace_location, trac
     int frequency_sum = 0;
     std::string op, key, val;
     std::ifstream in_workload_file;
-    in_workload_file.open(trace_location);
-    if(!in_workload_file){
+    in_workload_file.open(trace_location, std::ios::in);
+    if(!in_workload_file.is_open()){
         std::perror("Unable to find workload file");
+    }
+    if(in_workload_file.fail()){
+        std::perror("Opening workload file failed");
     }
     std::string line;
     while (std::getline(in_workload_file, line)) {
         op = line.substr(0, line.find(" "));
         key = line.substr(line.find(" ")+1);
         val = "";
+
         if (key.find(" ") != -1) {
             val = key.substr(key.find(" ")+1);
             key = key.substr(0, key.find(" "));
@@ -168,11 +173,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    void *arguments[3];
-    arguments[0] = malloc(sizeof(distribution * ));
-    arguments[1] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(double *));
-
+    void *arguments[4];
     std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> trace_;
     assert(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_ != "");
     auto dist = load_frequencies_from_trace(dynamic_cast<pancake_proxy&>(*proxy_).trace_location_, trace_, client_batch_size);
@@ -181,13 +182,15 @@ int main(int argc, char *argv[]) {
     auto items = dist.get_items();
     double alpha = 1.0 / items.size();
     double delta = 1.0 / (2 * items.size()) * 1 / alpha;
+    auto id_to_client = std::make_shared<thrift_response_client_map>();
     arguments[1] = &alpha;
     arguments[2] = &delta;
+    arguments[3] = &id_to_client;
     std::string dummy(object_size_, '0');
-
+    std::cout <<"Initializing pancake" << std::endl;
     dynamic_cast<pancake_proxy&>(*proxy_).init(items, std::vector<std::string>(items.size(), dummy), arguments);
     std::cout << "Initialized pancake" << std::endl;
-    auto proxy_server = thrift_server::create(proxy_, "pancake", PROXY_PORT, 1);
+    auto proxy_server = thrift_server::create(proxy_, "pancake", id_to_client, PROXY_PORT, 1);
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;

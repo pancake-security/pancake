@@ -3,12 +3,17 @@
 //
 
 #include "encryption_engine.h"
+#include <iostream>
 
     encryption_engine::encryption_engine() {
         OpenSSL_add_all_algorithms();
+        encryption_string_ = rand_str(32);
+	    iv_string_= rand_str(16);
+        encryption_key_ = (unsigned char *)encryption_string_.c_str();
+        iv_ = (unsigned char *)iv_string_.c_str();
 
-        encryption_key_ = (unsigned char *)rand_str(32).c_str();
-        iv_ = (unsigned char *)rand_str(16).c_str();
+        skey_ = NULL;
+        vkey_ = NULL;
 
         int rc = make_keys(&skey_, &vkey_);
         if (rc != 0)
@@ -19,6 +24,24 @@
         assert(vkey_ != NULL);
         if (vkey_ == NULL)
             exit(1);
+    };
+
+    encryption_engine::encryption_engine(const encryption_engine& enc_engine) {
+        encryption_key_ = (unsigned char *)enc_engine.encryption_string_.c_str();
+        iv_ = (unsigned char *)enc_engine.iv_string_.c_str();
+        skey_ = NULL;
+        vkey_ = NULL;
+
+        int rc = make_keys(&skey_, &vkey_);
+        if (rc != 0)
+            exit(1);
+        assert(skey_ != NULL);
+        if (skey_ == NULL)
+            exit(1);
+        assert(vkey_ != NULL);
+        if (vkey_ == NULL)
+            exit(1);
+
     };
 
     void encryption_engine::handle_errors(void) {

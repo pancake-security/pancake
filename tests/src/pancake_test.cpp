@@ -35,19 +35,19 @@ int main(){
         keys.push_back(std::to_string(i));
     }
     std::vector<std::string> values = std::vector<std::string>(keys.size(), dummy);
-    void *arguments[3];
-    arguments[0] = malloc(sizeof(distribution *));
-    arguments[1] = malloc(sizeof(double *));
-    arguments[2] = malloc(sizeof(double *));
+    auto id_to_client = std::make_shared<thrift_response_client_map>();
+    void *arguments[4];
     distribution distribution_(keys, std::vector<double>(keys.size(), 1.0/keys.size()));
     arguments[0] = &distribution_;
     double alpha = 1.0 / keys.size();
     double delta = 1.0 / (2 * keys.size()) * 1 / alpha;
     arguments[1] = &alpha;
     arguments[2] = &delta;
+    arguments[3] = &id_to_client;
+
     dynamic_cast<pancake_proxy&>(*proxy_).init(keys, values, arguments);
     std::cout << "Initialized pancake" << std::endl;
-    auto proxy_server = thrift_server::create(proxy_, "pancake", PROXY_PORT, 1);
+    auto proxy_server = thrift_server::create(proxy_, "pancake", id_to_client, PROXY_PORT, 1);
     std::thread proxy_serve_thread([&proxy_server] { proxy_server->serve(); });
     wait_for_server_start(HOST, PROXY_PORT);
     std::cout << "Proxy server is reachable" << std::endl;

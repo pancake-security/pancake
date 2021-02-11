@@ -32,7 +32,7 @@ void queue<T>::push(const T &item) {
     m_queue_.push(item);
     size_++;
     mlock.unlock();
-    this->m_cond.notify_one();
+    m_cond_.notify_one();
 }
 
 template<typename T>

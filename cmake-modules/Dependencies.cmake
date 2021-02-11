@@ -69,6 +69,7 @@ set(LIBCUCKOO_LIBRARIES ${LIBCUCKOO_LIBRARY})
 
 ExternalProject_Add(libcuckoo
         GIT_REPOSITORY https://github.com/efficient/libcuckoo.git
+        GIT_TAG 8785773896d74f72b6224e59d37f5f8c3c1e022a
         GIT_SUBMODULES
         LIST_SEPARATOR |
         CMAKE_ARGS ${LIBCUCKOO_CMAKE_ARGS}
@@ -136,7 +137,7 @@ if (Boost_BUILD)
         list(APPEND Boost_COMPONENT_FLAGS --with-${component})
     endforeach ()
     ExternalProject_Add(boost_ep
-            URL https://downloads.sourceforge.net/project/boost/boost/${Boost_VERSION}/boost_${Boost_VERSION_STR}.zip
+            URL https://downloads.sourceforge.net/project/boost/boost/${Boost_VERSION}/boost_${Boost_VERSION_STR}.tar.bz2
             UPDATE_COMMAND ""
             CONFIGURE_COMMAND ./bootstrap.sh --prefix=${Boost_PREFIX}
             BUILD_COMMAND ./b2 link=static variant=release cxxflags=-fPIC cflags=-fPIC --prefix=${Boost_PREFIX} ${Boost_COMPONENT_FLAGS} install

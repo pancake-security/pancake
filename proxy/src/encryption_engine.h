@@ -27,6 +27,7 @@ const char hn[] = "SHA256";
 class encryption_engine {
 public:
     encryption_engine();
+    encryption_engine(const encryption_engine& enc_engine);
     std::string encrypt(const std::string &plain_text);
     std::string decrypt(const std::string &cipher_text);
     std::string hmac(const std::string &key);
@@ -43,6 +44,8 @@ private:
     int make_keys(EVP_PKEY** skey, EVP_PKEY** vkey);
     int hmac_it(const byte* msg, size_t mlen, byte** val, size_t* vlen, EVP_PKEY* pkey);
 
+    std::string encryption_string_;
+    std::string iv_string_;
     unsigned char * encryption_key_;
     unsigned char * iv_;
     EVP_PKEY * skey_, * vkey_;

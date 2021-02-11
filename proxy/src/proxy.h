@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "proxy_types.h"
 
 class proxy {
 public:
@@ -21,6 +22,16 @@ public:
     virtual void put(int queue_id, const std::string &key, const std::string &value) = 0;
     virtual std::vector<std::string> get_batch(int queue_id, const std::vector<std::string> &keys) = 0;
     virtual void put_batch(int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) = 0;
+
+    virtual void async_get(const sequence_id &seq_id, const std::string &key) = 0;
+    virtual void async_put(const sequence_id &seq_id, const std::string &key, const std::string &value) = 0;
+    virtual void async_get_batch(const sequence_id &seq_id, const std::vector<std::string> &keys) = 0;
+    virtual void async_put_batch(const sequence_id &seq_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) = 0;
+    virtual void async_get(const sequence_id &seq_id, int queue_id, const std::string &key) = 0;
+    virtual void async_put(const sequence_id &seq_id, int queue_id, const std::string &key, const std::string &value) = 0;
+    virtual void async_get_batch(const sequence_id &seq_id, int queue_id, const std::vector<std::string> &keys) = 0;
+    virtual void async_put_batch(const sequence_id &seq_id, int queue_id, const std::vector<std::string> &keys, const std::vector<std::string> &values) = 0;
+
 
 };
 #endif //PANCAKE_PROXY_H
